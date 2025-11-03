@@ -1,0 +1,242 @@
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
+} from "react-native";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { supabase } from "../../utils/supabase";
+import { router, useLocalSearchParams } from "expo-router";
+import { Input } from "../../components/Input";
+import { InputSelect } from "../../components/InputSelect";
+import useStyles from "../../styles/atualizarPedidoPage";
+import useTheme from "../../hooks/useTheme";
+
+import MoveLeft from "lucide-react-native/dist/esm/icons/move-left";
+
+export default function AtualizarPedidoScreen() {
+  const styles = useStyles();
+  const { colors } = useTheme();
+  const { id } = useLocalSearchParams(); // ID do pedido
+  const [loading, setLoading] = useState(false);
+  const [carregandoPedido, setCarregandoPedido] = useState(true);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const [form, setForm] = useState({
+    cliente: "",
+    whatsapp: "",
+    tipo_modelo: "",
+    texto_logo: "",
+    tipo_pagamento: "",
+    valor: "",
+    observacao: "",
+    responsavel: "",
+    data_entrega: new Date(),
+  });
+
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
+
+  const handleConfirm = (date: Date) => {
+    handleChange("data_entrega", date);
+    hideDatePicker();
+  };
+
+  const handleChange = (key: string, value: string | Date) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  // Buscar dados do pedido
+  useEffect(() => {
+    const fetchPedido = async () => {
+      if (!id) return;
+      try {
+        const { data, error } = await supabase
+          .from("Pedidos")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) throw error;
+
+        setForm({
+          cliente: data.cliente || "",
+          whatsapp: data.whatsapp?.toString() || "",
+          tipo_modelo: data.tipo_modelo || "",
+          texto_logo: data.texto_logo || "",
+          tipo_pagamento: data.tipo_pagamento || "",
+          valor: data.valor?.toString() || "",
+          observacao: data.observacao || "",
+          responsavel: data.responsavel || "",
+          data_entrega: data.data_entrega
+            ? new Date(data.data_entrega)
+            : new Date(),
+        });
+      } catch (err: any) {
+        Alert.alert("Erro", err.message);
+      } finally {
+        setCarregandoPedido(false);
+      }
+    };
+    fetchPedido();
+  }, [id]);
+
+  const handleSubmit = async () => {
+    if (!form.cliente || !form.whatsapp || !form.tipo_modelo || !form.valor) {
+      Alert.alert("Atenção", "Preencha todos os campos obrigatórios!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from("Pedidos")
+        .update({
+          cliente: form.cliente,
+          whatsapp: Number(form.whatsapp),
+          tipo_modelo: form.tipo_modelo,
+          texto_logo: form.texto_logo,
+          tipo_pagamento: form.tipo_pagamento,
+          valor: Number(form.valor),
+          observacao: form.observacao || null,
+          responsavel: form.responsavel || null,
+          data_entrega: form.data_entrega.toISOString(),
+        })
+        .eq("id", id);
+
+      if (error) throw error;
+
+      Alert.alert("✅ Sucesso", "Pedido atualizado com sucesso!");
+      router.back();
+    } catch (err: any) {
+      Alert.alert("Erro", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (carregandoPedido) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.textPrimary} />
+        <Text style={{ marginTop: 10 }}>Carregando pedido...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1, backgroundColor: colors.background }}
+    >
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <MoveLeft size={24} color={colors.primary} />
+          </TouchableOpacity>
+          <Text style={styles.title}>✏️ Atualizar Pedido</Text>
+        </View>
+        <Text style={styles.subtitle}>
+          Edite as informações do pedido abaixo
+        </Text>
+
+        {/* Campos do formulário */}
+        <Input
+          label="Cliente *"
+          placeholder="Nome do cliente"
+          value={form.cliente}
+          onChangeText={(v) => handleChange("cliente", v)}
+        />
+        <Input
+          label="WhatsApp *"
+          placeholder="Ex: 5511999999999"
+          keyboardType="numeric"
+          value={form.whatsapp}
+          onChangeText={(v) => handleChange("whatsapp", v)}
+        />
+        <Input
+          label="Tipo de Modelo *"
+          placeholder="Ex: Automático, Trodat 4911"
+          value={form.tipo_modelo}
+          onChangeText={(v) => handleChange("tipo_modelo", v)}
+        />
+        <Input
+          label="Texto / Logotipo *"
+          placeholder="Digite o texto do carimbo"
+          value={form.texto_logo}
+          onChangeText={(v) => handleChange("texto_logo", v)}
+          multiline
+        />
+        <Input
+          label="Observações"
+          placeholder="Algum detalhe adicional?"
+          value={form.observacao}
+          onChangeText={(v) => handleChange("observacao", v)}
+          multiline
+        />
+        <InputSelect
+          label="Forma de Pagamento *"
+          value={form.tipo_pagamento}
+          onChange={(v) => handleChange("tipo_pagamento", v)}
+        />
+        <Input
+          label="Valor *"
+          placeholder="Ex: 79.90"
+          keyboardType="decimal-pad"
+          value={form.valor}
+          onChangeText={(v) => handleChange("valor", v)}
+        />
+        <Input
+          label="Responsável"
+          placeholder="Quem atendeu?"
+          value={form.responsavel}
+          onChangeText={(v) => handleChange("responsavel", v)}
+        />
+
+        {/* Data da entrega */}
+        <View style={styles.dateSection}>
+          <Text style={styles.label}>Data de entrega *</Text>
+          <TouchableOpacity style={styles.dateButton} onPress={showDatePicker}>
+            <Text style={styles.dateText}>
+              {form.data_entrega.toLocaleDateString("pt-BR")}{" "}
+              {form.data_entrega.toLocaleTimeString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="datetime"
+          date={form.data_entrega}
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
+          locale="pt-BR"
+          is24Hour
+        />
+
+        {/* Botão de envio */}
+        <TouchableOpacity
+          style={[styles.button, loading && { opacity: 0.6 }]}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? "Salvando..." : "Atualizar Pedido"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
