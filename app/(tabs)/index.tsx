@@ -12,12 +12,13 @@ import { supabase } from "../../utils/supabase";
 import { PedidoCard } from "../../components/PedidoCard";
 import { Pedido } from "../../@types/Pedido";
 import useStyles from "../../styles/homepage";
-import useTheme from "../../hooks/useTheme"; // 👈 importar o hook de tema
+import { useTheme } from "../../hooks/useTheme"; // 👈 importar o hook de tema
 import Plus from "lucide-react-native/dist/esm/icons/plus";
 
 export default function PedidosScreen() {
   const styles = useStyles();
-  const { colors } = useTheme(); // 👈 tema atual (light/dark)
+  const { theme } = useTheme();
+  const colors = theme.colors;
 
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);

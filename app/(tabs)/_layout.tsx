@@ -1,10 +1,11 @@
 import { Tabs } from "expo-router";
-import useTheme from "../../hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 import Package from "lucide-react-native/dist/esm/icons/package";
 import Settings from "lucide-react-native/dist/esm/icons/settings";
 
 export default function TabLayout() {
-  const { colors } = useTheme();
+  const { theme } = useTheme();
+  const { colors } = theme;
   const options = {
     headerShown: false,
     tabBarActiveTintColor: colors.primary,

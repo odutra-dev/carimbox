@@ -13,7 +13,7 @@ import * as Clipboard from "expo-clipboard";
 import { supabase } from "../../utils/supabase";
 import { Pedido } from "../../@types/Pedido";
 import { useStyles } from "../../styles/verPedidoPage";
-import useTheme from "../../hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 import { InfoRow } from "../../components/InfoRow";
 
 // Icons
@@ -33,7 +33,8 @@ import CircleX from "lucide-react-native/dist/esm/icons/circle-x";
 export default function VerPedido() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { colors } = useTheme();
+  const { theme } = useTheme();
+  const { colors } = theme;
   const styles = useStyles();
 
   const [pedido, setPedido] = useState<Pedido | null>(null);

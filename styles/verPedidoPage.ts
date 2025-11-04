@@ -1,8 +1,10 @@
 import { StyleSheet } from "react-native";
-import useTheme from "../hooks/useTheme"; // ajuste o caminho conforme seu projeto
+import { useTheme } from "../hooks/useTheme"; // ajuste o caminho conforme seu projeto
 
 export const useStyles = () => {
-  const { colors, spacing } = useTheme();
+  const { theme } = useTheme();
+
+  const { colors, spacing } = theme;
 
   return StyleSheet.create({
     container: {

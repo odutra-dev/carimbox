@@ -1,5 +1,5 @@
 import { Text, ToastAndroid, TouchableOpacity, View } from "react-native";
-import useTheme from "../../hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 import { useStyles } from "./styles";
 import * as Clipboard from "expo-clipboard";
 import Copy from "lucide-react-native/dist/esm/icons/copy";
@@ -13,7 +13,9 @@ export const InfoRow = ({
   label: string;
   value: string;
 }) => {
-  const { colors } = useTheme();
+  const { theme } = useTheme();
+  const { colors } = theme;
+
   const styles = useStyles();
 
   const handleCopyField = async () => {

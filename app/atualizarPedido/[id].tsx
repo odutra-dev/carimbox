@@ -16,13 +16,14 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Input } from "../../components/Input";
 import { InputSelect } from "../../components/InputSelect";
 import useStyles from "../../styles/atualizarPedidoPage";
-import useTheme from "../../hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 
 import MoveLeft from "lucide-react-native/dist/esm/icons/move-left";
 
 export default function AtualizarPedidoScreen() {
   const styles = useStyles();
-  const { colors } = useTheme();
+  const { theme } = useTheme();
+  const colors = theme.colors;
   const { id } = useLocalSearchParams(); // ID do pedido
   const [loading, setLoading] = useState(false);
   const [carregandoPedido, setCarregandoPedido] = useState(true);

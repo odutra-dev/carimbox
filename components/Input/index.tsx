@@ -1,11 +1,12 @@
 import React from "react";
 import { View, Text, TextInput } from "react-native";
 import { useStyles } from "./styles";
-import useTheme from "../../hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 
 export const Input = ({ label, multiline = false, ...props }) => {
   const styles = useStyles();
-  const { colors } = useTheme();
+  const { theme } = useTheme();
+  const { colors } = theme;
 
   return (
     <View style={styles.inputContainer}>

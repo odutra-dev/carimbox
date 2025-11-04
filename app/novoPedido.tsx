@@ -15,11 +15,14 @@ import { router } from "expo-router";
 import { Input } from "../components/Input";
 import { InputSelect } from "../components/InputSelect";
 import useStyles from "../styles/novoPedidoPage";
-import useTheme from "../hooks/useTheme";
+import { useTheme } from "../hooks/useTheme";
 
 import MoveLeft from "lucide-react-native/dist/esm/icons/move-left";
 
 export default function NovoPedidoScreen() {
+  const { theme } = useTheme();
+  const { colors } = theme;
+
   const styles = useStyles();
   const [form, setForm] = useState({
     cliente: "",
@@ -96,7 +99,7 @@ export default function NovoPedidoScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1, backgroundColor: useTheme().colors.background }}
+      style={{ flex: 1, backgroundColor: colors.background }}
     >
       <ScrollView
         contentContainerStyle={styles.container}
@@ -104,7 +107,7 @@ export default function NovoPedidoScreen() {
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <MoveLeft size={24} color={useTheme().colors.primary} />
+            <MoveLeft size={24} color={colors.primary} />
           </TouchableOpacity>
           <Text style={styles.title}>📝 Novo Pedido</Text>
         </View>

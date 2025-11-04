@@ -1,9 +1,9 @@
 import { StyleSheet } from "react-native";
-import useTheme from "../../hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 
 export const useStyles = () => {
-  const { colors, spacing } = useTheme(); // ✅ move o hook para dentro da função
-
+  const { theme } = useTheme(); // ✅ move o hook para dentro da função
+  const { colors, spacing } = theme;
   return StyleSheet.create({
     inputContainer: {
       marginBottom: spacing.md,
