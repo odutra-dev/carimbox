@@ -3,28 +3,29 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { supabase } from "../../utils/supabase";
 import { router, useLocalSearchParams } from "expo-router";
 import { Input } from "../../components/Input";
 import { InputSelect } from "../../components/InputSelect";
-import useStyles from "../../styles/atualizarPedidoPage";
+import useStyles from "../../styles/novoPedidoPage"; // mesmo estilo do "novo"
 import { useTheme } from "../../hooks/useTheme";
 
 import MoveLeft from "lucide-react-native/dist/esm/icons/move-left";
 
 export default function AtualizarPedidoScreen() {
-  const styles = useStyles();
   const { theme } = useTheme();
-  const colors = theme.colors;
-  const { id } = useLocalSearchParams(); // ID do pedido
+  const { colors } = theme;
+  const styles = useStyles();
+  const { id } = useLocalSearchParams();
+
   const [loading, setLoading] = useState(false);
   const [carregandoPedido, setCarregandoPedido] = useState(true);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -37,7 +38,7 @@ export default function AtualizarPedidoScreen() {
     tipo_pagamento: "",
     valor: "",
     observacao: "",
-    responsavel: "",
+    entregue: false,
     data_entrega: new Date(),
   });
 
@@ -74,7 +75,7 @@ export default function AtualizarPedidoScreen() {
           tipo_pagamento: data.tipo_pagamento || "",
           valor: data.valor?.toString() || "",
           observacao: data.observacao || "",
-          responsavel: data.responsavel || "",
+          entregue: data.entregue || false,
           data_entrega: data.data_entrega
             ? new Date(data.data_entrega)
             : new Date(),
@@ -106,14 +107,14 @@ export default function AtualizarPedidoScreen() {
           tipo_pagamento: form.tipo_pagamento,
           valor: Number(form.valor),
           observacao: form.observacao || null,
-          responsavel: form.responsavel || null,
+          entregue: form.entregue,
           data_entrega: form.data_entrega.toISOString(),
         })
         .eq("id", id);
 
       if (error) throw error;
 
-      Alert.alert("✅ Sucesso", "Pedido atualizado com sucesso!");
+      ToastAndroid.show("Pedido atualizado com sucesso!", 2000);
       router.back();
     } catch (err: any) {
       Alert.alert("Erro", err.message);
@@ -125,8 +126,10 @@ export default function AtualizarPedidoScreen() {
   if (carregandoPedido) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.textPrimary} />
-        <Text style={{ marginTop: 10 }}>Carregando pedido...</Text>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={{ color: colors.textPrimary, marginTop: 10 }}>
+          Carregando pedido...
+        </Text>
       </View>
     );
   }
@@ -165,13 +168,13 @@ export default function AtualizarPedidoScreen() {
           onChangeText={(v) => handleChange("whatsapp", v)}
         />
         <Input
-          label="Tipo de Modelo *"
+          label="Modelo *"
           placeholder="Ex: Automático, Trodat 4911"
           value={form.tipo_modelo}
           onChangeText={(v) => handleChange("tipo_modelo", v)}
         />
         <Input
-          label="Texto / Logotipo *"
+          label="Descrição *"
           placeholder="Digite o texto do carimbo"
           value={form.texto_logo}
           onChangeText={(v) => handleChange("texto_logo", v)}
@@ -195,12 +198,6 @@ export default function AtualizarPedidoScreen() {
           keyboardType="decimal-pad"
           value={form.valor}
           onChangeText={(v) => handleChange("valor", v)}
-        />
-        <Input
-          label="Responsável"
-          placeholder="Quem atendeu?"
-          value={form.responsavel}
-          onChangeText={(v) => handleChange("responsavel", v)}
         />
 
         {/* Data da entrega */}
