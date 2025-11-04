@@ -8,11 +8,11 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { supabase } from "../utils/supabase";
-import { PedidoCard } from "../components/PedidoCard";
-import { Pedido } from "../@types/Pedido";
-import useStyles from "../styles/homepage";
-import useTheme from "../hooks/useTheme"; // 👈 importar o hook de tema
+import { supabase } from "../../utils/supabase";
+import { PedidoCard } from "../../components/PedidoCard";
+import { Pedido } from "../../@types/Pedido";
+import useStyles from "../../styles/homepage";
+import useTheme from "../../hooks/useTheme"; // 👈 importar o hook de tema
 import Plus from "lucide-react-native/dist/esm/icons/plus";
 
 export default function PedidosScreen() {
@@ -70,15 +70,15 @@ export default function PedidosScreen() {
       <TouchableOpacity
         style={{
           position: "absolute",
-          bottom: 20,
+          bottom: 100,
           right: 20,
-          backgroundColor: colors.primary, // 👈 cor do tema
+          backgroundColor: colors.primary,
           borderRadius: 50,
           width: 60,
           height: 60,
           justifyContent: "center",
           alignItems: "center",
-          shadowColor: "#000",
+          shadowColor: colors.black,
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.08,
           shadowRadius: 3,
@@ -86,7 +86,7 @@ export default function PedidosScreen() {
         }}
         onPress={() => router.navigate("novoPedido")}
       >
-        <Plus size={32} color="white" />
+        <Plus size={32} color={colors.white} />
       </TouchableOpacity>
     </View>
   );

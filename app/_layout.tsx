@@ -1,16 +1,24 @@
-import { Fragment } from "react";
-import { Slot } from "expo-router";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import useTheme from "../hooks/useTheme";
-export default function Layout() {
+
+export default function RootLayout() {
   const { colors } = useTheme();
+
   return (
-    <Fragment>
+    <>
       <StatusBar
         backgroundColor={colors.background}
         style={colors.background === "#F8FAFC" ? "dark" : "light"}
       />
-      <Slot />
-    </Fragment>
+      <Stack screenOptions={{ headerShown: false }}>
+        {/* Grupo de abas */}
+        <Stack.Screen name="(tabs)" />
+
+        <Stack.Screen name="novoPedido" />
+        <Stack.Screen name="verPedido/[id]" />
+        <Stack.Screen name="atualizarPedido/[id]" />
+      </Stack>
+    </>
   );
 }
