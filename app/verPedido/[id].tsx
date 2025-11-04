@@ -75,7 +75,6 @@ Valor: R$ ${pedido.valor.toFixed(2)}
 Data Pedido: ${new Date(pedido.data_pedido).toLocaleString("pt-BR")}
 Entrega: ${new Date(pedido.data_entrega).toLocaleString("pt-BR")}
 Observação: ${pedido.observacao || "Nenhuma"}
-Responsável: ${pedido.responsavel || "Não informado"}
     `.trim();
 
     await Clipboard.setStringAsync(texto);
