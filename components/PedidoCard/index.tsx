@@ -16,9 +16,10 @@ import CircleCheckBig from "lucide-react-native/dist/esm/icons/circle-check-big"
 
 type PedidoCardProps = {
   pedido: Pedido;
+  onUpdate?: (pedidoAtualizado: Pedido) => void;
 };
 
-export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido }) => {
+export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdate }) => {
   const styles = useStyles();
   const [isEntregue, setIsEntregue] = useState(pedido.entregue);
 
@@ -36,8 +37,7 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido }) => {
     entregue,
   } = pedido;
 
-  const handleSendWhatsApp = () => {
-    const mensagem = `Olá ${cliente}, aqui é da Carimbos Ocian! 😄
+  const mensagemNovoPedido = `Olá ${cliente}, aqui é da Carimbos Ocian! 😄
 
 Segue o resumo do seu pedido:
 
@@ -51,13 +51,36 @@ ${texto_logo}
 
 💰 Forma de pagamento: ${tipo_pagamento}
 💵 Valor total: R$ ${valor.toFixed(2)}
-📅 Entrega Prevista: ${new Date(data_entrega).toLocaleString("pt-BR")}
+📅 Entrega Prevista: ${new Date(data_entrega)
+    .toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })
+    .replace(",", " às")}
 
 🙏 Agradecemos pela preferência!
 
 📦 Obs: Para retirar o pedido, basta informar o número do pedido enviado acima.
 `;
 
+  const mensagemPedidoConcluido = `✅ Pedido finalizado! ✅
+
+📦 Seu pedido está pronto para retirada/entrega.
+Qualquer dúvida, estamos aqui!
+
+Obrigado pela confiança! 🙌🏽
+
+Se puder, avalie a Carimbos Ocian no Google:
+👉 https://g.page/r/CbOE8NI63dFnEBM/review
+
+💙 Agradecemos pela confiança! 💙
+`;
+
+  const handleSendWhatsApp = (mensagem: string) => {
     const numero = whatsapp.toString().replace(/\D/g, "");
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
 
@@ -71,7 +94,6 @@ ${texto_logo}
   };
 
   const handleCheck = () => {
-    // Evita clicar novamente se já estiver concluído
     if (isEntregue) {
       ToastAndroid.show("Este pedido já está concluído!", 2000);
       return;
@@ -85,18 +107,21 @@ ${texto_logo}
         {
           text: "Confirmar",
           onPress: async () => {
-            const { error } = await supabase
+            const { data, error } = await supabase
               .from("Pedidos")
               .update({ entregue: true })
               .eq("id", id)
-              .select();
+              .select()
+              .single();
 
             if (error) {
               Alert.alert("Erro", "Não foi possível atualizar o pedido.");
               console.error(error);
             } else {
-              setIsEntregue(true); // atualiza o estado local
+              setIsEntregue(true); // atualiza local
+              if (data) onUpdate?.(data); // ✅ só chama se data existir
               ToastAndroid.show("Pedido concluído com sucesso!", 2000);
+              handleSendWhatsApp(mensagemPedidoConcluido);
             }
           },
         },
@@ -126,7 +151,9 @@ ${texto_logo}
             </TouchableOpacity>
           ) : null}
 
-          <TouchableOpacity onPress={handleSendWhatsApp}>
+          <TouchableOpacity
+            onPress={() => handleSendWhatsApp(mensagemNovoPedido)}
+          >
             <ExternalLink size={24} color={styles.icon.color} />
           </TouchableOpacity>
         </View>

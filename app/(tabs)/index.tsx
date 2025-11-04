@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { router } from "expo-router";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { router, useFocusEffect } from "expo-router";
 import {
   View,
   Text,
@@ -21,35 +21,78 @@ export default function PedidosScreen() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<
-    "todos" | "pendente" | "concluido"
-  >("todos");
+    "pendente" | "concluido" | "todos"
+  >("pendente");
 
+  // Busca os pedidos
+  const fetchPedidos = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("Pedidos")
+        .select("*")
+        .order("id", { ascending: false });
+
+      if (error) throw error;
+      setPedidos(data || []);
+    } catch (err: any) {
+      console.error("Erro ao buscar pedidos:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Atualiza ao focar na tela
+  useFocusEffect(
+    useCallback(() => {
+      fetchPedidos();
+    }, [])
+  );
+
+  // Realtime Supabase v2
   useEffect(() => {
-    const getPedidos = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("Pedidos")
-          .select("*")
-          .order("id", { ascending: false });
+    fetchPedidos();
 
-        if (error) throw error;
-        setPedidos(data || []);
-      } catch (err: any) {
-        console.error("Erro ao buscar pedidos:", err.message);
-      } finally {
-        setLoading(false);
-      }
+    const pedidosChannel = supabase
+      .channel("realtime-pedidos")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "Pedidos" },
+        (payload) => {
+          console.log("Realtime payload:", payload);
+          const newPedido: Pedido = payload.new;
+          const oldPedido: Pedido = payload.old;
+
+          setPedidos((prev) => {
+            switch (payload.eventType) {
+              case "INSERT":
+                return [newPedido, ...prev];
+              case "UPDATE":
+                return prev.map((p) => (p.id === newPedido.id ? newPedido : p));
+              case "DELETE":
+                return prev.filter((p) => p.id !== oldPedido.id);
+              default:
+                return prev;
+            }
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(pedidosChannel);
     };
-
-    getPedidos();
   }, []);
 
-  const filteredPedidos = pedidos.filter((pedido) => {
-    if (statusFilter === "todos") return true;
-    if (statusFilter === "pendente") return pedido.entregue !== true;
-    if (statusFilter === "concluido") return pedido.entregue === true;
-    return true;
-  });
+  // Filtra pedidos de acordo com o status
+  const filteredPedidos = useMemo(() => {
+    return pedidos.filter((pedido) => {
+      if (statusFilter === "todos") return true;
+      if (statusFilter === "pendente") return !pedido.entregue;
+      if (statusFilter === "concluido") return pedido.entregue;
+      return true;
+    });
+  }, [pedidos, statusFilter]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -65,7 +108,7 @@ export default function PedidosScreen() {
 
       {/* Toggle de status */}
       <View style={styles.toggleContainer}>
-        {["todos", "pendente", "concluido"].map((s) => (
+        {["pendente", "concluido", "todos"].map((s) => (
           <TouchableOpacity
             key={s}
             onPress={() => setStatusFilter(s as typeof statusFilter)}
@@ -106,11 +149,20 @@ export default function PedidosScreen() {
         </Text>
       ) : (
         <FlatList
-          data={filteredPedidos}
+          data={filteredPedidos} // ✅ usar array filtrado
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <PedidoCard pedido={item} />}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
+          renderItem={({ item }) => (
+            <PedidoCard
+              pedido={item}
+              onUpdate={(pedidoAtualizado) => {
+                setPedidos((prev) =>
+                  prev.map((p) =>
+                    p.id === pedidoAtualizado.id ? pedidoAtualizado : p
+                  )
+                );
+              }}
+            />
+          )}
         />
       )}
 
