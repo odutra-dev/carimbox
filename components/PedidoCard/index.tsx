@@ -23,22 +23,31 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido }) => {
     tipo_pagamento,
     valor,
     data_entrega,
+    observacao,
   } = pedido;
 
   const handleSendWhatsApp = () => {
-    const mensagem = `Olá ${cliente}, aqui é da Carimbos Ocian!
+    const mensagem = `Olá ${cliente}, aqui é da Carimbos Ocian! 😄
 
 Segue o resumo do seu pedido:
 
-Pedido nº: ${id}
+🧾Pedido nº: ${id}
 
-Modelo: ${tipo_modelo}
-Logotipo/Textos: ${texto_logo}
-Forma de pagamento: ${tipo_pagamento}
-Data e horário de retirada: ${new Date(data_entrega).toLocaleString("pt-BR")}
-Valor total: R$ ${valor.toFixed(2)}
+🔖Modelo: ${tipo_modelo}
+✏ Descrição:
+${texto_logo}
 
-Qualquer dúvida, estamos à disposição!`;
+🔎Observação: ${observacao}
+
+💰Forma de pagamento: ${tipo_pagamento}
+💵Valor total: R$ ${valor.toFixed(2)}
+📅Entrega Prevista: ${new Date(data_entrega).toLocaleString("pt-BR")}
+
+
+🙏 Agradecemos pela preferência!
+
+📦 Obs: Para retirar o pedido, basta informar o número do pedido enviado acima.
+`;
 
     const numero = whatsapp.toString().replace(/\D/g, "");
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
