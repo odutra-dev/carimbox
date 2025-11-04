@@ -32,8 +32,8 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido }) => {
 Segue o resumo do seu pedido:
 
 🧾Pedido nº: ${id}
-
 🔖Modelo: ${tipo_modelo}
+
 ✏ Descrição:
 ${texto_logo}
 

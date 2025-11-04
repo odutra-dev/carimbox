@@ -137,7 +137,7 @@ Observação: ${pedido.observacao || "Nenhuma"}
           Icon={Phone}
         />
         <InfoRow label="Modelo" value={pedido.tipo_modelo} Icon={Package} />
-        <InfoRow label="Texto / Logo" value={pedido.texto_logo} Icon={Type} />
+        <InfoRow label="Descrição" value={pedido.texto_logo} Icon={Type} />
         <InfoRow
           label="Pagamento"
           value={pedido.tipo_pagamento}
@@ -166,14 +166,6 @@ Observação: ${pedido.observacao || "Nenhuma"}
             Icon={FileType}
           />
         ) : null}
-
-        {/* {pedido.responsavel ? (
-          <InfoRow
-            label="Responsável"
-            value={pedido.responsavel}
-            icon="user-check"
-          />
-        ) : null} */}
       </View>
 
       <TouchableOpacity style={styles.copyButton} onPress={handleCopyAll}>
