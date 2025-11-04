@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Picker } from "@react-native-picker/picker";
 import {
   View,
   Text,
@@ -128,13 +127,13 @@ export default function NovoPedidoScreen() {
           onChangeText={(v) => handleChange("whatsapp", v)}
         />
         <Input
-          label="Tipo de Modelo *"
+          label="Modelo *"
           placeholder="Ex: Automático, Trodat 4911"
           value={form.tipo_modelo}
           onChangeText={(v) => handleChange("tipo_modelo", v)}
         />
         <Input
-          label="Texto / Logotipo *"
+          label="Descrição *"
           placeholder="Digite o texto do carimbo"
           value={form.texto_logo}
           onChangeText={(v) => handleChange("texto_logo", v)}
@@ -159,13 +158,6 @@ export default function NovoPedidoScreen() {
           keyboardType="decimal-pad"
           value={form.valor}
           onChangeText={(v) => handleChange("valor", v)}
-        />
-
-        <Input
-          label="Responsável"
-          placeholder="Quem atendeu?"
-          value={form.responsavel}
-          onChangeText={(v) => handleChange("responsavel", v)}
         />
 
         {/* Data da entrega */}
