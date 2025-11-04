@@ -6,22 +6,23 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import { supabase } from "../../utils/supabase";
 import { PedidoCard } from "../../components/PedidoCard";
 import { Pedido } from "../../@types/Pedido";
-import useStyles from "../../styles/homepage";
-import { useTheme } from "../../hooks/useTheme"; // 👈 importar o hook de tema
+import { useTheme } from "../../hooks/useTheme";
 import Plus from "lucide-react-native/dist/esm/icons/plus";
 
 export default function PedidosScreen() {
-  const styles = useStyles();
   const { theme } = useTheme();
   const colors = theme.colors;
 
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<
+    "todos" | "pendente" | "concluido"
+  >("todos");
 
   useEffect(() => {
     const getPedidos = async () => {
@@ -43,24 +44,69 @@ export default function PedidosScreen() {
     getPedidos();
   }, []);
 
+  const filteredPedidos = pedidos.filter((pedido) => {
+    if (statusFilter === "todos") return true;
+    if (statusFilter === "pendente") return pedido.entregue !== true;
+    if (statusFilter === "concluido") return pedido.entregue === true;
+    return true;
+  });
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>📦 Pedidos</Text>
-        <Text style={styles.subtitle}>Acompanhe os pedidos recentes</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>
+          📦 Pedidos
+        </Text>
+        <Text style={[styles.subtitle, { color: colors.textPrimary }]}>
+          Acompanhe os pedidos recentes
+        </Text>
       </View>
 
+      {/* Toggle de status */}
+      <View style={styles.toggleContainer}>
+        {["todos", "pendente", "concluido"].map((s) => (
+          <TouchableOpacity
+            key={s}
+            onPress={() => setStatusFilter(s as typeof statusFilter)}
+            style={[
+              styles.toggleButton,
+              {
+                backgroundColor:
+                  statusFilter === s ? colors.primary : colors.surface,
+              },
+            ]}
+          >
+            <Text
+              style={{
+                color: statusFilter === s ? colors.white : colors.textPrimary,
+                fontWeight: "500",
+              }}
+            >
+              {s === "todos"
+                ? "Todos"
+                : s === "pendente"
+                ? "Pendentes"
+                : "Concluídos"}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Lista ou Loading */}
       {loading ? (
         <ActivityIndicator
           size="large"
-          color={colors.primary} // 👈 cor primária do tema
+          color={colors.primary}
           style={{ marginTop: 20 }}
         />
-      ) : pedidos.length === 0 ? (
-        <Text style={styles.emptyText}>Nenhum pedido encontrado.</Text>
+      ) : filteredPedidos.length === 0 ? (
+        <Text style={[styles.emptyText, { color: colors.textPrimary }]}>
+          Nenhum pedido encontrado.
+        </Text>
       ) : (
         <FlatList
-          data={pedidos}
+          data={filteredPedidos}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <PedidoCard pedido={item} />}
           showsVerticalScrollIndicator={false}
@@ -68,23 +114,12 @@ export default function PedidosScreen() {
         />
       )}
 
+      {/* Botão de novo pedido */}
       <TouchableOpacity
-        style={{
-          position: "absolute",
-          bottom: 20,
-          right: 20,
-          backgroundColor: colors.primary,
-          borderRadius: 50,
-          width: 60,
-          height: 60,
-          justifyContent: "center",
-          alignItems: "center",
-          shadowColor: colors.black,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.08,
-          shadowRadius: 3,
-          elevation: 2,
-        }}
+        style={[
+          styles.fab,
+          { backgroundColor: colors.primary, shadowColor: colors.black },
+        ]}
         onPress={() => router.navigate("novoPedido")}
       >
         <Plus size={32} color={colors.white} />
@@ -92,3 +127,34 @@ export default function PedidosScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20 },
+  header: { marginBottom: 10 },
+  title: { fontSize: 28, fontWeight: "bold" },
+  subtitle: { fontSize: 16, marginTop: 4 },
+  toggleContainer: { flexDirection: "row", marginVertical: 10 },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 8,
+    marginHorizontal: 5,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  listContent: { paddingBottom: 100 },
+  emptyText: { textAlign: "center", marginTop: 20, fontSize: 16 },
+  fab: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    borderRadius: 50,
+    width: 60,
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+});
