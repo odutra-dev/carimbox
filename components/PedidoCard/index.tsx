@@ -20,7 +20,7 @@ type PedidoCardProps = {
 
 export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido }) => {
   const styles = useStyles();
-  const [isEntregue, setIsEntregue] = useState(pedido.entregue ?? false);
+  const [isEntregue, setIsEntregue] = useState(pedido.entregue);
 
   const {
     id,
@@ -33,6 +33,7 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido }) => {
     valor,
     data_entrega,
     observacao,
+    entregue,
   } = pedido;
 
   const handleSendWhatsApp = () => {
@@ -88,7 +89,7 @@ ${texto_logo}
               .from("Pedidos")
               .update({ entregue: true })
               .eq("id", id)
-              .select(); // garante retorno
+              .select();
 
             if (error) {
               Alert.alert("Erro", "Não foi possível atualizar o pedido.");

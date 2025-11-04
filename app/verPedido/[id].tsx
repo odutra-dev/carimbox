@@ -28,6 +28,7 @@ import FileType from "lucide-react-native/dist/esm/icons/file-type";
 import Pencil from "lucide-react-native/dist/esm/icons/pencil";
 import MoveLeft from "lucide-react-native/dist/esm/icons/move-left";
 import Copy from "lucide-react-native/dist/esm/icons/copy";
+import CircleX from "lucide-react-native/dist/esm/icons/circle-x";
 
 export default function VerPedido() {
   const { id } = useLocalSearchParams();
@@ -82,6 +83,33 @@ Observação: ${pedido.observacao || "Nenhuma"}
     ToastAndroid.show("Texto copiado para a área de transferência.", 2000);
   };
 
+  const handleReOpenPedido = () => {
+    Alert.alert(
+      "Confirmar reabertura do Pedido?",
+      `Deseja marcar o pedido #${id} como não concluído?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Confirmar",
+          onPress: async () => {
+            const { error } = await supabase
+              .from("Pedidos")
+              .update({ entregue: false })
+              .eq("id", id);
+
+            if (error) {
+              Alert.alert("Erro", "Não foi possível atualizar o pedido.");
+              console.error(error);
+            } else {
+              ToastAndroid.show("Pedido reaberto com sucesso!", 2000);
+              getPedido();
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -127,6 +155,12 @@ Observação: ${pedido.observacao || "Nenhuma"}
         >
           <Pencil size={24} color={colors.primary} />
         </TouchableOpacity>
+
+        {pedido.entregue && (
+          <TouchableOpacity onPress={handleReOpenPedido}>
+            <CircleX size={24} color={colors.error} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.card}>
