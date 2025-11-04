@@ -6,15 +6,16 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
-  StyleSheet,
 } from "react-native";
 import { supabase } from "../../utils/supabase";
 import { PedidoCard } from "../../components/PedidoCard";
 import { Pedido } from "../../@types/Pedido";
 import { useTheme } from "../../hooks/useTheme";
 import Plus from "lucide-react-native/dist/esm/icons/plus";
+import useStyles from "../../styles/homepage";
 
 export default function PedidosScreen() {
+  const styles = useStyles();
   const { theme } = useTheme();
   const colors = theme.colors;
 
@@ -179,34 +180,3 @@ export default function PedidosScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  header: { marginBottom: 10 },
-  title: { fontSize: 28, fontWeight: "bold" },
-  subtitle: { fontSize: 16, marginTop: 4 },
-  toggleContainer: { flexDirection: "row", marginVertical: 10 },
-  toggleButton: {
-    flex: 1,
-    paddingVertical: 8,
-    marginHorizontal: 5,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  listContent: { paddingBottom: 100 },
-  emptyText: { textAlign: "center", marginTop: 20, fontSize: 16 },
-  fab: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    borderRadius: 50,
-    width: 60,
-    height: 60,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-});

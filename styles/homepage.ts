@@ -37,6 +37,29 @@ export const useStyles = () => {
       color: colors.textMuted,
       fontSize: 16,
     },
+    toggleContainer: { flexDirection: "row", marginVertical: 10 },
+    toggleButton: {
+      flex: 1,
+      paddingVertical: 8,
+      marginHorizontal: 5,
+      borderRadius: 8,
+      alignItems: "center",
+    },
+
+    fab: {
+      position: "absolute",
+      bottom: 20,
+      right: 20,
+      borderRadius: 50,
+      width: 60,
+      height: 60,
+      justifyContent: "center",
+      alignItems: "center",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 3,
+      elevation: 2,
+    },
   });
 };
 
