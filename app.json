@@ -8,7 +8,11 @@
     "userInterfaceStyle": "automatic",
 
     "plugins": ["expo-router", "expo-font"],
-
+    "web": {
+      "bundler": "metro",
+      "output": "server",
+      "favicon": "./assets/logo.png"
+    },
     "android": {
       "package": "com.dutradev.carimbox",
       "icon": "./assets/logo.png",
