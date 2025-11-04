@@ -21,6 +21,7 @@ export const InputSelect = ({ label, value, onChange }) => {
           <Picker.Item label="Cartão de Crédito" value="Cartão Crédito" />
           <Picker.Item label="Cartão de Débito" value="Cartão Débito" />
           <Picker.Item label="Dinheiro" value="Dinheiro" />
+          <Picker.Item label="A pagar" value="A pagar" />
         </Picker>
       </View>
     </View>
