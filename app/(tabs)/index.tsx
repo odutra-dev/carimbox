@@ -70,7 +70,7 @@ export default function PedidosScreen() {
       <TouchableOpacity
         style={{
           position: "absolute",
-          bottom: 100,
+          bottom: 20,
           right: 20,
           backgroundColor: colors.primary,
           borderRadius: 50,
