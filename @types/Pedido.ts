@@ -8,6 +8,6 @@ export type Pedido = {
   tipo_pagamento: string;
   valor: number;
   observacao?: string | null;
-  responsavel?: string | null;
+  entregue?: boolean;
   data_entrega: string;
 };

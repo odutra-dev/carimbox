@@ -29,7 +29,7 @@ export default function NovoPedidoScreen() {
     tipo_pagamento: "",
     valor: "",
     observacao: "",
-    responsavel: "",
+    entregue: false,
     data_entrega: new Date(),
   });
 
@@ -66,7 +66,7 @@ export default function NovoPedidoScreen() {
           tipo_pagamento: form.tipo_pagamento,
           valor: Number(form.valor),
           observacao: form.observacao || null,
-          responsavel: form.responsavel || null,
+          entregue: form.entregue,
           data_entrega: form.data_entrega.toISOString(),
         },
       ]);
@@ -82,7 +82,7 @@ export default function NovoPedidoScreen() {
         tipo_pagamento: "",
         valor: "",
         observacao: "",
-        responsavel: "",
+        entregue: false,
         data_entrega: new Date(),
       });
       router.back();
