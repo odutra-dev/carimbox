@@ -34,7 +34,7 @@
   "private": true,
   "devDependencies": {
     "@types/react": "~19.1.10",
-    "expo": "^54.0.21",
+    "expo": "^54.0.22",
     "expo-atlas": "^0.4.0",
     "typescript": "~5.9.2"
   }
