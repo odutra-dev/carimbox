@@ -44,5 +44,8 @@ export const useStyles = () => {
     icon: {
       color: colors.primary,
     },
+    iconCheck: {
+      color: colors.success,
+    },
   });
 };

@@ -1,11 +1,18 @@
-import React from "react";
-import { View, Text, TouchableOpacity, Linking } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Linking,
+  Alert,
+  ToastAndroid,
+} from "react-native";
 import { Pedido } from "../../@types/Pedido";
 import { router } from "expo-router";
 import { useStyles } from "./styles";
-
+import { supabase } from "../../utils/supabase";
 import ExternalLink from "lucide-react-native/dist/esm/icons/external-link";
-import Eye from "lucide-react-native/dist/esm/icons/eye";
+import CircleCheckBig from "lucide-react-native/dist/esm/icons/circle-check-big";
 
 type PedidoCardProps = {
   pedido: Pedido;
@@ -13,6 +20,8 @@ type PedidoCardProps = {
 
 export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido }) => {
   const styles = useStyles();
+  const [isEntregue, setIsEntregue] = useState(pedido.entregue ?? false);
+
   const {
     id,
     data_pedido,
@@ -31,18 +40,17 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido }) => {
 
 Segue o resumo do seu pedido:
 
-🧾Pedido nº: ${id}
-🔖Modelo: ${tipo_modelo}
+🧾 Pedido nº: ${id}
+🔖 Modelo: ${tipo_modelo}
 
 ✏ Descrição:
 ${texto_logo}
 
-🔎Observação: ${observacao}
+🔎 Observação: ${observacao}
 
-💰Forma de pagamento: ${tipo_pagamento}
-💵Valor total: R$ ${valor.toFixed(2)}
-📅Entrega Prevista: ${new Date(data_entrega).toLocaleString("pt-BR")}
-
+💰 Forma de pagamento: ${tipo_pagamento}
+💵 Valor total: R$ ${valor.toFixed(2)}
+📅 Entrega Prevista: ${new Date(data_entrega).toLocaleString("pt-BR")}
 
 🙏 Agradecemos pela preferência!
 
@@ -61,8 +69,46 @@ ${texto_logo}
     router.push(`/verPedido/${id}`);
   };
 
+  const handleCheck = () => {
+    // Evita clicar novamente se já estiver concluído
+    if (isEntregue) {
+      ToastAndroid.show("Este pedido já está concluído!", 2000);
+      return;
+    }
+
+    Alert.alert(
+      "Confirmar Conclusão?",
+      `Deseja marcar o pedido #${id} como concluído?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Confirmar",
+          onPress: async () => {
+            const { error } = await supabase
+              .from("Pedidos")
+              .update({ entregue: true })
+              .eq("id", id)
+              .select(); // garante retorno
+
+            if (error) {
+              Alert.alert("Erro", "Não foi possível atualizar o pedido.");
+              console.error(error);
+            } else {
+              setIsEntregue(true); // atualiza o estado local
+              ToastAndroid.show("Pedido concluído com sucesso!", 2000);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
-    <View style={styles.card}>
+    <TouchableOpacity
+      onPress={handleViewDetails}
+      style={styles.card}
+      activeOpacity={0.8}
+    >
       <View style={styles.header}>
         <View>
           <Text style={styles.idText}>Pedido #{id}</Text>
@@ -73,14 +119,17 @@ ${texto_logo}
         </View>
 
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={handleViewDetails}>
-            <Eye size={24} color={styles.icon.color} />
-          </TouchableOpacity>
+          {!isEntregue ? (
+            <TouchableOpacity onPress={handleCheck}>
+              <CircleCheckBig size={24} color={styles.iconCheck.color} />
+            </TouchableOpacity>
+          ) : null}
+
           <TouchableOpacity onPress={handleSendWhatsApp}>
             <ExternalLink size={24} color={styles.icon.color} />
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
