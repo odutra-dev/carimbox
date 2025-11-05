@@ -2,7 +2,7 @@
   "expo": {
     "name": "carimbox",
     "slug": "carimbox",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "scheme": "acme",
     "description": "App para controle dos pedidos de carimbos",
     "userInterfaceStyle": "automatic",
