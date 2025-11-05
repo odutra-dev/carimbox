@@ -6,7 +6,6 @@
     "scheme": "acme",
     "description": "App para controle dos pedidos de carimbos",
     "userInterfaceStyle": "automatic",
-
     "plugins": ["expo-router", "expo-font"],
     "android": {
       "package": "com.dutradev.carimbox",
@@ -19,10 +18,12 @@
       "permissions": [
         "INTERNET",
         "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
       ]
     },
-
     "extra": {
       "router": {
         "origin": false
@@ -30,6 +31,13 @@
       "eas": {
         "projectId": "f7f26da3-45c6-4ca0-b4e8-1b24979d7312"
       }
-    }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f7f26da3-45c6-4ca0-b4e8-1b24979d7312"
+    },
+    "ios": {}
   }
 }
