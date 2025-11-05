@@ -1,11 +1,41 @@
-import React from "react";
-import { View, Text, Switch, StyleSheet } from "react-native";
+import React, { useCallback } from "react";
+import {
+  View,
+  Text,
+  Switch,
+  StyleSheet,
+  TouchableOpacity,
+  ToastAndroid,
+} from "react-native";
 import { useTheme } from "../../hooks/useTheme";
 import Constants from "expo-constants";
+import * as updates from "expo-updates";
+import RefreshCw from "lucide-react-native/dist/esm/icons/refresh-cw";
 
 export default function SettingsScreen() {
   const { mode, toggleMode, theme } = useTheme();
   const { colors } = theme;
+
+  // Memoriza a função checkForUpdate
+  const checkForUpdate = useCallback(async () => {
+    try {
+      const update = await updates.checkForUpdateAsync();
+      if (update.isAvailable) {
+        await updates.fetchUpdateAsync();
+        ToastAndroid.show(
+          "Atualização disponível. Reinicie o app.",
+          ToastAndroid.SHORT
+        );
+      } else {
+        ToastAndroid.show(
+          "Nenhuma atualização disponível.",
+          ToastAndroid.SHORT
+        );
+      }
+    } catch (error) {
+      console.error("Erro ao verificar atualização:", error);
+    }
+  }, []);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -17,18 +47,24 @@ export default function SettingsScreen() {
         <Text style={[styles.label, { color: colors.textSecondary }]}>
           Modo Escuro
         </Text>
-        <Switch value={mode === "dark"} onValueChange={toggleMode} />
+        <Switch
+          value={mode === "dark"}
+          onValueChange={toggleMode}
+          accessibilityLabel="Alternar modo escuro"
+          accessibilityHint="Ativa ou desativa o modo escuro"
+        />
       </View>
 
-      <View
-        style={{
-          position: "absolute",
-          bottom: 20,
-          alignItems: "center",
-          width: "100%",
-        }}
-      >
-        <Text style={{ color: colors.textSecondary, fontSize: 12 }}>
+      <View style={styles.updateContainer}>
+        <View style={styles.row}>
+          <Text style={[styles.label, { color: colors.textSecondary }]}>
+            Atualizar
+          </Text>
+          <TouchableOpacity onPress={checkForUpdate} activeOpacity={0.7}>
+            <RefreshCw size={24} color={colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+        <Text style={[styles.versionText, { color: colors.textSecondary }]}>
           Versão: {Constants.expoConfig.version}
         </Text>
       </View>
@@ -51,9 +87,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 10,
+    gap: 16,
+    borderBottomColor: "#222",
+    borderBottomWidth: 1,
+    paddingBottom: 16,
+    marginBottom: 16,
   },
   label: {
     fontSize: 18,
+  },
+  updateContainer: {
+    position: "absolute",
+    bottom: 20,
+    alignItems: "center",
+    width: "100%",
+  },
+  versionText: {
+    fontSize: 12,
+    marginTop: 5,
   },
 });
