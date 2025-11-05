@@ -29,7 +29,7 @@ export default function SettingsScreen() {
         }}
       >
         <Text style={{ color: colors.textSecondary, fontSize: 12 }}>
-          Versão: {Constants.expoConfig.version}
+          Versão: 1.0.0
         </Text>
       </View>
     </View>
