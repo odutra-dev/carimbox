@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   ToastAndroid,
   ActivityIndicator,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import { supabase } from "../../utils/supabase";
 import { Pedido } from "../../@types/Pedido";
@@ -62,6 +62,12 @@ export default function VerPedido() {
   useEffect(() => {
     if (id) getPedido();
   }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getPedido();
+    }, [])
+  );
 
   const handleCopyAll = async () => {
     if (!pedido) return;
