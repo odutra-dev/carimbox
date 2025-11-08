@@ -12,7 +12,7 @@ export const useStyles = () => {
       marginVertical: spacing.xs,
       borderRadius: spacing.sm,
       backgroundColor: colors.surface,
-      shadowColor: "#000",
+      shadowColor: colors.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.08,
       shadowRadius: 3,
@@ -29,11 +29,11 @@ export const useStyles = () => {
       color: colors.textPrimary,
     },
     dataText: {
-      fontSize: 13,
+      fontSize: 12,
       color: colors.textSecondary,
     },
     clienteText: {
-      fontSize: 15,
+      fontSize: 14,
       color: colors.textPrimary,
       marginTop: spacing.xs,
     },

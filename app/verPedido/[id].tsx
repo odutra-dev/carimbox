@@ -117,6 +117,20 @@ Observação: ${pedido.observacao || "Nenhuma"}
     );
   };
 
+  const formatarWhatsapp = (numero: string) => {
+    const num = numero.replace(/\D/g, "");
+
+    if (num.length === 11) {
+      return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
+    }
+
+    if (num.length === 10) {
+      return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
+    }
+
+    return numero;
+  };
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -174,7 +188,7 @@ Observação: ${pedido.observacao || "Nenhuma"}
         <InfoRow label="Cliente" value={pedido.cliente} Icon={User} />
         <InfoRow
           label="WhatsApp"
-          value={pedido.whatsapp?.toString() || "Não informado"}
+          value={formatarWhatsapp(String(pedido.whatsapp))}
           Icon={Phone}
         />
         <InfoRow label="Modelo" value={pedido.tipo_modelo} Icon={Package} />

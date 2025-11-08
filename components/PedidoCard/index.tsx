@@ -133,6 +133,20 @@ Se puder, avalie a Carimbos Ocian no Google:
     );
   };
 
+  const formatarWhatsapp = (numero: string) => {
+    const num = numero.replace(/\D/g, "");
+
+    if (num.length === 11) {
+      return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
+    }
+
+    if (num.length === 10) {
+      return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
+    }
+
+    return numero;
+  };
+
   return (
     <TouchableOpacity
       onPress={handleViewDetails}
@@ -145,7 +159,9 @@ Se puder, avalie a Carimbos Ocian no Google:
           <Text style={styles.dataText}>
             {new Date(data_pedido).toLocaleString("pt-BR")}
           </Text>
-          <Text style={styles.clienteText}>{cliente}</Text>
+          <Text style={styles.clienteText}>
+            {formatarWhatsapp(String(whatsapp))}
+          </Text>
         </View>
 
         <View style={styles.iconContainer}>
