@@ -82,7 +82,9 @@ Se puder, avalie a Carimbos Ocian no Google:
 
   const handleSendWhatsApp = (mensagem: string) => {
     const numero = whatsapp.toString().replace(/\D/g, "");
-    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+    const url = `https://wa.me/55${numero}?text=${encodeURIComponent(
+      mensagem
+    )}`;
 
     Linking.openURL(url).catch(() =>
       alert("Não foi possível abrir o WhatsApp.")
