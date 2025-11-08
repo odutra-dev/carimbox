@@ -52,7 +52,7 @@ export default function NovoPedidoScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!form.cliente || !form.whatsapp || !form.tipo_modelo || !form.valor) {
+    if (!form.whatsapp || !form.texto_logo || !form.valor) {
       Alert.alert("Atenção", "Preencha todos os campos obrigatórios!");
       return;
     }
@@ -115,9 +115,8 @@ export default function NovoPedidoScreen() {
           Preencha os dados abaixo para registrar um novo pedido
         </Text>
 
-        {/* Campos do formulário */}
         <Input
-          label="Cliente *"
+          label="Cliente"
           placeholder="Nome do cliente"
           value={form.cliente}
           onChangeText={(v) => handleChange("cliente", v)}
@@ -130,7 +129,7 @@ export default function NovoPedidoScreen() {
           onChangeText={(v) => handleChange("whatsapp", v)}
         />
         <Input
-          label="Modelo *"
+          label="Modelo"
           placeholder="Ex: Automático, Trodat 4911"
           value={form.tipo_modelo}
           onChangeText={(v) => handleChange("tipo_modelo", v)}
@@ -163,7 +162,6 @@ export default function NovoPedidoScreen() {
           onChangeText={(v) => handleChange("valor", v)}
         />
 
-        {/* Data da entrega */}
         <View style={styles.dateSection}>
           <Text style={styles.label}>Data de entrega *</Text>
           <TouchableOpacity style={styles.dateButton} onPress={showDatePicker}>
@@ -187,7 +185,6 @@ export default function NovoPedidoScreen() {
           is24Hour
         />
 
-        {/* Botão de envio */}
         <TouchableOpacity
           style={[styles.button, loading && { opacity: 0.6 }]}
           onPress={handleSubmit}

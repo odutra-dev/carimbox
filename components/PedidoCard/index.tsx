@@ -37,12 +37,14 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdate }) => {
     entregue,
   } = pedido;
 
-  const mensagemNovoPedido = `Olá ${cliente}, aqui é da Carimbos Ocian! 😄
+  const mensagemNovoPedido = `Olá ${
+    cliente ? `${cliente},` : ""
+  } aqui é da Carimbos Ocian! 😄
 
 Segue o resumo do seu pedido:
 
 🧾 Pedido nº: ${id}
-🔖 Modelo: ${tipo_modelo}
+${tipo_modelo ? `🔖 Modelo: ${tipo_modelo}` : ""}
 
 ✏ Descrição:
 ${texto_logo}
