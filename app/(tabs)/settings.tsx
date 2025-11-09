@@ -8,7 +8,6 @@ import {
   ToastAndroid,
 } from "react-native";
 import { useTheme } from "../../hooks/useTheme";
-import Constants from "expo-constants";
 import * as updates from "expo-updates";
 import RefreshCw from "lucide-react-native/dist/esm/icons/refresh-cw";
 
@@ -16,7 +15,6 @@ export default function SettingsScreen() {
   const { mode, toggleMode, theme } = useTheme();
   const { colors } = theme;
 
-  // Memoriza a função checkForUpdate
   const checkForUpdate = useCallback(async () => {
     try {
       const update = await updates.checkForUpdateAsync();
@@ -58,14 +56,14 @@ export default function SettingsScreen() {
       <View style={styles.updateContainer}>
         <View style={styles.row}>
           <Text style={[styles.label, { color: colors.textSecondary }]}>
-            Atualizar
+            Verificar se há atualização
           </Text>
           <TouchableOpacity onPress={checkForUpdate} activeOpacity={0.7}>
             <RefreshCw size={24} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
         <Text style={[styles.versionText, { color: colors.textSecondary }]}>
-          Versão: {Constants.expoConfig.version}
+          Versão: 1.2.0
         </Text>
       </View>
     </View>
