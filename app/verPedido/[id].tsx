@@ -74,9 +74,9 @@ export default function VerPedido() {
 
     const texto = `
 Pedido #${pedido.id}
-Cliente: ${pedido.cliente}
+${pedido.cliente ? `Cliente: ${pedido.cliente}` : ""}
 WhatsApp: ${pedido.whatsapp}
-Modelo: ${pedido.tipo_modelo}
+${pedido.tipo_modelo ? `Modelo: ${pedido.tipo_modelo}` : ""}
 Texto/Logo: ${pedido.texto_logo}
 Forma de Pagamento: ${pedido.tipo_pagamento}
 Valor: R$ ${pedido.valor.toFixed(2)}
@@ -185,13 +185,17 @@ Observação: ${pedido.observacao || "Nenhuma"}
       </View>
 
       <View style={styles.card}>
-        <InfoRow label="Cliente" value={pedido.cliente} Icon={User} />
+        {pedido.cliente?.length > 0 && (
+          <InfoRow label="Cliente" value={pedido.cliente} Icon={User} />
+        )}
         <InfoRow
           label="WhatsApp"
           value={formatarWhatsapp(String(pedido.whatsapp))}
           Icon={Phone}
         />
-        <InfoRow label="Modelo" value={pedido.tipo_modelo} Icon={Package} />
+        {pedido.tipo_modelo?.length > 0 && (
+          <InfoRow label="Modelo" value={pedido.tipo_modelo} Icon={Package} />
+        )}
         <InfoRow label="Descrição" value={pedido.texto_logo} Icon={Type} />
         <InfoRow
           label="Pagamento"
