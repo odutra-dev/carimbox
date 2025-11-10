@@ -1,0 +1,23 @@
+<div class="container">
+  <h2>Lista de Pedidos</h2>
+
+  <div *ngIf="loading">Carregando...</div>
+  <div *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <table *ngIf="!loading && pedidos.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Data do Pedido</th>
+        <th>WhatsApp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of pedidos">
+        <td>{{ p.id }}</td>
+        <td>{{ p.data_pedido | date : 'dd/MM/yyyy - HH:mm' }}</td>
+        <td>{{ p.whatsapp }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
