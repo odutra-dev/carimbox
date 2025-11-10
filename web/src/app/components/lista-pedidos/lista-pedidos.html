@@ -1,23 +1,36 @@
 <div class="container">
   <h2>Lista de Pedidos</h2>
 
-  <div *ngIf="loading">Carregando...</div>
-  <div *ngIf="errorMsg">{{ errorMsg }}</div>
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="errorMsg" class="error">{{ errorMsg }}</div>
 
-  <table *ngIf="!loading && pedidos.length > 0">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Data do Pedido</th>
-        <th>WhatsApp</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let p of pedidos">
-        <td>{{ p.id }}</td>
-        <td>{{ p.data_pedido | date : 'dd/MM/yyyy - HH:mm' }}</td>
-        <td>{{ p.whatsapp }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div *ngIf="!loading && pedidos.length > 0">
+    <div *ngFor="let pedido of pedidos" class="pedido-card" (click)="verDetalhes(pedido.id)">
+      <div class="header">
+        <div class="info">
+          <p class="id-text">Pedido #{{ pedido.id }}</p>
+          <p class="data-text">
+            {{ pedido.data_pedido | date : 'dd/MM/yyyy, HH:mm' }}
+          </p>
+          <p class="cliente-text">
+            {{ formatarWhatsapp(pedido.whatsapp.toString()) }}
+          </p>
+        </div>
+
+        <div class="icon-container" (click)="$event.stopPropagation()">
+          <ng-container *ngIf="!pedido.entregue">
+            <button class="icon-check" (click)="marcarComoEntregue(pedido)">
+              <i class="bi bi-check-circle-fill"></i>
+            </button>
+          </ng-container>
+
+          <button class="icon" (click)="enviarWhatsApp(pedido)">
+            <i class="bi bi-box-arrow-up-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && pedidos.length === 0" class="empty">Nenhum pedido encontrado.</div>
 </div>

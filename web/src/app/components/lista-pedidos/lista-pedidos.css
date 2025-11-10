@@ -1,20 +1,84 @@
 .container {
-  margin: 20px;
-  font-family: Arial, sans-serif;
-}
-
-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 16px;
 
-th,
-td {
-  padding: 10px;
-  border: 1px solid #ddd;
-}
+  h2 {
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
 
-th {
-  background: #f5f5f5;
+  .loading,
+  .error,
+  .empty {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: 16px;
+  }
+
+  .pedido-card {
+    width: 100%;
+    padding: 16px;
+    margin: 8px 0;
+    border-radius: 8px;
+    background-color: var(--surface);
+    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.01);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .id-text {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--text-primary);
+    }
+
+    .data-text {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .cliente-text {
+      font-size: 14px;
+      color: var(--text-primary);
+      margin-top: 4px;
+    }
+
+    .icon-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .icon,
+      .icon-check {
+        font-size: 22px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+
+        &:hover {
+          transform: scale(1.15);
+        }
+      }
+
+      .icon {
+        color: var(--primary);
+      }
+
+      .icon-check {
+        color: var(--success);
+      }
+    }
+  }
 }
