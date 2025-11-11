@@ -126,4 +126,8 @@ Se puder, avalie a Carimbos Ocian no Google:
     const url = `https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
   }
+
+  novoPedido() {
+    this.router.navigate(['/novo-pedido']); // Substitua pela rota correta
+  }
 }
