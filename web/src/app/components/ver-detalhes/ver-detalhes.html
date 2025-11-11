@@ -33,7 +33,9 @@
       <p><strong>Valor:</strong> R$ {{ pedido.valor | number : '1.2-2' }}</p>
       <p><strong>Data do Pedido:</strong> {{ pedido.data_pedido | date : 'dd/MM/yyyy HH:mm' }}</p>
       <p><strong>Entrega:</strong> {{ pedido.data_entrega | date : 'dd/MM/yyyy HH:mm' }}</p>
-      <p><strong>Observação:</strong> {{ pedido.observacao || 'Nenhuma' }}</p>
+      <p *ngIf="pedido.observacao">
+        <strong>Observação:</strong> {{ pedido.observacao || 'Nenhuma' }}
+      </p>
     </div>
 
     <div class="footer">
