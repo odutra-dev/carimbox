@@ -22,13 +22,14 @@
     padding: 16px;
     margin: 8px 0;
     border-radius: 8px;
-    background-color: var(--surface);
+    background-color: var(--background);
+    border: 1px solid var(--border);
     box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s ease;
     cursor: pointer;
 
     &:hover {
-      transform: scale(1.01);
+      transform: scale(1.02);
     }
 
     .header {
@@ -61,7 +62,7 @@
 
       .icon,
       .icon-check {
-        font-size: 22px;
+        font-size: 24px;
         background: none;
         border: none;
         cursor: pointer;
@@ -103,7 +104,7 @@
   align-items: center;
   gap: 8px;
   background-color: var(--primary);
-  color: var(--white);
+  color: var(--text-primary);
   border: none;
   border-radius: 6px;
   padding: 8px 14px;
@@ -117,8 +118,9 @@
 }
 
 .btn-novo-pedido:hover {
-  background-color: var(--text-primary);
+  background-color: var(--secondary);
   transform: scale(1.05);
+  color: var(--text-primary);
 }
 
 .filtros {
@@ -129,19 +131,20 @@
 
 .filtros button {
   padding: 6px 12px;
-  border: 1px solid var(--primary);
+  border: 1px solid var(--border);
   border-radius: 6px;
-  background-color: var(--white);
+  background-color: var(--background);
   color: var(--primary);
   cursor: pointer;
   transition: 0.2s;
 }
 
 .filtros button:hover {
-  background-color: var(--primary-light);
+  background-color: var(--primary);
+  color: var(--text-primary);
 }
 
 .filtros button.active {
-  background-color: var(--background);
-  color: white;
+  background-color: var(--primary);
+  color: var(--text-primary);
 }
