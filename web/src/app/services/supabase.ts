@@ -40,7 +40,7 @@ export class Supabase {
   }
 
   // 🔹 Buscar um pedido específico (opcional, se quiser usar em "ver detalhes")
-  async getPedidoById(id: number): Promise<Pedido | null> {
+  async getPedidoById(id: number): Promise<Pedido> {
     const { data, error } = await this.supabase.from('Pedidos').select('*').eq('id', id).single();
 
     if (error) throw error;
