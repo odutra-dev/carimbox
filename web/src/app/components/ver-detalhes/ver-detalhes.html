@@ -14,7 +14,7 @@
   <!-- Pedido encontrado -->
   <div *ngIf="pedido" class="pedido-card">
     <div class="header">
-      <button class="icon-btn" (click)="voltar()">⬅️</button>
+      <button class="icon-btn" (click)="voltar()"><i class="bi bi-arrow-left"></i></button>
       <h2>Pedido #{{ pedido.id }}</h2>
       <div>
         <button *ngIf="pedido.entregue" (click)="marcarComoNaoEntregue(pedido)" class="icon-btn">
