@@ -120,3 +120,28 @@
   background-color: var(--primary-dark);
   transform: scale(1.05);
 }
+
+.filtros {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filtros button {
+  padding: 6px 12px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  background-color: white;
+  color: var(--primary);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.filtros button:hover {
+  background-color: var(--primary-light);
+}
+
+.filtros button.active {
+  background-color: var(--primary);
+  color: white;
+}

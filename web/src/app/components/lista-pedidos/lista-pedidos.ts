@@ -16,6 +16,8 @@ export class ListaPedidos implements OnInit {
   loading = true;
   errorMsg = '';
 
+  filtro: 'todos' | 'pendentes' | 'concluidos' = 'pendentes';
+
   constructor(private supabaseService: Supabase, private router: Router) {}
 
   async ngOnInit() {
@@ -129,5 +131,20 @@ Se puder, avalie a Carimbos Ocian no Google:
 
   novoPedido() {
     this.router.navigate(['/novo-pedido']); // Substitua pela rota correta
+  }
+
+  // ✅ Getter que retorna apenas os pedidos filtrados
+  get pedidosFiltrados(): Pedido[] {
+    if (this.filtro === 'pendentes') {
+      return this.pedidos.filter((p) => !p.entregue);
+    } else if (this.filtro === 'concluidos') {
+      return this.pedidos.filter((p) => p.entregue);
+    }
+    return this.pedidos; // todos
+  }
+
+  // Função para alterar filtro
+  setFiltro(novoFiltro: 'todos' | 'pendentes' | 'concluidos') {
+    this.filtro = novoFiltro;
   }
 }

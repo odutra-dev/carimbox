@@ -7,12 +7,30 @@
     </button>
   </div>
 
-  <!-- Lista de pedidos -->
+  <!-- Filtros -->
+  <div class="filtros">
+    <button [class.active]="filtro === 'pendentes'" (click)="setFiltro('pendentes')">
+      Pendentes
+    </button>
+
+    <button [class.active]="filtro === 'concluidos'" (click)="setFiltro('concluidos')">
+      Concluídos
+    </button>
+
+    <button [class.active]="filtro === 'todos'" (click)="setFiltro('todos')">Todos</button>
+  </div>
+
+  <!-- Mensagens de loading ou erro -->
   <div *ngIf="loading" class="loading">Carregando...</div>
   <div *ngIf="errorMsg" class="error">{{ errorMsg }}</div>
 
-  <div *ngIf="!loading && pedidos.length > 0">
-    <div *ngFor="let pedido of pedidos" class="pedido-card" (click)="verDetalhes(pedido.id)">
+  <!-- Lista de pedidos filtrada -->
+  <div *ngIf="!loading && pedidosFiltrados.length > 0">
+    <div
+      *ngFor="let pedido of pedidosFiltrados"
+      class="pedido-card"
+      (click)="verDetalhes(pedido.id)"
+    >
       <div class="header">
         <div class="info">
           <p class="id-text">Pedido #{{ pedido.id }}</p>
@@ -35,5 +53,8 @@
     </div>
   </div>
 
-  <div *ngIf="!loading && pedidos.length === 0" class="empty">Nenhum pedido encontrado.</div>
+  <!-- Mensagem caso não haja pedidos filtrados -->
+  <div *ngIf="!loading && pedidosFiltrados.length === 0" class="empty">
+    Nenhum pedido encontrado.
+  </div>
 </div>
