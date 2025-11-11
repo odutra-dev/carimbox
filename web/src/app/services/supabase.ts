@@ -46,4 +46,11 @@ export class Supabase {
     if (error) throw error;
     return data as Pedido;
   }
+
+  async createPedido(pedido: Partial<Pedido>): Promise<Pedido> {
+    const { data, error } = await this.supabase.from('Pedidos').insert(pedido).select().single();
+
+    if (error) throw error;
+    return data as Pedido;
+  }
 }
