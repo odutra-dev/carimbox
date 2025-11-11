@@ -84,7 +84,12 @@
 
     <div class="mb-3">
       <label for="data_entrega" class="form-label">Data de entrega *</label>
-      <input type="date" id="data_entrega" class="form-control" formControlName="data_entrega" />
+      <input
+        type="datetime-local"
+        id="data_entrega"
+        class="form-control"
+        formControlName="data_entrega"
+      />
     </div>
 
     <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
