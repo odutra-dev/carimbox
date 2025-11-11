@@ -39,18 +39,22 @@ export class VerDetalhes {
 
   copiarTexto(): void {
     if (!this.pedido) return;
-    const texto = `
-Pedido #${this.pedido.id}
-Cliente: ${this.pedido.cliente}
-WhatsApp: ${this.pedido.whatsapp}
-Modelo: ${this.pedido.tipo_modelo}
-Texto/Logo: ${this.pedido.texto_logo}
-Pagamento: ${this.pedido.tipo_pagamento}
-Valor: R$ ${this.pedido.valor.toFixed(2)}
-Data Pedido: ${new Date(this.pedido.data_pedido).toLocaleString('pt-BR')}
-Entrega: ${new Date(this.pedido.data_entrega).toLocaleString('pt-BR')}
-Observação: ${this.pedido.observacao || 'Nenhuma'}
-    `.trim();
+    const p = this.pedido;
+
+    const partes = [
+      `Pedido #${p.id}`,
+      p.cliente ? `Cliente: ${p.cliente}` : null,
+      p.whatsapp ? `WhatsApp: ${p.whatsapp}` : null,
+      p.tipo_modelo ? `Modelo: ${p.tipo_modelo}` : null,
+      p.texto_logo ? `Texto/Logo: ${p.texto_logo}` : null,
+      p.tipo_pagamento ? `Pagamento: ${p.tipo_pagamento}` : null,
+      p.valor != null ? `Valor: R$ ${p.valor.toFixed(2)}` : null,
+      p.data_pedido ? `Data Pedido: ${new Date(p.data_pedido).toLocaleString('pt-BR')}` : null,
+      p.data_entrega ? `Entrega: ${new Date(p.data_entrega).toLocaleString('pt-BR')}` : null,
+      p.observacao ? `Observação: ${p.observacao}` : null,
+    ];
+
+    const texto = partes.filter(Boolean).join('\n');
 
     navigator.clipboard.writeText(texto);
     alert('Dados copiados para a área de transferência.');
