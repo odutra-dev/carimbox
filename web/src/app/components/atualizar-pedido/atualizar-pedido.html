@@ -1,0 +1,94 @@
+<div class="container">
+  <div class="header">
+    <button class="back-button" type="button" aria-label="Voltar" (click)="goBack()">←</button>
+    <h1>📝 Atualizar Pedido</h1>
+  </div>
+  <p class="subtitle">Preencha os dados abaixo para registrar um novo pedido</p>
+
+  <form [formGroup]="pedidoForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="cliente" class="form-label">Cliente</label>
+      <input
+        type="text"
+        id="cliente"
+        class="form-control"
+        placeholder="Nome do cliente"
+        formControlName="cliente"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="whatsapp" class="form-label">WhatsApp *</label>
+      <input
+        type="tel"
+        id="whatsapp"
+        class="form-control"
+        placeholder="Ex: 5511999999999"
+        formControlName="whatsapp"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="tipo_modelo" class="form-label">Modelo</label>
+      <input
+        type="text"
+        id="tipo_modelo"
+        class="form-control"
+        placeholder="Ex: Automático, Trodat 4911"
+        formControlName="tipo_modelo"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="texto_logo" class="form-label">Descrição *</label>
+      <textarea
+        id="texto_logo"
+        rows="3"
+        class="form-control"
+        placeholder="Digite o texto do carimbo"
+        formControlName="texto_logo"
+      ></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="observacao" class="form-label">Observações</label>
+      <textarea
+        id="observacao"
+        rows="2"
+        class="form-control"
+        placeholder="Algum detalhe adicional?"
+        formControlName="observacao"
+      ></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="tipo_pagamento" class="form-label">Forma de Pagamento *</label>
+      <select id="tipo_pagamento" class="form-select" formControlName="tipo_pagamento">
+        <option *ngFor="let op of formaPagamentoOptions" [value]="op">{{ op }}</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="valor" class="form-label">Valor *</label>
+      <input
+        type="number"
+        id="valor"
+        class="form-control"
+        placeholder="Ex: 79.90"
+        formControlName="valor"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="data_entrega" class="form-label">Data de entrega *</label>
+      <input type="date" id="data_entrega" class="form-control" formControlName="data_entrega" />
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
+      {{ loading ? 'Enviando...' : 'Atualizar Pedido' }}
+    </button>
+  </form>
+</div>

@@ -1,0 +1,60 @@
+<div class="container">
+  <!-- Header personalizado -->
+  <div class="app-header">
+    <h1>Carimbox</h1>
+    <button class="btn-novo-pedido" (click)="novoPedido()">
+      <i class="bi bi-plus-circle"></i> Novo Pedido
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros">
+    <button [class.active]="filtro === 'pendentes'" (click)="setFiltro('pendentes')">
+      Pendentes
+    </button>
+
+    <button [class.active]="filtro === 'concluidos'" (click)="setFiltro('concluidos')">
+      Concluídos
+    </button>
+
+    <button [class.active]="filtro === 'todos'" (click)="setFiltro('todos')">Todos</button>
+  </div>
+
+  <!-- Mensagens de loading ou erro -->
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="errorMsg" class="error">{{ errorMsg }}</div>
+
+  <!-- Lista de pedidos filtrada -->
+  <div *ngIf="!loading && pedidosFiltrados.length > 0">
+    <div
+      *ngFor="let pedido of pedidosFiltrados"
+      class="pedido-card"
+      (click)="verDetalhes(pedido.id)"
+    >
+      <div class="header">
+        <div class="info">
+          <p class="id-text">Pedido #{{ pedido.id }}</p>
+          <p class="data-text">{{ pedido.data_pedido | date : 'dd/MM/yyyy, HH:mm' }}</p>
+          <p class="cliente-text">{{ formatarWhatsapp(pedido.whatsapp.toString()) }}</p>
+        </div>
+
+        <div class="icon-container" (click)="$event.stopPropagation()">
+          <ng-container *ngIf="!pedido.entregue">
+            <button class="icon-check" (click)="marcarComoEntregue(pedido)">
+              <i class="bi bi-check-circle-fill"></i>
+            </button>
+          </ng-container>
+
+          <button class="icon" (click)="enviarWhatsApp(pedido)">
+            <i class="bi bi-box-arrow-up-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensagem caso não haja pedidos filtrados -->
+  <div *ngIf="!loading && pedidosFiltrados.length === 0" class="empty">
+    Nenhum pedido encontrado.
+  </div>
+</div>

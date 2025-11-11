@@ -1,0 +1,45 @@
+<div class="container">
+  <!-- Loading -->
+  <div *ngIf="loading" class="center">
+    <div class="spinner"></div>
+    <p>Carregando pedido...</p>
+  </div>
+
+  <!-- Pedido não encontrado -->
+  <div *ngIf="!loading && !pedido" class="center">
+    <p>Pedido não encontrado.</p>
+    <button class="btn" (click)="voltar()">Voltar</button>
+  </div>
+
+  <!-- Pedido encontrado -->
+  <div *ngIf="pedido" class="pedido-card">
+    <div class="header">
+      <button class="icon-btn" (click)="voltar()"><i class="bi bi-arrow-left"></i></button>
+      <h2>Pedido #{{ pedido.id }}</h2>
+      <div>
+        <button *ngIf="pedido.entregue" (click)="marcarComoNaoEntregue(pedido)" class="icon-btn">
+          <i class="bi bi-x-circle"></i>
+        </button>
+        <button class="icon-btn" (click)="editarPedido()"><i class="bi bi-pencil-fill"></i></button>
+      </div>
+    </div>
+
+    <div class="info">
+      <p *ngIf="pedido.cliente"><strong>Cliente:</strong> {{ pedido.cliente }}</p>
+      <p><strong>WhatsApp:</strong> {{ formatarWhatsapp(pedido.whatsapp.toString()) }}</p>
+      <p *ngIf="pedido.tipo_modelo"><strong>Modelo:</strong> {{ pedido.tipo_modelo }}</p>
+      <p><strong>Texto/Logo:</strong> {{ pedido.texto_logo }}</p>
+      <p><strong>Forma de Pagamento:</strong> {{ pedido.tipo_pagamento }}</p>
+      <p><strong>Valor:</strong> R$ {{ pedido.valor | number : '1.2-2' }}</p>
+      <p><strong>Data do Pedido:</strong> {{ pedido.data_pedido | date : 'dd/MM/yyyy HH:mm' }}</p>
+      <p><strong>Entrega:</strong> {{ pedido.data_entrega | date : 'dd/MM/yyyy HH:mm' }}</p>
+      <p *ngIf="pedido.observacao">
+        <strong>Observação:</strong> {{ pedido.observacao || 'Nenhuma' }}
+      </p>
+    </div>
+
+    <div class="footer">
+      <button class="btn" (click)="copiarTexto()">Copiar Pedido</button>
+    </div>
+  </div>
+</div>
