@@ -48,5 +48,16 @@ export const useStyles = () => {
     iconCheck: {
       color: colors.success,
     },
+    skelBase: {
+      backgroundColor: colors.surface
+        ? colors.surface
+        : "rgba(180,180,180,0.35)",
+
+      borderRadius: spacing.xs,
+    },
+    skelPlaceholder: {
+      backgroundColor: colors.border,
+      borderRadius: spacing.xs,
+    },
   });
 };

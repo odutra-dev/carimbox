@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,8 @@ import {
   Linking,
   Alert,
   ToastAndroid,
+  Animated,
+  StyleSheet,
 } from "react-native";
 import { Pedido } from "../../@types/Pedido";
 import { router } from "expo-router";
@@ -34,9 +36,9 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdate }) => {
     valor,
     data_entrega,
     observacao,
-    entregue,
   } = pedido;
 
+  // MENSAGEM NOVO PEDIDO
   const mensagemNovoPedido = `Olá ${
     cliente ? `${cliente},` : ""
   } aqui é da Carimbos Ocian! 😄
@@ -69,6 +71,7 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
 📦 Obs: Para retirar o pedido, basta informar o número do pedido enviado acima.
 `;
 
+  // MENSAGEM DE PEDIDO CONCLUÍDO
   const mensagemPedidoConcluido = `✅ Pedido finalizado! ✅
 
 📦 Seu pedido está pronto para retirada/entrega.
@@ -82,6 +85,7 @@ Se puder, avalie a Carimbos Ocian no Google:
 💙 Agradecemos pela confiança! 💙
 `;
 
+  // ENVIAR WHATSAPP
   const handleSendWhatsApp = (mensagem: string) => {
     const numero = whatsapp.toString().replace(/\D/g, "");
     const url = `https://wa.me/55${numero}?text=${encodeURIComponent(
@@ -89,14 +93,16 @@ Se puder, avalie a Carimbos Ocian no Google:
     )}`;
 
     Linking.openURL(url).catch(() =>
-      alert("Não foi possível abrir o WhatsApp.")
+      Alert.alert("Erro", "Não foi possível abrir o WhatsApp.")
     );
   };
 
+  // IR PARA DETALHES
   const handleViewDetails = () => {
     router.push(`/verPedido/${id}`);
   };
 
+  // MARCAR COMO CONCLUÍDO
   const handleCheck = () => {
     if (isEntregue) {
       ToastAndroid.show("Este pedido já está concluído!", 2000);
@@ -122,8 +128,8 @@ Se puder, avalie a Carimbos Ocian no Google:
               Alert.alert("Erro", "Não foi possível atualizar o pedido.");
               console.error(error);
             } else {
-              setIsEntregue(true); // atualiza local
-              if (data) onUpdate?.(data); // ✅ só chama se data existir
+              setIsEntregue(true);
+              if (data) onUpdate?.(data);
               ToastAndroid.show("Pedido concluído com sucesso!", 2000);
               handleSendWhatsApp(mensagemPedidoConcluido);
             }
@@ -133,16 +139,15 @@ Se puder, avalie a Carimbos Ocian no Google:
     );
   };
 
+  // FORMATAR TELEFONE
   const formatarWhatsapp = (numero: string) => {
     const num = numero.replace(/\D/g, "");
 
-    if (num.length === 11) {
+    if (num.length === 11)
       return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
-    }
 
-    if (num.length === 10) {
+    if (num.length === 10)
       return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
-    }
 
     return numero;
   };
@@ -165,11 +170,11 @@ Se puder, avalie a Carimbos Ocian no Google:
         </View>
 
         <View style={styles.iconContainer}>
-          {!isEntregue ? (
+          {!isEntregue && (
             <TouchableOpacity onPress={handleCheck}>
               <CircleCheckBig size={32} color={styles.iconCheck.color} />
             </TouchableOpacity>
-          ) : null}
+          )}
 
           <TouchableOpacity
             onPress={() => handleSendWhatsApp(mensagemNovoPedido)}
@@ -179,5 +184,63 @@ Se puder, avalie a Carimbos Ocian no Google:
         </View>
       </View>
     </TouchableOpacity>
+  );
+};
+
+// SKELETON
+export const PedidoCardSkeleton = () => {
+  const styles = useStyles();
+
+  const pulse = useRef(new Animated.Value(0.5)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 1,
+          duration: 700,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulse, {
+          toValue: 0.5,
+          duration: 700,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
+  const Placeholder = ({ style }: any) => (
+    <Animated.View
+      style={[
+        styles.skelPlaceholder,
+        style,
+        {
+          opacity: pulse,
+        },
+      ]}
+    />
+  );
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <View>
+          {/* Pedido #ID */}
+          <Placeholder style={{ width: 130, height: 16 }} />
+
+          {/* Data */}
+          <Placeholder style={{ width: 160, height: 14, marginTop: 8 }} />
+
+          {/* WhatsApp */}
+          <Placeholder style={{ width: 150, height: 14, marginTop: 10 }} />
+        </View>
+
+        <View style={styles.iconContainer}>
+          <Placeholder style={{ width: 32, height: 32, borderRadius: 16 }} />
+          <Placeholder style={{ width: 32, height: 32, borderRadius: 16 }} />
+        </View>
+      </View>
+    </View>
   );
 };
