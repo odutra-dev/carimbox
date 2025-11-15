@@ -1,14 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { router, useFocusEffect } from "expo-router";
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { supabase } from "../../utils/supabase";
-import { PedidoCard } from "../../components/PedidoCard";
+import { PedidoCard, PedidoCardSkeleton } from "../../components/PedidoCard";
 import { Pedido } from "../../@types/Pedido";
 import { useTheme } from "../../hooks/useTheme";
 import Plus from "lucide-react-native/dist/esm/icons/plus";
@@ -61,23 +55,33 @@ export default function PedidosScreen() {
         { event: "*", schema: "public", table: "Pedidos" },
         (payload) => {
           console.log("Realtime payload:", payload);
-          const newPedido: Pedido = payload.new;
-          const oldPedido: Pedido = payload.old;
+
+          const newPedido = payload.new as Partial<Pedido>;
+          const oldPedido = payload.old as Partial<Pedido>;
 
           setPedidos((prev) => {
             switch (payload.eventType) {
               case "INSERT":
-                return [newPedido, ...prev];
+                if (!newPedido.id) return prev;
+                return [newPedido as Pedido, ...prev];
+
               case "UPDATE":
-                return prev.map((p) => (p.id === newPedido.id ? newPedido : p));
+                if (!newPedido.id) return prev;
+                return prev.map((p) =>
+                  p.id === newPedido.id ? (newPedido as Pedido) : p
+                );
+
               case "DELETE":
+                if (!oldPedido.id) return prev;
                 return prev.filter((p) => p.id !== oldPedido.id);
+
               default:
                 return prev;
             }
           });
         }
       )
+
       .subscribe();
 
     return () => {
@@ -139,11 +143,7 @@ export default function PedidosScreen() {
 
       {/* Lista ou Loading */}
       {loading ? (
-        <ActivityIndicator
-          size="large"
-          color={colors.primary}
-          style={{ marginTop: 20 }}
-        />
+        <PedidoCardSkeleton />
       ) : filteredPedidos.length === 0 ? (
         <Text style={[styles.emptyText, { color: colors.textPrimary }]}>
           Nenhum pedido encontrado.
