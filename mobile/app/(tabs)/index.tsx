@@ -164,6 +164,8 @@ export default function PedidosScreen() {
               }}
             />
           )}
+          refreshing={loading}
+          onRefresh={fetchPedidos}
         />
       )}
 
