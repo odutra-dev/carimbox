@@ -25,7 +25,7 @@ export const useStyles = () => {
       fontSize: 15,
     },
     multilineInput: {
-      height: 100,
+      height: 300,
       textAlignVertical: "top",
     },
   });
