@@ -10,12 +10,12 @@ import {
   ToastAndroid,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { supabase } from "../utils/supabase";
+import { supabase } from "../../utils/supabase";
 import { router } from "expo-router";
-import { Input } from "../components/Input";
-import { InputSelect } from "../components/InputSelect";
-import useStyles from "../styles/novoPedidoPage";
-import { useTheme } from "../hooks/useTheme";
+import { Input } from "../../components/Input";
+import { InputSelect } from "../../components/InputSelect";
+import useStyles from "../../styles/novoPedidoPage";
+import { useTheme } from "../../hooks/useTheme";
 
 import MoveLeft from "lucide-react-native/dist/esm/icons/move-left";
 
