@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ToastAndroid,
 } from "react-native";
-import { useTheme } from "../../hooks/useTheme";
+import { useTheme } from "../../../hooks/useTheme";
 import * as updates from "expo-updates";
 import RefreshCw from "lucide-react-native/dist/esm/icons/refresh-cw";
 
