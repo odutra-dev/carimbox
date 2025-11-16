@@ -9,7 +9,7 @@ export const useStyles = () => {
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      paddingVertical: spacing.xl,
+      paddingTop: spacing.xl,
       paddingHorizontal: spacing.md,
     },
     header: {
