@@ -14,7 +14,7 @@ function AppContent() {
       />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="novoPedido" />
+        <Stack.Screen name="novoPedido/index" />
         <Stack.Screen name="verPedido/[id]" />
         <Stack.Screen name="atualizarPedido/[id]" />
       </Stack>
