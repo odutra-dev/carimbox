@@ -6,7 +6,11 @@
     "scheme": "acme",
     "description": "App para controle dos pedidos de carimbos",
     "userInterfaceStyle": "automatic",
-    "plugins": ["expo-router", "expo-font"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-localization"
+    ],
     "android": {
       "package": "com.dutradev.carimbox",
       "icon": "./assets/logo.png",
