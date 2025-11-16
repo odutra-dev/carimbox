@@ -6,4 +6,7 @@ export const enLang = {
   pendentes: "Pending",
   concluidos: "Completed",
   todos: "All",
+  modoEscuro: "Dark mode",
+  verificarAtualizacao: "Check for updates",
+  versao: "Version",
 };

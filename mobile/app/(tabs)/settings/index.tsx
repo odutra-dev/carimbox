@@ -10,6 +10,7 @@ import {
 import { useTheme } from "../../../hooks/useTheme";
 import * as updates from "expo-updates";
 import RefreshCw from "lucide-react-native/dist/esm/icons/refresh-cw";
+import { i18n } from "../../../i18n";
 
 export default function SettingsScreen() {
   const { mode, toggleMode, theme } = useTheme();
@@ -38,12 +39,12 @@ export default function SettingsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Text style={[styles.title, { color: colors.textPrimary }]}>
-        Configurações
+        {i18n.t("confguracaoTitulo")}
       </Text>
 
       <View style={styles.row}>
         <Text style={[styles.label, { color: colors.textSecondary }]}>
-          Modo Escuro
+          {i18n.t("modoEscuro")}
         </Text>
         <Switch
           value={mode === "dark"}
@@ -56,14 +57,14 @@ export default function SettingsScreen() {
       <View style={styles.updateContainer}>
         <View style={styles.row}>
           <Text style={[styles.label, { color: colors.textSecondary }]}>
-            Verificar se há atualização
+            {i18n.t("verificarAtualizacao")}
           </Text>
           <TouchableOpacity onPress={checkForUpdate} activeOpacity={0.7}>
             <RefreshCw size={24} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
         <Text style={[styles.versionText, { color: colors.textSecondary }]}>
-          Versão: 1.3.1
+          {i18n.t("versao")}: 1.3.1
         </Text>
       </View>
     </View>

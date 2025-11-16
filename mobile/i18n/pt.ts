@@ -6,4 +6,7 @@ export const ptLang = {
   pendentes: "Pendentes",
   concluidos: "Concluídos",
   todos: "Todos",
+  modoEscuro: "Modo escuro",
+  verificarAtualizacao: "Verificar atualização",
+  versao: "Versão",
 };
