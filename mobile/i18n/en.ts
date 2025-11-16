@@ -1,5 +1,6 @@
 export const enLang = {
   pedidosTitulo: "Orders",
+  confguracaoTitulo: "Settings",
   mensagemHome: "Track recent orders",
   pedidosPage: "Orders",
   configuracoesPage: "Settings",

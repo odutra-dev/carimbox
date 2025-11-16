@@ -1,5 +1,6 @@
 export const ptLang = {
   pedidosTitulo: "Pedidos",
+  confguracaoTitulo: "Configurações",
   mensagemHome: "Acompanhe os pedidos recentes",
   pedidosPage: "Pedidos",
   configuracoesPage: "Configurações",
