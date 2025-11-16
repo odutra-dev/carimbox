@@ -9,7 +9,7 @@ export const useStyles = () => {
     container: {
       flex: 1,
       backgroundColor: colors.background,
-      paddingVertical: spacing.xl,
+      paddingTop: spacing.xl,
       paddingHorizontal: spacing.md,
     },
     header: {
@@ -44,6 +44,8 @@ export const useStyles = () => {
       marginHorizontal: 5,
       borderRadius: 8,
       alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
     },
 
     fab: {

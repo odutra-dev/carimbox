@@ -8,6 +8,7 @@ export const useStyles = () => {
 
   return StyleSheet.create({
     container: {
+      flex: 1,
       backgroundColor: colors.background,
       paddingVertical: spacing.xl,
       paddingHorizontal: spacing.md,
@@ -37,7 +38,6 @@ export const useStyles = () => {
       backgroundColor: colors.surface,
       borderRadius: spacing.sm,
       padding: spacing.md,
-      marginBottom: spacing.lg,
       borderWidth: 1,
       borderColor: colors.border,
       shadowColor: colors.black,
@@ -71,7 +71,13 @@ export const useStyles = () => {
       backgroundColor: colors.primary,
       paddingVertical: spacing.md - 4,
       borderRadius: spacing.sm,
-      marginTop: spacing.lg,
+      marginVertical: spacing.xl,
+      gap: spacing.sm,
+      shadowColor: colors.black,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 3,
+      elevation: 2,
     },
 
     copyButtonText: {

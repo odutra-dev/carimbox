@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ToastAndroid,
 } from "react-native";
-import { useTheme } from "../../hooks/useTheme";
+import { useTheme } from "../../../hooks/useTheme";
 import * as updates from "expo-updates";
 import RefreshCw from "lucide-react-native/dist/esm/icons/refresh-cw";
 
@@ -63,7 +63,7 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
         <Text style={[styles.versionText, { color: colors.textSecondary }]}>
-          Versão: 1.3.0
+          Versão: 1.3.1
         </Text>
       </View>
     </View>
