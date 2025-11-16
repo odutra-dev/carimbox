@@ -2,9 +2,14 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ThemeProvider, useTheme } from "../hooks/useTheme";
 
+//Localization
+import { getLocales } from "expo-localization";
+import { i18n } from "../i18n";
 function AppContent() {
   const { theme } = useTheme();
   const { colors } = theme;
+
+  i18n.locale = getLocales()[0].languageCode ?? "en";
 
   return (
     <>

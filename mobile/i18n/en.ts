@@ -1,0 +1,9 @@
+export const enLang = {
+  pedidosTitulo: "Orders",
+  mensagemHome: "Track recent orders",
+  pedidosPage: "Orders",
+  configuracoesPage: "Settings",
+  pendentes: "Pending",
+  concluidos: "Completed",
+  todos: "All",
+};
