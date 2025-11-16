@@ -44,6 +44,8 @@ export const useStyles = () => {
       marginHorizontal: 5,
       borderRadius: 8,
       alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
     },
 
     fab: {
