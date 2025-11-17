@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "carimbos Ocian",
-    "slug": "carimbos-ocian",
+    "slug": "carimbox",
     "version": "1.4.0",
     "scheme": "acme",
     "description": "App para controle dos pedidos de carimbos",
