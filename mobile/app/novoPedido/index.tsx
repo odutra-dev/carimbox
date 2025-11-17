@@ -123,7 +123,7 @@ export default function NovoPedidoScreen() {
         />
         <Input
           label="WhatsApp *"
-          placeholder="Ex: 5511999999999"
+          placeholder="Ex: 11999999999"
           keyboardType="numeric"
           value={form.whatsapp}
           onChangeText={(v) => handleChange("whatsapp", v)}
