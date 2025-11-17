@@ -40,7 +40,7 @@ export const useStyles = () => {
     iconContainer: {
       flexDirection: "row",
       alignItems: "center",
-      gap: spacing.md,
+      gap: spacing.xl,
     },
     icon: {
       color: colors.primary,
