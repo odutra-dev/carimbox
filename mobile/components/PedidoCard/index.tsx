@@ -172,14 +172,14 @@ Se puder, avalie a Carimbos Ocian no Google:
         <View style={styles.iconContainer}>
           {!isEntregue && (
             <TouchableOpacity onPress={handleCheck}>
-              <CircleCheckBig size={32} color={styles.iconCheck.color} />
+              <CircleCheckBig size={45} color={styles.iconCheck.color} />
             </TouchableOpacity>
           )}
 
           <TouchableOpacity
             onPress={() => handleSendWhatsApp(mensagemNovoPedido)}
           >
-            <ExternalLink size={32} color={styles.icon.color} />
+            <ExternalLink size={45} color={styles.icon.color} />
           </TouchableOpacity>
         </View>
       </View>

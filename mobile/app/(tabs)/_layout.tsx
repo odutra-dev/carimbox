@@ -3,6 +3,8 @@ import { useTheme } from "../../hooks/useTheme";
 import Package from "lucide-react-native/dist/esm/icons/package";
 import Settings from "lucide-react-native/dist/esm/icons/settings";
 
+import { i18n } from "../../i18n";
+
 export default function TabLayout() {
   const { theme } = useTheme();
   const { colors } = theme;
@@ -22,7 +24,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Pedidos",
+          title: i18n.t("pedidosPage"),
           tabBarIcon: ({ color, size }) => (
             <Package size={size} color={color} />
           ),
@@ -31,7 +33,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings/index"
         options={{
-          title: "Configurações",
+          title: i18n.t("configuracoesPage"),
           tabBarIcon: ({ color, size }) => (
             <Settings size={size} color={color} />
           ),

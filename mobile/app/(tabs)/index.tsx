@@ -8,6 +8,8 @@ import { useTheme } from "../../hooks/useTheme";
 import Plus from "lucide-react-native/dist/esm/icons/plus";
 import useStyles from "../../styles/homepage";
 
+import { i18n } from "../../i18n";
+
 export default function PedidosScreen() {
   const styles = useStyles();
   const { theme } = useTheme();
@@ -104,10 +106,10 @@ export default function PedidosScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={[styles.title, { color: colors.textPrimary }]}>
-          📦 Pedidos
+          📦 {i18n.t("pedidosTitulo")}
         </Text>
         <Text style={[styles.subtitle, { color: colors.textPrimary }]}>
-          Acompanhe os pedidos recentes
+          {i18n.t("mensagemHome")}
         </Text>
       </View>
 
@@ -132,10 +134,10 @@ export default function PedidosScreen() {
               }}
             >
               {s === "todos"
-                ? "Todos"
+                ? i18n.t("todos")
                 : s === "pendente"
-                ? "Pendentes"
-                : "Concluídos"}
+                ? i18n.t("pendentes")
+                : i18n.t("concluidos")}
             </Text>
           </TouchableOpacity>
         ))}
