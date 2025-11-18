@@ -22,6 +22,12 @@ export const enLang = {
   DataPedido: "Order date",
   DataEntrega: "Delivery date",
   CopiarTodos: "Copy all data",
+  MarcarNaoConcluidoTitulo: "Mark as pending?",
+  MarcarNaoConcluidoMensagemP1: "Do you want to mark the order",
+  MarcarNaoConcluidoMensagemP2: "as pending?",
+  MarcarNaoConcluidoBotaoCancelar: "Cancel",
+  MarcarNaoConcluidoBotaoConfirmar: "Confirm",
+  MarcarNaoConcluidoMensagemAtualizado: "Order marked as pending!",
 
   PedidoIDCard: "Order",
   MarcarConcluidoTitulo: "Mark as completed?",

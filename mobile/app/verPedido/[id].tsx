@@ -93,12 +93,14 @@ Observação: ${pedido.observacao || "Nenhuma"}
 
   const handleReOpenPedido = () => {
     Alert.alert(
-      "Confirmar reabertura do Pedido?",
-      `Deseja marcar o pedido #${id} como não concluído?`,
+      i18n.t("MarcarNaoConcluidoTitulo"),
+      `${i18n.t("MarcarNaoConcluidoMensagemP1")} #${id} ${i18n.t(
+        "MarcarNaoConcluidoMensagemP2"
+      )}`,
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: i18n.t("MarcarNaoConcluidoBotaoCancelar"), style: "cancel" },
         {
-          text: "Confirmar",
+          text: i18n.t("MarcarNaoConcluidoBotaoConfirmar"),
           onPress: async () => {
             const { error } = await supabase
               .from("Pedidos")
@@ -109,7 +111,10 @@ Observação: ${pedido.observacao || "Nenhuma"}
               Alert.alert("Erro", "Não foi possível atualizar o pedido.");
               console.error(error);
             } else {
-              ToastAndroid.show("Pedido reaberto com sucesso!", 2000);
+              ToastAndroid.show(
+                i18n.t("MarcarNaoConcluidoMensagemAtualizado"),
+                2000
+              );
               getPedido();
             }
           },

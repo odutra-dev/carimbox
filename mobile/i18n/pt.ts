@@ -22,6 +22,13 @@ export const ptLang = {
   DataPedido: "Data do pedido",
   DataEntrega: "Data de entrega",
   CopiarTodos: "Copiar Todos os Dados",
+  MarcarNaoConcluidoTitulo: "Marcar como não concluído?",
+  MarcarNaoConcluidoMensagemP1: "Deseja marcar o pedido",
+  MarcarNaoConcluidoMensagemP2: "como pendente?",
+  MarcarNaoConcluidoBotaoCancelar: "Cancelar",
+  MarcarNaoConcluidoBotaoConfirmar: "Confirmar",
+  MarcarNaoConcluidoMensagemAtualizado:
+    "Pedido desmarcado como concluido com sucesso!",
 
   PedidoIDCard: "Pedido",
   MarcarConcluidoTitulo: "Marcar como concluído?",
