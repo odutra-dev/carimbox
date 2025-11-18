@@ -22,4 +22,12 @@ export const enLang = {
   DataPedido: "Order date",
   DataEntrega: "Delivery date",
   CopiarTodos: "Copy all data",
+
+  PedidoIDCard: "Order",
+  MarcarConcluidoTitulo: "Mark as completed?",
+  MarcarConcluidoMensagemP1: "Do you want to mark the order",
+  MarcarConcluidoMensagemP2: "as completed?",
+  MarcarConcluidoBotaoCancelar: "Cancel",
+  MarcarConcluidoBotaoConfirmar: "Confirm",
+  MarcarConcluidoMensagemAtualizado: "Order marked as completed!",
 };

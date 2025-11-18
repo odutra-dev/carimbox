@@ -22,4 +22,12 @@ export const ptLang = {
   DataPedido: "Data do pedido",
   DataEntrega: "Data de entrega",
   CopiarTodos: "Copiar Todos os Dados",
+
+  PedidoIDCard: "Pedido",
+  MarcarConcluidoTitulo: "Marcar como concluído?",
+  MarcarConcluidoMensagemP1: "Deseja marcar o pedido",
+  MarcarConcluidoMensagemP2: "como concluído?",
+  MarcarConcluidoBotaoCancelar: "Cancelar",
+  MarcarConcluidoBotaoConfirmar: "Confirmar",
+  MarcarConcluidoMensagemAtualizado: "Pedido concluído com sucesso!",
 };
