@@ -29,6 +29,7 @@ import Pencil from "lucide-react-native/dist/esm/icons/pencil";
 import MoveLeft from "lucide-react-native/dist/esm/icons/move-left";
 import Copy from "lucide-react-native/dist/esm/icons/copy";
 import CircleX from "lucide-react-native/dist/esm/icons/circle-x";
+import { i18n } from "../../i18n";
 
 export default function VerPedido() {
   const { id } = useLocalSearchParams();
@@ -169,7 +170,9 @@ Observação: ${pedido.observacao || "Nenhuma"}
           <MoveLeft size={24} color={colors.primary} />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Pedido #{pedido.id}</Text>
+        <Text style={styles.title}>
+          {i18n.t("PedidoID")} #{pedido.id}
+        </Text>
 
         <TouchableOpacity
           onPress={() => router.navigate(`/atualizarPedido/${id}`)}
@@ -186,41 +189,53 @@ Observação: ${pedido.observacao || "Nenhuma"}
 
       <View style={styles.card}>
         {pedido.cliente?.length > 0 && (
-          <InfoRow label="Cliente" value={pedido.cliente} Icon={User} />
+          <InfoRow
+            label={i18n.t("Cliente")}
+            value={pedido.cliente}
+            Icon={User}
+          />
         )}
         <InfoRow
-          label="WhatsApp"
+          label={i18n.t("WhatsApp")}
           value={formatarWhatsapp(String(pedido.whatsapp))}
           Icon={Phone}
         />
         {pedido.tipo_modelo?.length > 0 && (
-          <InfoRow label="Modelo" value={pedido.tipo_modelo} Icon={Package} />
+          <InfoRow
+            label={i18n.t("TipoModelo")}
+            value={pedido.tipo_modelo}
+            Icon={Package}
+          />
         )}
-        <InfoRow label="Descrição" value={pedido.texto_logo} Icon={Type} />
         <InfoRow
-          label="Pagamento"
+          label={i18n.t("TextoLogo")}
+          value={pedido.texto_logo}
+          Icon={Type}
+        />
+        <InfoRow
+          label={i18n.t("TipoPagamento")}
           value={pedido.tipo_pagamento}
           Icon={CreditCard}
         />
         <InfoRow
-          label="Valor"
+          label={i18n.t("Valor")}
           value={`R$ ${pedido.valor.toFixed(2)}`}
           Icon={DollarSign}
         />
         <InfoRow
-          label="Data do Pedido"
+          label={i18n.t("DataPedido")}
           value={new Date(pedido.data_pedido).toLocaleString("pt-BR")}
           Icon={Calendar}
         />
         <InfoRow
-          label="Entrega"
+          label={i18n.t("DataEntrega")}
           value={new Date(pedido.data_entrega).toLocaleString("pt-BR")}
           Icon={Calendar}
         />
 
         {pedido.observacao ? (
           <InfoRow
-            label="Observação"
+            label={i18n.t("Observacao")}
             value={pedido.observacao}
             Icon={FileType}
           />
@@ -229,7 +244,7 @@ Observação: ${pedido.observacao || "Nenhuma"}
 
       <TouchableOpacity style={styles.copyButton} onPress={handleCopyAll}>
         <Copy size={18} color={colors.white} style={{ marginRight: 8 }} />
-        <Text style={styles.copyButtonText}>Copiar Todos os Dados</Text>
+        <Text style={styles.copyButtonText}>{i18n.t("CopiarTodos")}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

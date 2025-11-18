@@ -10,4 +10,16 @@ export const enLang = {
   modoEscuro: "Dark mode",
   verificarAtualizacao: "Check for updates",
   versao: "Version",
+
+  PedidoID: "Order",
+  WhatsApp: "WhatsApp",
+  Cliente: "Client",
+  TipoModelo: "Model",
+  TextoLogo: "Description",
+  Observacao: "Observation",
+  TipoPagamento: "Payment type",
+  Valor: "Value",
+  DataPedido: "Order date",
+  DataEntrega: "Delivery date",
+  CopiarTodos: "Copy all data",
 };

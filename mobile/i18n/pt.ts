@@ -10,4 +10,16 @@ export const ptLang = {
   modoEscuro: "Modo escuro",
   verificarAtualizacao: "Verificar atualização",
   versao: "Versão",
+
+  PedidoID: "Pedido",
+  WhatsApp: "WhatsApp",
+  Cliente: "Cliente",
+  TipoModelo: "Modelo",
+  TextoLogo: "Descrição",
+  Observacao: "Observação",
+  TipoPagamento: "Forma de pagamento",
+  Valor: "Valor",
+  DataPedido: "Data do pedido",
+  DataEntrega: "Data de entrega",
+  CopiarTodos: "Copiar Todos os Dados",
 };
