@@ -39,4 +39,6 @@ export const ptLang = {
   MarcarConcluidoBotaoCancelar: "Cancelar",
   MarcarConcluidoBotaoConfirmar: "Confirmar",
   MarcarConcluidoMensagemAtualizado: "Pedido concluído com sucesso!",
+
+  idioma: "Idioma",
 };

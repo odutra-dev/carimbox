@@ -38,4 +38,6 @@ export const enLang = {
   MarcarConcluidoBotaoCancelar: "Cancel",
   MarcarConcluidoBotaoConfirmar: "Confirm",
   MarcarConcluidoMensagemAtualizado: "Order marked as completed!",
+
+  idioma: "Language",
 };

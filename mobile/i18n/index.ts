@@ -8,3 +8,5 @@ const locales = {
 };
 
 export const i18n = new I18n(locales);
+
+export const changeLanguage = (locale: string) => (i18n.locale = locale);
