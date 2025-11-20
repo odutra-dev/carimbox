@@ -46,13 +46,17 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdate }) => {
   //} aqui é da Carimbos Ocian! 😄`
 
   const mensagemNovoPedido = `
-
 Segue o resumo do seu pedido:
 
-🧾 Pedido nº: ${id}
+━━━━━━━━━━━━━━━━━
+📦 Nº DO PEDIDO
+     *Nº: ${pedido.id}*
+━━━━━━━━━━━━━━━━━
+
 ${tipo_modelo ? `🔖 Modelo: ${tipo_modelo}` : ""}
 
 ✏ Descrição:
+
 ${texto_logo}
 
 ${observacao ? `📝 Observação: ${observacao}` : ""}
@@ -60,7 +64,7 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
 💰 Forma de pagamento: ${tipo_pagamento}
 💵 Valor total: R$ ${valor.toFixed(2).replace(".", ",")}
 
-━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━
 📦 ENTREGA PREVISTA
 📅 ${new Date(data_entrega)
     .toLocaleString("pt-BR", {
@@ -72,8 +76,7 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
       hour12: false,
     })
     .replace(",", " às")}
-━━━━━━━━━━━━━━━━━━━━━━
-
+━━━━━━━━━━━━━━━━━
 
 🙏 Agradecemos pela preferência!
 
