@@ -10,7 +10,7 @@ import {
 import { useTheme } from "../../../hooks/useTheme";
 import * as updates from "expo-updates";
 import RefreshCw from "lucide-react-native/dist/esm/icons/refresh-cw";
-import { i18n } from "../../../i18n";
+import { i18n, changeLanguage } from "../../../i18n";
 
 export default function SettingsScreen() {
   const { mode, toggleMode, theme } = useTheme();
@@ -39,6 +39,7 @@ export default function SettingsScreen() {
         {i18n.t("confguracaoTitulo")}
       </Text>
 
+      {/* Alternar modo escuro */}
       <View style={styles.row}>
         <Text style={[styles.label, { color: colors.textSecondary }]}>
           {i18n.t("modoEscuro")}
@@ -51,6 +52,7 @@ export default function SettingsScreen() {
         />
       </View>
 
+      {/* Atualizações */}
       <View style={styles.updateContainer}>
         <View style={styles.row}>
           <Text style={[styles.label, { color: colors.textSecondary }]}>
