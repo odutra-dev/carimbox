@@ -21,13 +21,10 @@ export default function SettingsScreen() {
       const update = await updates.checkForUpdateAsync();
       if (update.isAvailable) {
         await updates.fetchUpdateAsync();
-        ToastAndroid.show(
-          "Atualização disponível. Reinicie o app.",
-          ToastAndroid.SHORT
-        );
+        ToastAndroid.show(i18n.t("messageAtualizacao"), ToastAndroid.SHORT);
       } else {
         ToastAndroid.show(
-          "Nenhuma atualização disponível.",
+          i18n.t("messageQueNaoAtualizacao"),
           ToastAndroid.SHORT
         );
       }
@@ -64,7 +61,7 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
         <Text style={[styles.versionText, { color: colors.textSecondary }]}>
-          {i18n.t("versao")}: 1.3.1
+          {i18n.t("versao")}: 1.4.0
         </Text>
       </View>
     </View>

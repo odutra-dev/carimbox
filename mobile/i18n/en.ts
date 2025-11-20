@@ -10,6 +10,8 @@ export const enLang = {
   modoEscuro: "Dark mode",
   verificarAtualizacao: "Check for updates",
   versao: "Version",
+  messageAtualizacao: "An update is available",
+  messageQueNaoAtualizacao: "No update available",
 
   PedidoID: "Order",
   WhatsApp: "WhatsApp",

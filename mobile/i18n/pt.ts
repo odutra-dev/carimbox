@@ -10,6 +10,8 @@ export const ptLang = {
   modoEscuro: "Modo escuro",
   verificarAtualizacao: "Verificar atualização",
   versao: "Versão",
+  messageAtualizacao: "Atualização disponível",
+  messageQueNaoAtualizacao: "Nenhuma atualização disponível",
 
   PedidoID: "Pedido",
   WhatsApp: "WhatsApp",
