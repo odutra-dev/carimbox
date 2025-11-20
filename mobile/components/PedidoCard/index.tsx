@@ -58,8 +58,11 @@ ${texto_logo}
 ${observacao ? `📝 Observação: ${observacao}` : ""}
 
 💰 Forma de pagamento: ${tipo_pagamento}
-💵 Valor total: R$ ${valor.toFixed(2)}
-📅 Entrega Prevista: ${new Date(data_entrega)
+💵 Valor total: R$ ${valor.toFixed(2).replace(".", ",")}
+
+━━━━━━━━━━━━━━━━━━━━━━
+📦 ENTREGA PREVISTA
+📅 ${new Date(data_entrega)
     .toLocaleString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
@@ -69,6 +72,8 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
       hour12: false,
     })
     .replace(",", " às")}
+━━━━━━━━━━━━━━━━━━━━━━
+
 
 🙏 Agradecemos pela preferência!
 
