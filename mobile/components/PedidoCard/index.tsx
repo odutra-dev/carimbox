@@ -15,6 +15,7 @@ import { useStyles } from "./styles";
 import { supabase } from "../../utils/supabase";
 import ExternalLink from "lucide-react-native/dist/esm/icons/external-link";
 import CircleCheckBig from "lucide-react-native/dist/esm/icons/circle-check-big";
+import { i18n } from "../../i18n";
 
 type PedidoCardProps = {
   pedido: Pedido;
@@ -39,23 +40,33 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdate }) => {
   } = pedido;
 
   // MENSAGEM NOVO PEDIDO
-  const mensagemNovoPedido = `Olá ${
-    cliente ? `${cliente},` : ""
-  } aqui é da Carimbos Ocian! 😄
 
+  // `Olá ${
+  //  cliente ? `${cliente},` : ""
+  //} aqui é da Carimbos Ocian! 😄`
+
+  const mensagemNovoPedido = `
 Segue o resumo do seu pedido:
 
-🧾 Pedido nº: ${id}
+━━━━━━━━━━━━━━━━━
+📦 Nº DO PEDIDO
+     *Nº: ${pedido.id}*
+━━━━━━━━━━━━━━━━━
+
 ${tipo_modelo ? `🔖 Modelo: ${tipo_modelo}` : ""}
 
 ✏ Descrição:
+
 ${texto_logo}
 
 ${observacao ? `📝 Observação: ${observacao}` : ""}
 
 💰 Forma de pagamento: ${tipo_pagamento}
-💵 Valor total: R$ ${valor.toFixed(2)}
-📅 Entrega Prevista: ${new Date(data_entrega)
+💵 Valor total: R$ ${valor.toFixed(2).replace(".", ",")}
+
+━━━━━━━━━━━━━━━━━
+📦 ENTREGA PREVISTA
+📅 ${new Date(data_entrega)
     .toLocaleString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
@@ -65,6 +76,7 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
       hour12: false,
     })
     .replace(",", " às")}
+━━━━━━━━━━━━━━━━━
 
 🙏 Agradecemos pela preferência!
 
@@ -110,12 +122,14 @@ Se puder, avalie a Carimbos Ocian no Google:
     }
 
     Alert.alert(
-      "Confirmar Conclusão?",
-      `Deseja marcar o pedido #${id} como concluído?`,
+      i18n.t("MarcarConcluidoTitulo"),
+      `${i18n.t("MarcarConcluidoMensagemP1")} #${id} ${i18n.t(
+        "MarcarConcluidoMensagemP2"
+      )}`,
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: i18n.t("MarcarConcluidoBotaoCancelar"), style: "cancel" },
         {
-          text: "Confirmar",
+          text: i18n.t("MarcarConcluidoBotaoConfirmar"),
           onPress: async () => {
             const { data, error } = await supabase
               .from("Pedidos")
@@ -130,7 +144,10 @@ Se puder, avalie a Carimbos Ocian no Google:
             } else {
               setIsEntregue(true);
               if (data) onUpdate?.(data);
-              ToastAndroid.show("Pedido concluído com sucesso!", 2000);
+              ToastAndroid.show(
+                i18n.t("MarcarConcluidoMensagemAtualizado"),
+                2000
+              );
               handleSendWhatsApp(mensagemPedidoConcluido);
             }
           },
@@ -160,7 +177,9 @@ Se puder, avalie a Carimbos Ocian no Google:
     >
       <View style={styles.header}>
         <View>
-          <Text style={styles.idText}>Pedido #{id}</Text>
+          <Text style={styles.idText}>
+            {i18n.t("PedidoIDCard")} #{id}
+          </Text>
           <Text style={styles.dataText}>
             {new Date(data_pedido).toLocaleString("pt-BR")}
           </Text>
