@@ -24,6 +24,8 @@ export default function PedidosScreen() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+
   const PAGE_SIZE = 20;
 
   const [statusFilter, setStatusFilter] = useState<
@@ -38,32 +40,42 @@ export default function PedidosScreen() {
       if (reset) {
         setLoading(true);
         setPage(0);
+        setHasMore(true);
       } else {
+        if (!hasMore) return; // evita requisições desnecessárias
         setLoadingMore(true);
       }
 
       const start = reset ? 0 : page * PAGE_SIZE;
       const end = start + PAGE_SIZE - 1;
 
-      const { data, error } = await supabase
+      // Monta a query com filtro direto no Supabase
+      let query = supabase
         .from("Pedidos")
         .select("*")
         .order("id", { ascending: false })
         .range(start, end);
 
+      if (statusFilter === "pendente") query = query.eq("entregue", false);
+      else if (statusFilter === "concluido") query = query.eq("entregue", true);
+
+      const { data, error } = await query;
       if (error) throw error;
 
+      const fetched = data || [];
+
       if (reset) {
-        setPedidos(data || []);
+        setPedidos(fetched);
       } else {
         // evita duplicações
         setPedidos((prev) => {
           const ids = new Set(prev.map((p) => p.id));
-          const novos = (data || []).filter((p) => !ids.has(p.id));
+          const novos = fetched.filter((p) => !ids.has(p.id));
           return [...prev, ...novos];
         });
       }
 
+      if (fetched.length < PAGE_SIZE) setHasMore(false); // não há mais itens
       if (!reset) setPage((prev) => prev + 1);
     } catch (err: any) {
       console.error("Erro ao buscar pedidos:", err.message);
@@ -77,7 +89,7 @@ export default function PedidosScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchPedidos(true);
-    }, [])
+    }, [statusFilter]) // adiciona statusFilter para refazer a busca ao mudar filtro
   );
 
   // ---------------------------
@@ -97,8 +109,13 @@ export default function PedidosScreen() {
             switch (payload.eventType) {
               case "INSERT":
                 if (!novo.id) return prev;
-                // insere somente se não existe
                 if (prev.find((p) => p.id === novo.id)) return prev;
+                // aplica filtro no insert
+                if (
+                  (statusFilter === "pendente" && novo.entregue) ||
+                  (statusFilter === "concluido" && !novo.entregue)
+                )
+                  return prev;
                 return [novo as Pedido, ...prev];
 
               case "UPDATE":
@@ -120,19 +137,7 @@ export default function PedidosScreen() {
       .subscribe();
 
     return () => supabase.removeChannel(channel);
-  }, []);
-
-  // ---------------------------
-  // 🔹 FILTRO
-  // ---------------------------
-  const filteredPedidos = useMemo(() => {
-    return pedidos.filter((pedido) => {
-      if (statusFilter === "todos") return true;
-      if (statusFilter === "pendente") return !pedido.entregue;
-      if (statusFilter === "concluido") return pedido.entregue;
-      return true;
-    });
-  }, [pedidos, statusFilter]);
+  }, [statusFilter]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -181,13 +186,13 @@ export default function PedidosScreen() {
       {/* Lista */}
       {loading ? (
         <PedidoCardSkeleton />
-      ) : filteredPedidos.length === 0 ? (
+      ) : pedidos.length === 0 ? (
         <Text style={[styles.emptyText, { color: colors.textPrimary }]}>
           Nenhum pedido encontrado.
         </Text>
       ) : (
         <FlatList
-          data={filteredPedidos}
+          data={pedidos}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <PedidoCard
@@ -204,7 +209,7 @@ export default function PedidosScreen() {
           refreshing={loading}
           onRefresh={() => fetchPedidos(true)}
           onEndReached={() => {
-            if (!loadingMore) fetchPedidos();
+            if (!loadingMore && hasMore) fetchPedidos();
           }}
           onEndReachedThreshold={0.3}
           ListFooterComponent={
