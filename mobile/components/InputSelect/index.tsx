@@ -17,7 +17,7 @@ export const InputSelect = ({ label, value, onChange }) => {
           onValueChange={onChange}
           style={styles.picker}
         >
-          <Picker.Item label={i18n.t("SelecioneUmaOpçao")} value="" />
+          <Picker.Item label={i18n.t("SelecioneUmaOpcao")} value="" />
           <Picker.Item label={i18n.t("Pix")} value="Pix" />
           <Picker.Item
             label={i18n.t("CartaoDeCredito")}

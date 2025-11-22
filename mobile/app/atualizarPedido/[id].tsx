@@ -15,10 +15,10 @@ import { supabase } from "../../utils/supabase";
 import { router, useLocalSearchParams } from "expo-router";
 import { Input } from "../../components/Input";
 import { InputSelect } from "../../components/InputSelect";
-import useStyles from "../../styles/novoPedidoPage"; // mesmo estilo do "novo"
+import useStyles from "../../styles/novoPedidoPage";
 import { useTheme } from "../../hooks/useTheme";
-
 import MoveLeft from "lucide-react-native/dist/esm/icons/move-left";
+import { i18n } from "../../i18n";
 
 export default function AtualizarPedidoScreen() {
   const { theme } = useTheme();
@@ -54,7 +54,6 @@ export default function AtualizarPedidoScreen() {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Buscar dados do pedido
   useEffect(() => {
     const fetchPedido = async () => {
       if (!id) return;
@@ -81,7 +80,7 @@ export default function AtualizarPedidoScreen() {
             : new Date(),
         });
       } catch (err: any) {
-        Alert.alert("Erro", err.message);
+        Alert.alert(i18n.t("Erro"), err.message);
       } finally {
         setCarregandoPedido(false);
       }
@@ -91,7 +90,7 @@ export default function AtualizarPedidoScreen() {
 
   const handleSubmit = async () => {
     if (!form.whatsapp || !form.texto_logo || !form.valor) {
-      Alert.alert("Atenção", "Preencha todos os campos obrigatórios!");
+      Alert.alert(i18n.t("Erro"), i18n.t("AlertaCamposObrigatoriosAtualizar"));
       return;
     }
 
@@ -114,10 +113,10 @@ export default function AtualizarPedidoScreen() {
 
       if (error) throw error;
 
-      ToastAndroid.show("Pedido atualizado com sucesso!", 2000);
+      ToastAndroid.show(i18n.t("PedidoAtualizadoSucesso"), 2000);
       router.back();
     } catch (err: any) {
-      Alert.alert("Erro", err.message);
+      Alert.alert(i18n.t("Erro"), err.message);
     } finally {
       setLoading(false);
     }
@@ -128,7 +127,7 @@ export default function AtualizarPedidoScreen() {
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
         <Text style={{ color: colors.textPrimary, marginTop: 10 }}>
-          Carregando pedido...
+          {i18n.t("CarregandoPedido")}
         </Text>
       </View>
     );
@@ -147,60 +146,62 @@ export default function AtualizarPedidoScreen() {
           <TouchableOpacity onPress={() => router.back()}>
             <MoveLeft size={24} color={colors.primary} />
           </TouchableOpacity>
-          <Text style={styles.title}>✏️ Atualizar Pedido</Text>
+          <Text style={styles.title}>{i18n.t("AtualizarPedidoTitulo")}</Text>
         </View>
         <Text style={styles.subtitle}>
-          Edite as informações do pedido abaixo
+          {i18n.t("AtualizarPedidoSubtitulo")}
         </Text>
 
         <Input
-          label="Cliente"
-          placeholder="Nome do cliente"
+          label={i18n.t("ClienteAtualizarPedido")}
+          placeholder={i18n.t("ClienteAtualizarPedidoPlaceholder")}
           value={form.cliente}
           onChangeText={(v) => handleChange("cliente", v)}
         />
         <Input
-          label="WhatsApp *"
-          placeholder="Ex: 5511999999999"
+          label={i18n.t("WhatsAppAtualizarPedido")}
+          placeholder={i18n.t("WhatsAppAtualizarPedidoPlaceholder")}
           keyboardType="numeric"
           value={form.whatsapp}
           onChangeText={(v) => handleChange("whatsapp", v)}
         />
         <Input
-          label="Modelo"
-          placeholder="Ex: Automático, Trodat 4911"
+          label={i18n.t("TipoModeloAtualizarPedido")}
+          placeholder={i18n.t("TipoModeloAtualizarPedidoPlaceholder")}
           value={form.tipo_modelo}
           onChangeText={(v) => handleChange("tipo_modelo", v)}
         />
         <Input
-          label="Descrição *"
-          placeholder="Digite o texto do carimbo"
+          label={i18n.t("TextoLogoAtualizarPedido")}
+          placeholder={i18n.t("TextoLogoAtualizarPedidoPlaceholder")}
           value={form.texto_logo}
           onChangeText={(v) => handleChange("texto_logo", v)}
           multiline
         />
         <Input
-          label="Observações"
-          placeholder="Algum detalhe adicional?"
+          label={i18n.t("ObservacaoAtualizarPedido")}
+          placeholder={i18n.t("ObservacaoAtualizarPedidoPlaceholder")}
           value={form.observacao}
           onChangeText={(v) => handleChange("observacao", v)}
           multiline
         />
         <InputSelect
-          label="Forma de Pagamento *"
+          label={i18n.t("TipoPagamentoAtualizarPedido")}
           value={form.tipo_pagamento}
           onChange={(v) => handleChange("tipo_pagamento", v)}
         />
         <Input
-          label="Valor *"
-          placeholder="Ex: 79.90"
+          label={i18n.t("ValorAtualizarPedido")}
+          placeholder={i18n.t("ValorAtualizarPedidoPlaceholder")}
           keyboardType="decimal-pad"
           value={form.valor}
           onChangeText={(v) => handleChange("valor", v)}
         />
 
         <View style={styles.dateSection}>
-          <Text style={styles.label}>Data de entrega *</Text>
+          <Text style={styles.label}>
+            {i18n.t("DataEntregaAtualizarPedido")}
+          </Text>
           <TouchableOpacity style={styles.dateButton} onPress={showDatePicker}>
             <Text style={styles.dateText}>
               {form.data_entrega.toLocaleDateString("pt-BR")}{" "}
@@ -228,7 +229,7 @@ export default function AtualizarPedidoScreen() {
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? "Salvando..." : "Atualizar Pedido"}
+            {loading ? i18n.t("Salvando") : i18n.t("AtualizarPedido")}
           </Text>
         </TouchableOpacity>
       </ScrollView>
