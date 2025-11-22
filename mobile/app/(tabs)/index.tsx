@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { router, useFocusEffect } from "expo-router";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { supabase } from "../../utils/supabase";
 import { PedidoCard, PedidoCardSkeleton } from "../../components/PedidoCard";
 import { Pedido } from "../../@types/Pedido";
 import { useTheme } from "../../hooks/useTheme";
 import Plus from "lucide-react-native/dist/esm/icons/plus";
 import useStyles from "../../styles/homepage";
-
 import { i18n } from "../../i18n";
 
 export default function PedidosScreen() {
@@ -17,65 +22,94 @@ export default function PedidosScreen() {
 
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 20;
+
   const [statusFilter, setStatusFilter] = useState<
     "pendente" | "concluido" | "todos"
   >("pendente");
 
-  // Busca os pedidos
-  const fetchPedidos = async () => {
+  // ---------------------------
+  // 🔹 BUSCA COM PAGINAÇÃO
+  // ---------------------------
+  const fetchPedidos = async (reset = false) => {
     try {
-      setLoading(true);
+      if (reset) {
+        setLoading(true);
+        setPage(0);
+      } else {
+        setLoadingMore(true);
+      }
+
+      const start = reset ? 0 : page * PAGE_SIZE;
+      const end = start + PAGE_SIZE - 1;
+
       const { data, error } = await supabase
         .from("Pedidos")
         .select("*")
-        .order("id", { ascending: false });
+        .order("id", { ascending: false })
+        .range(start, end);
 
       if (error) throw error;
-      setPedidos(data || []);
+
+      if (reset) {
+        setPedidos(data || []);
+      } else {
+        // evita duplicações
+        setPedidos((prev) => {
+          const ids = new Set(prev.map((p) => p.id));
+          const novos = (data || []).filter((p) => !ids.has(p.id));
+          return [...prev, ...novos];
+        });
+      }
+
+      if (!reset) setPage((prev) => prev + 1);
     } catch (err: any) {
       console.error("Erro ao buscar pedidos:", err.message);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
-  // Atualiza ao focar na tela
+  // Atualiza ao focar na tela (reset da paginação)
   useFocusEffect(
     useCallback(() => {
-      fetchPedidos();
+      fetchPedidos(true);
     }, [])
   );
 
-  // Realtime Supabase v2
+  // ---------------------------
+  // 🔹 REALTIME SUPABASE
+  // ---------------------------
   useEffect(() => {
-    fetchPedidos();
-
-    const pedidosChannel = supabase
+    const channel = supabase
       .channel("realtime-pedidos")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "Pedidos" },
         (payload) => {
-          console.log("Realtime payload:", payload);
-
-          const newPedido = payload.new as Partial<Pedido>;
-          const oldPedido = payload.old as Partial<Pedido>;
+          const novo = payload.new as Partial<Pedido>;
+          const antigo = payload.old as Partial<Pedido>;
 
           setPedidos((prev) => {
             switch (payload.eventType) {
               case "INSERT":
-                if (!newPedido.id) return prev;
-                return [newPedido as Pedido, ...prev];
+                if (!novo.id) return prev;
+                // insere somente se não existe
+                if (prev.find((p) => p.id === novo.id)) return prev;
+                return [novo as Pedido, ...prev];
 
               case "UPDATE":
-                if (!newPedido.id) return prev;
+                if (!novo.id) return prev;
                 return prev.map((p) =>
-                  p.id === newPedido.id ? (newPedido as Pedido) : p
+                  p.id === novo.id ? (novo as Pedido) : p
                 );
 
               case "DELETE":
-                if (!oldPedido.id) return prev;
-                return prev.filter((p) => p.id !== oldPedido.id);
+                if (!antigo.id) return prev;
+                return prev.filter((p) => p.id !== antigo.id);
 
               default:
                 return prev;
@@ -83,15 +117,14 @@ export default function PedidosScreen() {
           });
         }
       )
-
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(pedidosChannel);
-    };
+    return () => supabase.removeChannel(channel);
   }, []);
 
-  // Filtra pedidos de acordo com o status
+  // ---------------------------
+  // 🔹 FILTRO
+  // ---------------------------
   const filteredPedidos = useMemo(() => {
     return pedidos.filter((pedido) => {
       if (statusFilter === "todos") return true;
@@ -118,7 +151,9 @@ export default function PedidosScreen() {
         {["pendente", "concluido", "todos"].map((s) => (
           <TouchableOpacity
             key={s}
-            onPress={() => setStatusFilter(s as typeof statusFilter)}
+            onPress={() => {
+              setStatusFilter(s as any);
+            }}
             style={[
               styles.toggleButton,
               {
@@ -143,7 +178,7 @@ export default function PedidosScreen() {
         ))}
       </View>
 
-      {/* Lista ou Loading */}
+      {/* Lista */}
       {loading ? (
         <PedidoCardSkeleton />
       ) : filteredPedidos.length === 0 ? (
@@ -152,7 +187,7 @@ export default function PedidosScreen() {
         </Text>
       ) : (
         <FlatList
-          data={filteredPedidos} // ✅ usar array filtrado
+          data={filteredPedidos}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <PedidoCard
@@ -167,11 +202,20 @@ export default function PedidosScreen() {
             />
           )}
           refreshing={loading}
-          onRefresh={fetchPedidos}
+          onRefresh={() => fetchPedidos(true)}
+          onEndReached={() => {
+            if (!loadingMore) fetchPedidos();
+          }}
+          onEndReachedThreshold={0.3}
+          ListFooterComponent={
+            loadingMore ? (
+              <ActivityIndicator size="large" color={colors.primary} />
+            ) : null
+          }
         />
       )}
 
-      {/* Botão de novo pedido */}
+      {/* Botão Novo Pedido */}
       <TouchableOpacity
         style={[
           styles.fab,
