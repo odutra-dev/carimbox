@@ -95,4 +95,9 @@ export const ptLang = {
   CarregandoPedido: "Carregando pedido...",
 
   Copiado: "Texto copiado para a área de transferência.",
+
+  NenhumPedidoEncontrado: "Nenhum pedido encontrado.",
+  Dia: "Dia",
+  Mes: "Mês",
+  Ano: "Ano",
 };

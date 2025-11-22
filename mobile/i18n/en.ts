@@ -94,4 +94,9 @@ export const enLang = {
   CarregandoPedido: "Loading order...",
 
   Copiado: "Text copied to clipboard.",
+
+  NenhumPedidoEncontrado: "No orders found.",
+  Dia: "Day",
+  Mes: "Month",
+  Ano: "Year",
 };
