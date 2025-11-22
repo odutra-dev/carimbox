@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useStyles } from "./styles";
+import { i18n } from "../../i18n";
 
 export const InputSelect = ({ label, value, onChange }) => {
   const styles = useStyles();
@@ -16,12 +17,15 @@ export const InputSelect = ({ label, value, onChange }) => {
           onValueChange={onChange}
           style={styles.picker}
         >
-          <Picker.Item label="Selecione uma opção" value="" />
-          <Picker.Item label="Pix" value="Pix" />
-          <Picker.Item label="Cartão de Crédito" value="Cartão Crédito" />
-          <Picker.Item label="Cartão de Débito" value="Cartão Débito" />
-          <Picker.Item label="Dinheiro" value="Dinheiro" />
-          <Picker.Item label="A pagar" value="A pagar" />
+          <Picker.Item label={i18n.t("SelecioneUmaOpçao")} value="" />
+          <Picker.Item label={i18n.t("Pix")} value="Pix" />
+          <Picker.Item
+            label={i18n.t("CartaoDeCredito")}
+            value="Cartão Crédito"
+          />
+          <Picker.Item label={i18n.t("CartaoDeDebito")} value="Cartão Débito" />
+          <Picker.Item label={i18n.t("Dinheiro")} value="Dinheiro" />
+          <Picker.Item label={i18n.t("APagar")} value="A pagar" />
         </Picker>
       </View>
     </View>
