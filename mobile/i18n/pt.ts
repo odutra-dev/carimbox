@@ -93,4 +93,6 @@ export const ptLang = {
   AlertaCamposObrigatoriosAtualizar: "Preencha todos os campos obrigatórios!",
   PedidoAtualizadoSucesso: "Pedido atualizado com sucesso!",
   CarregandoPedido: "Carregando pedido...",
+
+  Copiado: "Texto copiado para a área de transferência.",
 };

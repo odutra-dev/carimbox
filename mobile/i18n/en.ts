@@ -92,4 +92,6 @@ export const enLang = {
   AlertaCamposObrigatoriosAtualizar: "Please fill in all required fields!",
   PedidoAtualizadoSucesso: "Order updated successfully!",
   CarregandoPedido: "Loading order...",
+
+  Copiado: "Text copied to clipboard.",
 };
