@@ -6,9 +6,8 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
-  Platform,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker from "react-native-modal-datetime-picker";
 import { supabase } from "../../utils/supabase";
 import { PedidoCard, PedidoCardSkeleton } from "../../components/PedidoCard";
 import { Pedido } from "../../@types/Pedido";
@@ -39,24 +38,65 @@ export default function PedidosScreen() {
   type DateFilterType = "dia" | "mes" | "ano" | null;
   const [dateFilterType, setDateFilterType] = useState<DateFilterType>(null);
   const [dateFilterValue, setDateFilterValue] = useState<Date>(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
 
-  const formatDateBR = (date: Date) =>
-    `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}/${date.getFullYear()}`;
+  const formatDateBR = (d: Date) =>
+    `${String(d.getDate()).padStart(2, "0")}/${String(
+      d.getMonth() + 1
+    ).padStart(2, "0")}/${d.getFullYear()}`;
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    // Apenas atualizar quando o usuário confirmar
-    if (event.type === "set" && selectedDate) {
-      setDateFilterValue(selectedDate);
-      fetchPedidos(true); // atualiza a lista imediatamente
-    }
-    setShowDatePicker(false);
+  // -------------------------------------
+  // 🔥 Transformar data local -> intervalo local sem UTC
+  // -------------------------------------
+  const startOfDate = (date: Date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d} 00:00:00`;
+  };
+
+  const endOfDate = (date: Date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d} 23:59:59`;
   };
 
   // ---------------------------
-  // 🔹 BUSCA COM PAGINAÇÃO E FILTROS
+  // 🔹 GERA RANGE COMPLETO
+  // ---------------------------
+  const buildRange = () => {
+    if (!dateFilterType) return null;
+
+    const start = new Date(dateFilterValue);
+    const end = new Date(dateFilterValue);
+
+    if (dateFilterType === "dia") {
+      // Ex: 5 DEZ 2025 → filtra só o mesmo dia
+      return { start: startOfDate(start), end: endOfDate(start) };
+    }
+
+    if (dateFilterType === "mes") {
+      // Primeiro dia do mês
+      start.setDate(1);
+      // Primeiro dia do próximo mês
+      end.setMonth(end.getMonth() + 1);
+      end.setDate(1);
+      return { start: startOfDate(start), end: startOfDate(end) };
+    }
+
+    if (dateFilterType === "ano") {
+      start.setMonth(0, 1);
+      end.setFullYear(end.getFullYear() + 1);
+      end.setMonth(0, 1);
+      return { start: startOfDate(start), end: startOfDate(end) };
+    }
+
+    return null;
+  };
+
+  // ---------------------------
+  // 🔹 BUSCA SUPABASE
   // ---------------------------
   const fetchPedidos = async (reset = false) => {
     try {
@@ -69,62 +109,49 @@ export default function PedidosScreen() {
         setLoadingMore(true);
       }
 
-      const start = reset ? 0 : page * PAGE_SIZE;
-      const end = start + PAGE_SIZE - 1;
+      const startIndex = reset ? 0 : page * PAGE_SIZE;
+      const endIndex = startIndex + PAGE_SIZE - 1;
 
       let query = supabase
         .from("Pedidos")
         .select("*")
         .order("id", { ascending: false })
-        .range(start, end);
+        .range(startIndex, endIndex);
 
-      // Filtro de status
+      // Status
       if (statusFilter === "pendente") query = query.eq("entregue", false);
       else if (statusFilter === "concluido") query = query.eq("entregue", true);
 
-      // Filtro de data
-      if (dateFilterType && dateFilterValue) {
-        const startDate = new Date(dateFilterValue);
-        let endDate = new Date(dateFilterValue);
-
-        if (dateFilterType === "dia") endDate.setDate(startDate.getDate() + 1);
-        else if (dateFilterType === "mes")
-          endDate.setMonth(startDate.getMonth() + 1);
-        else if (dateFilterType === "ano")
-          endDate.setFullYear(startDate.getFullYear() + 1);
-
-        // Considera apenas a parte da data para evitar problemas de UTC
+      // Data (finalmente corrigido!)
+      const range = buildRange();
+      if (range)
         query = query
-          .gte("data_pedido", startDate.toISOString().slice(0, 10))
-          .lt("data_pedido", endDate.toISOString().slice(0, 10));
-      }
+          .gte("data_pedido", range.start)
+          .lte("data_pedido", range.end);
 
       const { data, error } = await query;
       if (error) throw error;
 
-      const fetched = data || [];
-
-      if (reset) {
-        setPedidos(fetched);
-      } else {
-        setPedidos((prev) => {
-          const ids = new Set(prev.map((p) => p.id));
-          const novos = fetched.filter((p) => !ids.has(p.id));
-          return [...prev, ...novos];
-        });
+      if (reset) setPedidos(data || []);
+      else {
+        const ids = new Set(pedidos.map((p) => p.id));
+        const novos = (data || []).filter((p) => !ids.has(p.id));
+        setPedidos((prev) => [...prev, ...novos]);
       }
 
-      if (fetched.length < PAGE_SIZE) setHasMore(false);
-      if (!reset) setPage((prev) => prev + 1);
-    } catch (err: any) {
-      console.error("Erro ao buscar pedidos:", err.message);
+      if (!data || data.length < PAGE_SIZE) setHasMore(false);
+      if (!reset) setPage((p) => p + 1);
+    } catch (e: any) {
+      console.log("ERRO FETCH:", e.message);
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
   };
 
-  // Atualiza ao focar na tela ou ao mudar filtros
+  // ---------------------------
+  // 🔹 RELOAD EM FOCO E FILTROS
+  // ---------------------------
   useFocusEffect(
     useCallback(() => {
       fetchPedidos(true);
@@ -132,68 +159,28 @@ export default function PedidosScreen() {
   );
 
   // ---------------------------
-  // 🔹 REALTIME SUPABASE
+  // 🔹 REALTIME
   // ---------------------------
   useEffect(() => {
     const channel = supabase
-      .channel("realtime-pedidos")
+      .channel("rt-pedidos")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "Pedidos" },
-        (payload) => {
-          const novo = payload.new as Partial<Pedido>;
-          const antigo = payload.old as Partial<Pedido>;
-
-          setPedidos((prev) => {
-            switch (payload.eventType) {
-              case "INSERT":
-                if (!novo.id) return prev;
-                if (prev.find((p) => p.id === novo.id)) return prev;
-
-                // Filtros
-                if (
-                  (statusFilter === "pendente" && novo.entregue) ||
-                  (statusFilter === "concluido" && !novo.entregue)
-                )
-                  return prev;
-
-                if (dateFilterType && dateFilterValue && novo.data_pedido) {
-                  const created = new Date(novo.data_pedido);
-                  const startDate = new Date(dateFilterValue);
-                  let endDate = new Date(dateFilterValue);
-
-                  if (dateFilterType === "dia")
-                    endDate.setDate(startDate.getDate() + 1);
-                  else if (dateFilterType === "mes")
-                    endDate.setMonth(startDate.getMonth() + 1);
-                  else if (dateFilterType === "ano")
-                    endDate.setFullYear(startDate.getFullYear() + 1);
-
-                  if (!(created >= startDate && created < endDate)) return prev;
-                }
-
-                return [novo as Pedido, ...prev];
-
-              case "UPDATE":
-                if (!novo.id) return prev;
-                return prev.map((p) =>
-                  p.id === novo.id ? (novo as Pedido) : p
-                );
-
-              case "DELETE":
-                if (!antigo.id) return prev;
-                return prev.filter((p) => p.id !== antigo.id);
-
-              default:
-                return prev;
-            }
-          });
-        }
+        () => fetchPedidos(true)
       )
       .subscribe();
 
     return () => supabase.removeChannel(channel);
-  }, [statusFilter, dateFilterType, dateFilterValue]);
+  }, []);
+
+  // ---------------------------
+  // 🔹 QUANDO O USUÁRIO CONFIRMA A DATA
+  // ---------------------------
+  const handleDateConfirm = (date: Date) => {
+    setDateFilterValue(date);
+    setShowPicker(false);
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -207,7 +194,7 @@ export default function PedidosScreen() {
         </Text>
       </View>
 
-      {/* Toggle de status */}
+      {/* STATUS */}
       <View style={styles.toggleContainer}>
         {["pendente", "concluido", "todos"].map((s) => (
           <TouchableOpacity
@@ -237,16 +224,15 @@ export default function PedidosScreen() {
         ))}
       </View>
 
-      {/* Filtro de data */}
+      {/* TIPO DE DATA */}
       <View style={[styles.toggleContainer, { marginVertical: 10 }]}>
-        {["todos", "dia", "mes", "ano"].map((tipo) => (
+        {["dia", "mes", "ano"].map((tipo) => (
           <TouchableOpacity
             key={tipo}
-            onPress={() =>
-              setDateFilterType(
-                tipo === "todos" ? null : (tipo as DateFilterType)
-              )
-            }
+            onPress={() => {
+              setDateFilterType(tipo as DateFilterType);
+              setShowPicker(true); // 🔥 obrigar escolher data
+            }}
             style={[
               styles.toggleButton,
               {
@@ -262,70 +248,55 @@ export default function PedidosScreen() {
                 fontWeight: "500",
               }}
             >
-              {tipo === "dia"
-                ? i18n.t("Dia")
-                : tipo === "mes"
-                ? i18n.t("Mes")
-                : tipo === "ano"
-                ? i18n.t("Ano")
-                : i18n.t("todos")}
+              {i18n.t(tipo === "dia" ? "Dia" : tipo === "mes" ? "Mes" : "Ano")}
             </Text>
           </TouchableOpacity>
         ))}
 
-        {dateFilterType && (
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            style={[
-              styles.toggleButton,
-              { backgroundColor: colors.surface, marginLeft: 5 },
-            ]}
-          >
-            <Text style={{ color: colors.textPrimary }}>
-              {formatDateBR(dateFilterValue)}
-            </Text>
-          </TouchableOpacity>
-        )}
+        {/* Remover filtro */}
+        <TouchableOpacity
+          onPress={() => setDateFilterType(null)}
+          style={[
+            styles.toggleButton,
+            { backgroundColor: colors.surface, marginLeft: 5 },
+          ]}
+        >
+          <Text style={{ color: colors.textPrimary }}>{i18n.t("todos")}</Text>
+        </TouchableOpacity>
       </View>
 
-      {showDatePicker && (
-        <DateTimePicker
-          value={dateFilterValue}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-          locale="pt-BR"
-        />
-      )}
+      {/* Date Picker */}
+      <DateTimePicker
+        isVisible={showPicker}
+        mode="date"
+        onConfirm={handleDateConfirm}
+        onCancel={() => setShowPicker(false)}
+        date={dateFilterValue}
+        locale="pt-BR"
+      />
 
-      {/* Lista */}
+      {/* LISTA */}
       {loading ? (
         <PedidoCardSkeleton />
       ) : pedidos.length === 0 ? (
-        <Text style={[styles.emptyText, { color: colors.textPrimary }]}>
+        <Text style={{ textAlign: "center", color: colors.textPrimary }}>
           {i18n.t("NenhumPedidoEncontrado")}
         </Text>
       ) : (
         <FlatList
           data={pedidos}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(i) => i.id.toString()}
           renderItem={({ item }) => (
             <PedidoCard
               pedido={item}
-              onUpdate={(pedidoAtualizado) =>
-                setPedidos((prev) =>
-                  prev.map((p) =>
-                    p.id === pedidoAtualizado.id ? pedidoAtualizado : p
-                  )
-                )
+              onUpdate={(p) =>
+                setPedidos((prev) => prev.map((x) => (x.id === p.id ? p : x)))
               }
             />
           )}
           refreshing={loading}
           onRefresh={() => fetchPedidos(true)}
-          onEndReached={() => {
-            if (!loadingMore && hasMore) fetchPedidos();
-          }}
+          onEndReached={() => !loadingMore && hasMore && fetchPedidos()}
           onEndReachedThreshold={0.3}
           ListFooterComponent={
             loadingMore ? (
@@ -335,7 +306,7 @@ export default function PedidosScreen() {
         />
       )}
 
-      {/* Botão Novo Pedido */}
+      {/* BOTÃO */}
       <TouchableOpacity
         style={[
           styles.fab,
