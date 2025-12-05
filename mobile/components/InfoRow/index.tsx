@@ -3,6 +3,7 @@ import { useTheme } from "../../hooks/useTheme";
 import { useStyles } from "./styles";
 import * as Clipboard from "expo-clipboard";
 import Copy from "lucide-react-native/dist/esm/icons/copy";
+import { i18n } from "../../i18n";
 
 export const InfoRow = ({
   Icon,
@@ -20,7 +21,7 @@ export const InfoRow = ({
 
   const handleCopyField = async () => {
     await Clipboard.setStringAsync(value);
-    ToastAndroid.show("Texto copiado para a área de transferência.", 2000);
+    ToastAndroid.show(i18n.t("Copiado"), 2000);
   };
 
   return (

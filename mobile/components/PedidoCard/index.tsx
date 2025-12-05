@@ -78,16 +78,18 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
     .replace(",", " às")}
 ━━━━━━━━━━━━━━━━━
 
-🙏 Agradecemos pela preferência!
-
 📦 Obs: Para retirar o pedido, basta informar o número do pedido enviado acima.
 `;
 
   // MENSAGEM DE PEDIDO CONCLUÍDO
   const mensagemPedidoConcluido = `✅ Pedido finalizado! ✅
 
-📦 Seu pedido está pronto para retirada/entrega.
-Qualquer dúvida, estamos aqui!
+📦 Para retirar so informar o numero do pedido
+
+━━━━━━━━━━━━━━━━━
+📦 Nº DO PEDIDO
+     *Nº: ${pedido.id}*
+━━━━━━━━━━━━━━━━━
 
 Obrigado pela confiança! 🙌🏽
 
