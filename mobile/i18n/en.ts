@@ -99,4 +99,9 @@ export const enLang = {
   Dia: "Day",
   Mes: "Month",
   Ano: "Year",
+
+  // Apenas para as labels
+  labelCarimbo: "Stamp",
+  labelMdf: "MDF/Acrylic",
+  labelOuthers: "Others",
 };
