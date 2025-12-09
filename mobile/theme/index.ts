@@ -18,6 +18,10 @@ export const theme = {
 
       black: "#000000",
       white: "#FFFFFF",
+
+      labelCarimbo: "#DA1325",
+      labelMdf: "#16a34a",
+      labelOuthers: "##c59E0B",
     },
 
     spacing: {
@@ -48,6 +52,10 @@ export const theme = {
 
       black: "#000000",
       white: "#FFFFFF",
+
+      labelCarimbo: "#DA1325",
+      labelMdf: "#16a34a",
+      labelOuthers: "##c59E0B",
     },
 
     spacing: {

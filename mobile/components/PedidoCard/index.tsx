@@ -7,7 +7,6 @@ import {
   Alert,
   ToastAndroid,
   Animated,
-  StyleSheet,
 } from "react-native";
 import { Pedido } from "../../@types/Pedido";
 import { router } from "expo-router";
@@ -179,6 +178,7 @@ Se puder, avalie a Carimbos Ocian no Google:
     >
       <View style={styles.header}>
         <View>
+          <View style={styles.line}></View>
           <Text style={styles.idText}>
             {i18n.t("PedidoIDCard")} #{id}
           </Text>
