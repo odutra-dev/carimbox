@@ -16,13 +16,13 @@ import { Input } from "../../components/Input";
 import { InputSelect } from "../../components/InputSelect";
 import useStyles from "../../styles/novoPedidoPage";
 import { useTheme } from "../../hooks/useTheme";
-
+import { Picker } from "@react-native-picker/picker";
 import MoveLeft from "lucide-react-native/dist/esm/icons/move-left";
 import { i18n } from "../../i18n"; // import do seu i18n configurado
 
 export default function NovoPedidoScreen() {
   const { theme } = useTheme();
-  const { colors } = theme;
+  const { colors, spacing } = theme;
 
   const styles = useStyles();
   const [form, setForm] = useState({
@@ -35,6 +35,7 @@ export default function NovoPedidoScreen() {
     observacao: "",
     entregue: false,
     data_entrega: new Date(),
+    label: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -72,6 +73,7 @@ export default function NovoPedidoScreen() {
           observacao: form.observacao || null,
           entregue: form.entregue,
           data_entrega: form.data_entrega.toISOString(),
+          label: form.label,
         },
       ]);
 
@@ -88,6 +90,7 @@ export default function NovoPedidoScreen() {
         observacao: "",
         entregue: false,
         data_entrega: new Date(),
+        label: "",
       });
       router.back();
     } catch (err: any) {
@@ -183,6 +186,21 @@ export default function NovoPedidoScreen() {
           locale="pt-BR"
           is24Hour
         />
+
+        <Text style={styles.label}>{i18n.t("Label")}</Text>
+        <Picker
+          selectedValue={form.label}
+          onValueChange={(v) => handleChange("label", v)}
+          style={{
+            height: 50,
+            color: colors.textPrimary,
+            paddingHorizontal: spacing.md,
+          }}
+        >
+          <Picker.Item label={i18n.t("labelCarimbo")} value="Carimbo" />
+          <Picker.Item label={i18n.t("labelMdf")} value="Mdf/Acrílico" />
+          <Picker.Item label={i18n.t("labelOuthers")} value="Outros" />
+        </Picker>
 
         <TouchableOpacity
           style={[styles.button, loading && { opacity: 0.6 }]}

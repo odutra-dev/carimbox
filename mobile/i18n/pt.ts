@@ -106,4 +106,6 @@ export const ptLang = {
   labelCarimbo: "Carimbo",
   labelMdf: "MDF/Acrílico",
   labelOuthers: "Outros",
+
+  Label: "Etiqueta",
 };

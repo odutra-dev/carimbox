@@ -104,4 +104,6 @@ export const enLang = {
   labelCarimbo: "Stamp",
   labelMdf: "MDF/Acrylic",
   labelOuthers: "Others",
+
+  Label: "Label",
 };
