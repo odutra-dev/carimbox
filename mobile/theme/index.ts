@@ -21,7 +21,7 @@ export const theme = {
 
       labelCarimbo: "#DA1325",
       labelMdf: "#16a34a",
-      labelOuthers: "##c59E0B",
+      labelOuthers: "#c59E0B",
     },
 
     spacing: {
@@ -55,7 +55,7 @@ export const theme = {
 
       labelCarimbo: "#DA1325",
       labelMdf: "#16a34a",
-      labelOuthers: "##c59E0B",
+      labelOuthers: "#c59E0B",
     },
 
     spacing: {

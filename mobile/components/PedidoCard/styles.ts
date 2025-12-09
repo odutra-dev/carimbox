@@ -60,8 +60,7 @@ export const useStyles = () => {
       borderRadius: spacing.xs,
     },
     line: {
-      height: 14,
-      backgroundColor: colors.border,
+      height: 12,
       borderRadius: spacing.xs,
       marginTop: spacing.sm,
     },
