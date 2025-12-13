@@ -33,9 +33,27 @@
     >
       <div class="header">
         <div class="info">
+          <!-- Barra colorida corrigida -->
+          <div
+            class="label-bar"
+            [style.backgroundColor]="
+              pedido.label === 'Carimbo'
+                ? '#DA1325'
+                : pedido.label === 'Mdf/Acrílico'
+                ? '#C59E0B'
+                : pedido.label === 'Outros'
+                ? '#16A34A'
+                : '#9E9E9E'
+            "
+          ></div>
+
           <p class="id-text">Pedido #{{ pedido.id }}</p>
-          <p class="data-text">{{ pedido.data_pedido | date : 'dd/MM/yyyy, HH:mm' }}</p>
-          <p class="cliente-text">{{ formatarWhatsapp(pedido.whatsapp.toString()) }}</p>
+          <p class="data-text">
+            {{ pedido.data_pedido | date : 'dd/MM/yyyy, HH:mm' }}
+          </p>
+          <p class="cliente-text">
+            {{ formatarWhatsapp(pedido.whatsapp.toString()) }}
+          </p>
         </div>
 
         <div class="icon-container" (click)="$event.stopPropagation()">
