@@ -10,4 +10,5 @@ export type Pedido = {
   observacao?: string | null;
   entregue?: boolean;
   data_entrega: string;
+  label: string;
 };

@@ -100,4 +100,12 @@ export const ptLang = {
   Dia: "Dia",
   Mes: "Mês",
   Ano: "Ano",
+
+  // Apenas para as labels
+
+  labelCarimbo: "Carimbo",
+  labelMdf: "MDF/Acrílico",
+  labelOuthers: "Outros",
+
+  Label: "Etiqueta",
 };

@@ -92,6 +92,13 @@
       />
     </div>
 
+    <div class="mb-3">
+      <label for="label" class="form-label">Etiqueta *</label>
+      <select id="label" class="form-select" formControlName="label">
+        <option *ngFor="let op of labelOptions" [value]="op">{{ op }}</option>
+      </select>
+    </div>
+
     <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
       {{ loading ? 'Enviando...' : 'Cadastrar Pedido' }}
     </button>

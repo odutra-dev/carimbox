@@ -18,6 +18,7 @@ export class NovoPedido {
   pedidoForm: FormGroup;
   loading = false;
   formaPagamentoOptions = ['Pix', 'Cartão de Crédito', 'Cartão de Débito', 'Dinheiro', 'A pagar'];
+  labelOptions = ['Carimbo', 'Mdf/Acrílico', 'Outros'];
 
   constructor(private fb: FormBuilder, private router: Router, private supabase: Supabase) {
     this.pedidoForm = this.fb.group({
@@ -30,6 +31,7 @@ export class NovoPedido {
       valor: ['', Validators.required],
       data_entrega: [new Date(), Validators.required],
       entregue: [false],
+      label: ['Carimbo'],
     });
   }
 
@@ -57,7 +59,8 @@ export class NovoPedido {
         valor: Number(formValue.valor),
         observacao: formValue.observacao || null,
         entregue: formValue.entregue,
-        data_entrega: new Date(formValue.data_entrega).toISOString(), // ✅ corrigido
+        data_entrega: new Date(formValue.data_entrega).toISOString(),
+        label: formValue.label,
       });
 
       alert('Pedido criado com sucesso!');
@@ -71,7 +74,8 @@ export class NovoPedido {
         valor: '',
         observacao: '',
         entregue: false,
-        data_entrega: new Date(), // mantém o padrão
+        data_entrega: new Date(),
+        label: 'Carimbo',
       });
 
       this.router.navigate(['/']);

@@ -19,10 +19,11 @@ import useStyles from "../../styles/novoPedidoPage";
 import { useTheme } from "../../hooks/useTheme";
 import MoveLeft from "lucide-react-native/dist/esm/icons/move-left";
 import { i18n } from "../../i18n";
+import { Picker } from "@react-native-picker/picker";
 
 export default function AtualizarPedidoScreen() {
   const { theme } = useTheme();
-  const { colors } = theme;
+  const { colors, spacing } = theme;
   const styles = useStyles();
   const { id } = useLocalSearchParams();
 
@@ -40,6 +41,7 @@ export default function AtualizarPedidoScreen() {
     observacao: "",
     entregue: false,
     data_entrega: new Date(),
+    label: "",
   });
 
   const showDatePicker = () => setDatePickerVisibility(true);
@@ -78,6 +80,7 @@ export default function AtualizarPedidoScreen() {
           data_entrega: data.data_entrega
             ? new Date(data.data_entrega)
             : new Date(),
+          label: data.label || "",
         });
       } catch (err: any) {
         Alert.alert(i18n.t("Erro"), err.message);
@@ -108,6 +111,7 @@ export default function AtualizarPedidoScreen() {
           observacao: form.observacao || null,
           entregue: form.entregue,
           data_entrega: form.data_entrega.toISOString(),
+          label: form.label,
         })
         .eq("id", id);
 
@@ -222,6 +226,21 @@ export default function AtualizarPedidoScreen() {
           locale="pt-BR"
           is24Hour
         />
+
+        <Text style={styles.label}>{i18n.t("Label")}</Text>
+        <Picker
+          selectedValue={form.label}
+          onValueChange={(v) => handleChange("label", v)}
+          style={{
+            height: 50,
+            color: colors.textPrimary,
+            paddingHorizontal: spacing.md,
+          }}
+        >
+          <Picker.Item label={i18n.t("labelCarimbo")} value="Carimbo" />
+          <Picker.Item label={i18n.t("labelMdf")} value="Mdf/Acrílico" />
+          <Picker.Item label={i18n.t("labelOuthers")} value="Outros" />
+        </Picker>
 
         <TouchableOpacity
           style={[styles.button, loading && { opacity: 0.6 }]}

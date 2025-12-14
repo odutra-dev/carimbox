@@ -7,7 +7,6 @@ import {
   Alert,
   ToastAndroid,
   Animated,
-  StyleSheet,
 } from "react-native";
 import { Pedido } from "../../@types/Pedido";
 import { router } from "expo-router";
@@ -16,6 +15,7 @@ import { supabase } from "../../utils/supabase";
 import ExternalLink from "lucide-react-native/dist/esm/icons/external-link";
 import CircleCheckBig from "lucide-react-native/dist/esm/icons/circle-check-big";
 import { i18n } from "../../i18n";
+import { useTheme } from "../../hooks/useTheme";
 
 type PedidoCardProps = {
   pedido: Pedido;
@@ -37,7 +37,19 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdate }) => {
     valor,
     data_entrega,
     observacao,
+    label,
   } = pedido;
+
+  const { colors } = useTheme().theme;
+
+  const labelColor =
+    label == "Carimbo"
+      ? colors.labelCarimbo
+      : label == "Mdf/Acrílico"
+      ? colors.labelMdf
+      : label == "Outros"
+      ? colors.labelOuthers
+      : "#9E9E9E";
 
   // MENSAGEM NOVO PEDIDO
 
@@ -179,6 +191,7 @@ Se puder, avalie a Carimbos Ocian no Google:
     >
       <View style={styles.header}>
         <View>
+          <View style={[styles.line, { backgroundColor: labelColor }]}></View>
           <Text style={styles.idText}>
             {i18n.t("PedidoIDCard")} #{id}
           </Text>

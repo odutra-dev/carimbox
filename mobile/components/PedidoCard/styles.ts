@@ -59,5 +59,10 @@ export const useStyles = () => {
       backgroundColor: colors.border,
       borderRadius: spacing.xs,
     },
+    line: {
+      height: 12,
+      borderRadius: spacing.xs,
+      marginTop: spacing.sm,
+    },
   });
 };
