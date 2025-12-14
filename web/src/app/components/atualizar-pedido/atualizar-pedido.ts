@@ -18,6 +18,7 @@ export class AtualizarPedido implements OnInit {
   pedidoForm: FormGroup;
   loading = false;
   formaPagamentoOptions = ['Pix', 'Cartão de Crédito', 'Cartão de Débito', 'Dinheiro', 'A pagar'];
+  labelOptions = ['Carimbo', 'Mdf/Acrílico', 'Outros'];
   pedidoId!: number;
 
   constructor(
@@ -36,6 +37,7 @@ export class AtualizarPedido implements OnInit {
       valor: ['', Validators.required],
       data_entrega: [new Date(), Validators.required],
       entregue: [false],
+      label: 'Carimbo',
     });
   }
 
@@ -57,8 +59,11 @@ export class AtualizarPedido implements OnInit {
           observacao: pedido.observacao,
           tipo_pagamento: pedido.tipo_pagamento,
           valor: pedido.valor,
-          data_entrega: pedido.data_entrega ? new Date(pedido.data_entrega) : new Date(),
+          data_entrega: pedido.data_entrega
+            ? this.formatDate(new Date(pedido.data_entrega))
+            : this.formatDate(new Date()),
           entregue: pedido.entregue,
+          label: pedido.label,
         });
       } catch (error) {
         console.error('Erro ao carregar pedido:', error);
@@ -97,7 +102,8 @@ export class AtualizarPedido implements OnInit {
         valor: Number(formValue.valor),
         observacao: formValue.observacao || null,
         entregue: formValue.entregue,
-        data_entrega: new Date(formValue.data_entrega).toISOString(),
+        data_entrega: formValue.data_entrega, // Enviar como string
+        label: formValue.label,
       });
 
       alert('Pedido atualizado com sucesso!');
@@ -108,5 +114,16 @@ export class AtualizarPedido implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  // Função para formatar a data no formato 'YYYY-MM-DDTHH:mm'
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 }
