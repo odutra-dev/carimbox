@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
-  ActivityIndicator,
 } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import { supabase } from "../../../utils/supabase";
@@ -19,7 +18,7 @@ type DateFilterType = "dia" | "mes" | "ano" | null;
 
 export default function SearchScreen() {
   const { theme } = useTheme();
-  const { colors } = theme;
+  const { colors, spacing } = theme;
 
   const [pedidoId, setPedidoId] = useState("");
   const [dateFilterType, setDateFilterType] = useState<DateFilterType>(null);
@@ -30,7 +29,9 @@ export default function SearchScreen() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  // 🔹 Date helpers (igual ao pedidos)
+  /* =======================
+      Date helpers
+  ======================== */
   const startOfDate = (d: Date) =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
       d.getDate()
@@ -65,7 +66,9 @@ export default function SearchScreen() {
     return null;
   };
 
-  // 🔥 BUSCA REAL
+  /* =======================
+      Actions
+  ======================== */
   const aplicarFiltros = async () => {
     try {
       setLoading(true);
@@ -76,12 +79,8 @@ export default function SearchScreen() {
         .select("*")
         .order("id", { ascending: false });
 
-      // 🔍 ID
-      if (pedidoId) {
-        query = query.eq("id", Number(pedidoId));
-      }
+      if (pedidoId) query = query.eq("id", Number(pedidoId));
 
-      // 📅 Data
       const range = buildRange();
       if (range) {
         query = query
@@ -94,7 +93,7 @@ export default function SearchScreen() {
 
       setPedidos(data || []);
     } catch (e: any) {
-      console.log("ERRO SEARCH:", e.message);
+      console.log("SEARCH ERROR:", e.message);
     } finally {
       setLoading(false);
     }
@@ -108,52 +107,148 @@ export default function SearchScreen() {
     setSearched(false);
   };
 
+  const filtrosAtivos = pedidoId !== "" || dateFilterType !== null;
+
+  /* =======================
+      UI
+  ======================== */
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* FILTROS */}
-      <Text style={[styles.title, { color: colors.textPrimary }]}>
-        {i18n.t("searchTitulo")}
-      </Text>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>
+          {i18n.t("searchTitulo")}
+        </Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+          {i18n.t("BuscarPorId")} / {i18n.t("Dia")} • {i18n.t("Mes")} •{" "}
+          {i18n.t("Ano")}
+        </Text>
+      </View>
 
-      <Text style={{ color: colors.textPrimary }}>{i18n.t("BuscarPorId")}</Text>
-      <TextInput
+      {/* FILTER CARD */}
+      <View
         style={[
-          styles.input,
-          { backgroundColor: colors.surface, color: colors.textPrimary },
+          styles.card,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          },
         ]}
-        keyboardType="numeric"
-        placeholder="Ex: 123"
-        placeholderTextColor={colors.textSecondary}
-        value={pedidoId}
-        onChangeText={setPedidoId}
-      />
+      >
+        {/* ID */}
+        <Text style={[styles.label, { color: colors.textSecondary }]}>
+          {i18n.t("BuscarPorId")}
+        </Text>
+        <TextInput
+          style={[
+            styles.input,
+            {
+              backgroundColor: colors.background,
+              color: colors.textPrimary,
+              borderColor: colors.border,
+            },
+          ]}
+          keyboardType="numeric"
+          placeholder="Ex: 123"
+          placeholderTextColor={colors.textMuted}
+          value={pedidoId}
+          onChangeText={setPedidoId}
+        />
 
-      <View style={styles.row}>
-        {["dia", "mes", "ano"].map((tipo) => (
+        {/* DATE TYPE */}
+        <Text style={[styles.label, { color: colors.textSecondary }]}>
+          {i18n.t("DataPedido")}
+        </Text>
+        <View style={styles.row}>
+          {["dia", "mes", "ano"].map((tipo) => (
+            <TouchableOpacity
+              key={tipo}
+              style={[
+                styles.filterButton,
+                {
+                  backgroundColor:
+                    dateFilterType === tipo
+                      ? colors.primary
+                      : colors.background,
+                  borderColor: colors.border,
+                },
+              ]}
+              onPress={() => {
+                setDateFilterType(tipo as DateFilterType);
+                setShowPicker(true);
+              }}
+            >
+              <Text
+                style={{
+                  color:
+                    dateFilterType === tipo ? colors.white : colors.textPrimary,
+                  fontWeight: "500",
+                }}
+              >
+                {i18n.t(
+                  tipo === "dia" ? "Dia" : tipo === "mes" ? "Mes" : "Ano"
+                )}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* ACTIONS */}
+        <View style={styles.actions}>
           <TouchableOpacity
-            key={tipo}
+            style={[styles.applyButton, { backgroundColor: colors.primary }]}
+            onPress={aplicarFiltros}
+          >
+            <Text style={{ color: colors.white, fontWeight: "bold" }}>
+              {i18n.t("AplicarFiltros")}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            disabled={!filtrosAtivos}
             style={[
-              styles.filterButton,
+              styles.clearButton,
               {
-                backgroundColor:
-                  dateFilterType === tipo ? colors.primary : colors.surface,
+                borderColor: colors.primary,
+                opacity: filtrosAtivos ? 1 : 0.4,
               },
             ]}
-            onPress={() => {
-              setDateFilterType(tipo as DateFilterType);
-              setShowPicker(true);
-            }}
+            onPress={limparFiltros}
           >
             <Text
               style={{
-                color:
-                  dateFilterType === tipo ? colors.white : colors.textPrimary,
+                color: colors.primary,
+                fontWeight: "bold",
               }}
             >
-              {tipo.toUpperCase()}
+              {i18n.t("LimparFiltros")}
             </Text>
           </TouchableOpacity>
-        ))}
+        </View>
+      </View>
+
+      {/* RESULTS */}
+      <View style={styles.results}>
+        {loading ? (
+          <PedidoCardSkeleton />
+        ) : searched && pedidos.length === 0 ? (
+          <Text
+            style={{
+              textAlign: "center",
+              color: colors.textMuted,
+              marginTop: spacing.lg,
+            }}
+          >
+            {i18n.t("NenhumPedidoEncontrado")}
+          </Text>
+        ) : (
+          <FlatList
+            data={pedidos}
+            keyExtractor={(i) => i.id.toString()}
+            renderItem={({ item }) => <PedidoCard pedido={item} />}
+            contentContainerStyle={{ paddingBottom: spacing.xl }}
+          />
+        )}
       </View>
 
       <DateTimePicker
@@ -166,87 +261,90 @@ export default function SearchScreen() {
         }}
         onCancel={() => setShowPicker(false)}
       />
-
-      <TouchableOpacity
-        style={[styles.applyButton, { backgroundColor: colors.primary }]}
-        onPress={aplicarFiltros}
-      >
-        <Text style={{ color: colors.white, fontWeight: "bold" }}>
-          {i18n.t("AplicarFiltros")}
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.clearButton, { borderColor: colors.primary }]}
-        onPress={limparFiltros}
-      >
-        <Text style={{ color: colors.primary, fontWeight: "bold" }}>
-          {i18n.t("LimparFiltros")}
-        </Text>
-      </TouchableOpacity>
-
-      {/* RESULTADO */}
-      {loading ? (
-        <PedidoCardSkeleton />
-      ) : searched && pedidos.length === 0 ? (
-        <Text
-          style={{
-            textAlign: "center",
-            marginTop: 20,
-            color: colors.textPrimary,
-          }}
-        >
-          {i18n.t("NenhumPedidoEncontrado")}
-        </Text>
-      ) : (
-        <FlatList
-          data={pedidos}
-          keyExtractor={(i) => i.id.toString()}
-          renderItem={({ item }) => <PedidoCard pedido={item} />}
-          contentContainerStyle={{ paddingBottom: 40 }}
-        />
-      )}
     </View>
   );
 }
 
+/* =======================
+    Styles
+======================== */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 40,
   },
+
+  header: {
+    paddingBottom: 12,
+  },
+
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontWeight: "700",
   },
+
+  subtitle: {
+    marginTop: 4,
+    fontSize: 14,
+  },
+
+  card: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+
+  label: {
+    fontSize: 13,
+    marginBottom: 6,
+    fontWeight: "500",
+  },
+
   input: {
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 12,
-    marginVertical: 10,
+    borderWidth: 1,
+    marginBottom: 16,
   },
+
   row: {
     flexDirection: "row",
-    gap: 10,
-    marginVertical: 20,
+    gap: 8,
+    marginBottom: 16,
   },
+
   filterButton: {
     flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  applyButton: {
-    marginBottom: 20,
-    padding: 16,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  clearButton: {
-    marginBottom: 20,
-    padding: 14,
+    paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
     borderWidth: 1,
+  },
+
+  actions: {
+    flexDirection: "row",
+    gap: 12,
+  },
+
+  applyButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+
+  clearButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    borderWidth: 1,
+  },
+
+  results: {
+    flex: 1,
+    marginTop: 16,
+    paddingHorizontal: 16,
   },
 });
