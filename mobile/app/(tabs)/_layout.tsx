@@ -1,7 +1,7 @@
 import { Tabs } from "expo-router";
 import { useTheme } from "../../hooks/useTheme";
-import Package from "lucide-react-native/dist/esm/icons/package";
-import Settings from "lucide-react-native/dist/esm/icons/settings";
+
+import Feather from "@expo/vector-icons/Feather";
 
 import { i18n } from "../../i18n";
 
@@ -26,16 +26,27 @@ export default function TabLayout() {
         options={{
           title: i18n.t("pedidosPage"),
           tabBarIcon: ({ color, size }) => (
-            <Package size={size} color={color} />
+            <Feather name="package" size={size} color={color} />
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="search/index"
+        options={{
+          title: i18n.t("SearchPage"),
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="search" size={size} color={color} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="settings/index"
         options={{
           title: i18n.t("configuracoesPage"),
           tabBarIcon: ({ color, size }) => (
-            <Settings size={size} color={color} />
+            <Feather name="settings" size={size} color={color} />
           ),
         }}
       />

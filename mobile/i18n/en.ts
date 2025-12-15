@@ -106,4 +106,10 @@ export const enLang = {
   labelOuthers: "Others",
 
   Label: "Label",
+
+  SearchPage: "Search",
+  searchTitulo: "Search Orders",
+  BuscarPorId: "Search by Order ID",
+  AplicarFiltros: "Apply Filters",
+  LimparFiltros: "Clear filters",
 };

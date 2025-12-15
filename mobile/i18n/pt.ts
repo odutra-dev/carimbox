@@ -1,3 +1,5 @@
+import { Search } from "lucide-react-native";
+
 export const ptLang = {
   pedidosTitulo: "Pedidos",
   confguracaoTitulo: "Configurações",
@@ -108,4 +110,10 @@ export const ptLang = {
   labelOuthers: "Outros",
 
   Label: "Etiqueta",
+
+  SearchPage: "Buscar",
+  searchTitulo: "Buscar Pedidos",
+  BuscarPorId: "Buscar por ID do Pedido",
+  AplicarFiltros: "Aplicar Filtros",
+  LimparFiltros: "Limpar filtros",
 };
