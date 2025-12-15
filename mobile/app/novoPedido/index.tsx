@@ -187,20 +187,30 @@ export default function NovoPedidoScreen() {
           is24Hour
         />
 
-        <Text style={styles.label}>{i18n.t("Label")}</Text>
-        <Picker
-          selectedValue={form.label}
-          onValueChange={(v) => handleChange("label", v)}
+        <View
           style={{
-            height: 50,
-            color: colors.textPrimary,
-            paddingHorizontal: spacing.md,
+            backgroundColor: colors.surface,
+            borderRadius: spacing.sm,
+            borderWidth: 1,
+            borderColor: colors.border,
+            overflow: "hidden",
           }}
         >
-          <Picker.Item label={i18n.t("labelCarimbo")} value="Carimbo" />
-          <Picker.Item label={i18n.t("labelMdf")} value="Mdf/Acrílico" />
-          <Picker.Item label={i18n.t("labelOuthers")} value="Outros" />
-        </Picker>
+          <Text style={styles.label}>{i18n.t("Label")}</Text>
+          <Picker
+            selectedValue={form.label}
+            onValueChange={(v) => handleChange("label", v)}
+            style={{
+              height: 50,
+              color: colors.textPrimary,
+              paddingHorizontal: spacing.md,
+            }}
+          >
+            <Picker.Item label={i18n.t("labelCarimbo")} value="Carimbo" />
+            <Picker.Item label={i18n.t("labelMdf")} value="Mdf/Acrílico" />
+            <Picker.Item label={i18n.t("labelOuthers")} value="Outros" />
+          </Picker>
+        </View>
 
         <TouchableOpacity
           style={[styles.button, loading && { opacity: 0.6 }]}
