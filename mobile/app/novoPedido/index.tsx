@@ -187,6 +187,7 @@ export default function NovoPedidoScreen() {
           is24Hour
         />
 
+        <Text style={styles.label}>{i18n.t("Label")}</Text>
         <View
           style={{
             backgroundColor: colors.surface,
@@ -196,7 +197,6 @@ export default function NovoPedidoScreen() {
             overflow: "hidden",
           }}
         >
-          <Text style={styles.label}>{i18n.t("Label")}</Text>
           <Picker
             selectedValue={form.label}
             onValueChange={(v) => handleChange("label", v)}

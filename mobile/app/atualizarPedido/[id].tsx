@@ -226,6 +226,8 @@ export default function AtualizarPedidoScreen() {
           locale="pt-BR"
           is24Hour
         />
+
+        <Text style={styles.label}>{i18n.t("Label")}</Text>
         <View
           style={{
             backgroundColor: colors.surface,
@@ -235,7 +237,6 @@ export default function AtualizarPedidoScreen() {
             overflow: "hidden",
           }}
         >
-          <Text style={styles.label}>{i18n.t("Label")}</Text>
           <Picker
             selectedValue={form.label}
             onValueChange={(v) => handleChange("label", v)}
