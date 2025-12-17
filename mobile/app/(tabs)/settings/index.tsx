@@ -63,7 +63,7 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
         <Text style={[styles.versionText, { color: colors.textSecondary }]}>
-          {i18n.t("versao")}: 1.6.0
+          {i18n.t("versao")}: 1.6.1
         </Text>
       </View>
     </View>
