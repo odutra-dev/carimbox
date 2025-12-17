@@ -35,7 +35,7 @@ export default function NovoPedidoScreen() {
     observacao: "",
     entregue: false,
     data_entrega: new Date(),
-    label: "",
+    label: "Carimbo",
   });
 
   const [loading, setLoading] = useState(false);
@@ -90,7 +90,7 @@ export default function NovoPedidoScreen() {
         observacao: "",
         entregue: false,
         data_entrega: new Date(),
-        label: "",
+        label: "Carimbo",
       });
       router.back();
     } catch (err: any) {
