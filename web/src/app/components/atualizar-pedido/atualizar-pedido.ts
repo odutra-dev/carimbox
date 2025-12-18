@@ -102,7 +102,7 @@ export class AtualizarPedido implements OnInit {
         valor: Number(formValue.valor),
         observacao: formValue.observacao || null,
         entregue: formValue.entregue,
-        data_entrega: formValue.data_entrega, // Enviar como string
+        data_entrega: new Date(formValue.data_entrega).toISOString(),
         label: formValue.label,
       });
 
