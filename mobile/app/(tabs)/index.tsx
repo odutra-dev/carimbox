@@ -214,6 +214,8 @@ export default function PedidosScreen() {
               <ActivityIndicator size="large" color={colors.primary} />
             ) : null
           }
+          onRefresh={() => fetchPedidos(true)}
+          refreshing={loading}
         />
       )}
 

@@ -41,7 +41,7 @@ export default function AtualizarPedidoScreen() {
     observacao: "",
     entregue: false,
     data_entrega: new Date(),
-    label: "",
+    label: "Carimbo",
   });
 
   const showDatePicker = () => setDatePickerVisibility(true);
@@ -80,7 +80,7 @@ export default function AtualizarPedidoScreen() {
           data_entrega: data.data_entrega
             ? new Date(data.data_entrega)
             : new Date(),
-          label: data.label || "",
+          label: data.label || "Carimbo",
         });
       } catch (err: any) {
         Alert.alert(i18n.t("Erro"), err.message);
@@ -226,6 +226,8 @@ export default function AtualizarPedidoScreen() {
           locale="pt-BR"
           is24Hour
         />
+
+        <Text style={styles.label}>{i18n.t("Label")}</Text>
         <View
           style={{
             backgroundColor: colors.surface,
@@ -235,7 +237,6 @@ export default function AtualizarPedidoScreen() {
             overflow: "hidden",
           }}
         >
-          <Text style={styles.label}>{i18n.t("Label")}</Text>
           <Picker
             selectedValue={form.label}
             onValueChange={(v) => handleChange("label", v)}
