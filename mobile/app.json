@@ -2,7 +2,7 @@
   "expo": {
     "name": "Carimbos Ocian",
     "slug": "carimbox",
-    "version": "1.4.0",
+    "version": "1.6.2",
     "scheme": "acme",
     "description": "App para controle dos pedidos de carimbos",
     "userInterfaceStyle": "automatic",
@@ -32,7 +32,7 @@
       }
     },
     "runtimeVersion": {
-      "policy": "appVersion"
+      "policy": "sdkVersion"
     },
     "updates": {
       "url": "https://u.expo.dev/f7f26da3-45c6-4ca0-b4e8-1b24979d7312"

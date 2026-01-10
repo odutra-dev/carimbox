@@ -25,6 +25,7 @@ export const InputSelect = ({ label, value, onChange }) => {
           />
           <Picker.Item label={i18n.t("CartaoDeDebito")} value="Cartão Débito" />
           <Picker.Item label={i18n.t("Dinheiro")} value="Dinheiro" />
+          <Picker.Item label={i18n.t("LinkPay")} value="Link de pagamento" />
           <Picker.Item label={i18n.t("APagar")} value="A pagar" />
         </Picker>
       </View>

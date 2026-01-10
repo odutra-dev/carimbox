@@ -69,6 +69,7 @@ export const enLang = {
   CartaoDeDebito: "Debit Card",
   Dinheiro: "Cash",
   APagar: "To pay",
+  LinkPay: "Link payment",
 
   // ==== Corrigido somente AtualizarPedido ====
   AtualizarPedidoTitulo: "✏️ Update Order",
