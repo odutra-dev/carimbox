@@ -17,7 +17,14 @@ import { CommonModule } from '@angular/common';
 export class NovoPedido {
   pedidoForm: FormGroup;
   loading = false;
-  formaPagamentoOptions = ['Pix', 'Cartão de Crédito', 'Cartão de Débito', 'Dinheiro', 'A pagar'];
+  formaPagamentoOptions = [
+    'Pix',
+    'Cartão de Crédito',
+    'Cartão de Débito',
+    'Dinheiro',
+    'Link de pagamento',
+    'A pagar',
+  ];
   labelOptions = ['Carimbo', 'Mdf/Acrílico', 'Outros'];
 
   constructor(private fb: FormBuilder, private router: Router, private supabase: Supabase) {
