@@ -1,5 +1,3 @@
-import { Search } from "lucide-react-native";
-
 export const ptLang = {
   pedidosTitulo: "Pedidos",
   confguracaoTitulo: "Configurações",
@@ -72,6 +70,7 @@ export const ptLang = {
   CartaoDeDebito: "Cartão de Débito",
   Dinheiro: "Dinheiro",
   APagar: "A pagar",
+  LinkPay: "Link de pagamento",
 
   // ==== Apenas AtualizarPedido ====
   AtualizarPedidoTitulo: "✏️ Atualizar Pedido",
