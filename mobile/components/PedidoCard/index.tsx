@@ -96,16 +96,15 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
   // MENSAGEM DE PEDIDO CONCLUÍDO
   const mensagemPedidoConcluido = `✅ Pedido finalizado! ✅
 
-📦 Para retirar so informar o numero do pedido
+━━━━━━━━━━━━━━━━━━━━━━━━
+📦 Retirada com o nº do pedido: ${pedido.id}
+━━━━━━━━━━━━━━━━━━━━━━━━
 
-━━━━━━━━━━━━━━━━━
-📦 Nº DO PEDIDO
-     *Nº: ${pedido.id}*
-━━━━━━━━━━━━━━━━━
+📍 DENTRO do CHAVEIRO OCIAN
+Rua Remo Estéfane, 50 – Ocian
+https://maps.app.goo.gl/3FzpDGgtgv9ipG1f9
 
-Obrigado pela confiança! 🙌🏽
-
-Se puder, avalie a Carimbos Ocian no Google:
+Avalie a Carimbos Ocian no Google:
 👉 https://g.page/r/CbOE8NI63dFnEBM/review
 
 💙 Agradecemos pela confiança! 💙
