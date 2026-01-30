@@ -18,7 +18,10 @@ export class ListaPedidos implements OnInit {
 
   filtro: 'todos' | 'pendentes' | 'concluidos' = 'pendentes';
 
-  constructor(private supabaseService: Supabase, private router: Router) {}
+  constructor(
+    private supabaseService: Supabase,
+    private router: Router,
+  ) {}
 
   async ngOnInit() {
     try {
@@ -118,6 +121,26 @@ Se puder, avalie a Carimbos Ocian no Google:
     } catch (err) {
       console.error(err);
       alert('Erro ao atualizar o pedido.');
+    }
+  }
+
+  // ✅ Exclui pedido no Supabase
+  async excluirPedido(pedido: Pedido) {
+    if (pedido.entregue) {
+      alert('Este pedido já está concluído!');
+      return;
+    }
+
+    const confirmar = confirm(`Deseja excluir o pedido #${pedido.id}?`);
+    if (!confirmar) return;
+
+    try {
+      const atualizado = await this.supabaseService.deletePedido(pedido.id);
+      alert('Pedido excluído com sucesso!');
+      this.pedidos = this.pedidos.filter((p) => p.id !== pedido.id);
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao excluir o pedido.');
     }
   }
 

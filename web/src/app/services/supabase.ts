@@ -53,4 +53,10 @@ export class Supabase {
     if (error) throw error;
     return data as Pedido;
   }
+
+  async deletePedido(id: number): Promise<void> {
+    const { error } = await this.supabase.from('Pedidos').delete().eq('id', id);
+
+    if (error) throw error;
+  }
 }
