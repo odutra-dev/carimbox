@@ -56,8 +56,8 @@
           </p>
         </div>
 
-        <ng-container *ngIf="!pedido.entregue" (click)="$event.stopPropagation()">
-          <button class="icon-delete" (click)="excluirPedido(pedido)">REMOVER</button>
+        <ng-container *ngIf="!pedido.entregue">
+          <button class="icon-delete" (click)="excluirPedido(pedido, $event)">REMOVER</button>
         </ng-container>
 
         <div class="icon-container" (click)="$event.stopPropagation()">

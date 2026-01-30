@@ -125,7 +125,8 @@ Se puder, avalie a Carimbos Ocian no Google:
   }
 
   // ✅ Exclui pedido no Supabase
-  async excluirPedido(pedido: Pedido) {
+  async excluirPedido(pedido: Pedido, event: MouseEvent) {
+    event.stopPropagation();
     if (pedido.entregue) {
       alert('Este pedido já está concluído!');
       return;
