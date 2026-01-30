@@ -40,21 +40,25 @@
               pedido.label === 'Carimbo'
                 ? '#DA1325'
                 : pedido.label === 'Mdf/Acrílico'
-                ? '#C59E0B'
-                : pedido.label === 'Outros'
-                ? '#16A34A'
-                : '#9E9E9E'
+                  ? '#16A34A'
+                  : pedido.label === 'Outros'
+                    ? '#C59E0B'
+                    : '#9E9E9E'
             "
           ></div>
 
           <p class="id-text">Pedido #{{ pedido.id }}</p>
           <p class="data-text">
-            {{ pedido.data_pedido | date : 'dd/MM/yyyy, HH:mm' }}
+            {{ pedido.data_pedido | date: 'dd/MM/yyyy, HH:mm' }}
           </p>
           <p class="cliente-text">
             {{ formatarWhatsapp(pedido.whatsapp.toString()) }}
           </p>
         </div>
+
+        <ng-container *ngIf="!pedido.entregue">
+          <button class="icon-delete" (click)="excluirPedido(pedido, $event)">REMOVER</button>
+        </ng-container>
 
         <div class="icon-container" (click)="$event.stopPropagation()">
           <ng-container *ngIf="!pedido.entregue">
