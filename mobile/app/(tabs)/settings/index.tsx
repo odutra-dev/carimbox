@@ -25,7 +25,7 @@ export default function SettingsScreen() {
       } else {
         ToastAndroid.show(
           i18n.t("messageQueNaoAtualizacao"),
-          ToastAndroid.SHORT
+          ToastAndroid.SHORT,
         );
       }
     } catch (error) {
@@ -63,7 +63,7 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
         <Text style={[styles.versionText, { color: colors.textSecondary }]}>
-          {i18n.t("versao")}: 1.6.2
+          {i18n.t("versao")}: 1.6.3
         </Text>
       </View>
     </View>
