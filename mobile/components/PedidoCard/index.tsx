@@ -46,10 +46,10 @@ export const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onUpdate }) => {
     label == "Carimbo"
       ? colors.labelCarimbo
       : label == "Mdf/Acrílico"
-      ? colors.labelMdf
-      : label == "Outros"
-      ? colors.labelOuthers
-      : "#9E9E9E";
+        ? colors.labelMdf
+        : label == "Outros"
+          ? colors.labelOuthers
+          : "#9E9E9E";
 
   // MENSAGEM NOVO PEDIDO
 
@@ -94,7 +94,7 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
 `;
 
   // MENSAGEM DE PEDIDO CONCLUÍDO
-  const mensagemPedidoConcluido = `✅ Pedido finalizado! ✅
+  const mensagemPedidoConcluido = `✅ Seu pedido já foi finalizado e está disponível para retirada! ✅
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
 📦 Retirada com o nº do pedido: ${pedido.id}
@@ -114,11 +114,11 @@ Avalie a Carimbos Ocian no Google:
   const handleSendWhatsApp = (mensagem: string) => {
     const numero = whatsapp.toString().replace(/\D/g, "");
     const url = `https://wa.me/55${numero}?text=${encodeURIComponent(
-      mensagem
+      mensagem,
     )}`;
 
     Linking.openURL(url).catch(() =>
-      Alert.alert("Erro", "Não foi possível abrir o WhatsApp.")
+      Alert.alert("Erro", "Não foi possível abrir o WhatsApp."),
     );
   };
 
@@ -137,7 +137,7 @@ Avalie a Carimbos Ocian no Google:
     Alert.alert(
       i18n.t("MarcarConcluidoTitulo"),
       `${i18n.t("MarcarConcluidoMensagemP1")} #${id} ${i18n.t(
-        "MarcarConcluidoMensagemP2"
+        "MarcarConcluidoMensagemP2",
       )}`,
       [
         { text: i18n.t("MarcarConcluidoBotaoCancelar"), style: "cancel" },
@@ -159,13 +159,13 @@ Avalie a Carimbos Ocian no Google:
               if (data) onUpdate?.(data);
               ToastAndroid.show(
                 i18n.t("MarcarConcluidoMensagemAtualizado"),
-                2000
+                2000,
               );
               handleSendWhatsApp(mensagemPedidoConcluido);
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -239,7 +239,7 @@ export const PedidoCardSkeleton = () => {
           duration: 700,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   }, []);
 
