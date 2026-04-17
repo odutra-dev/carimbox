@@ -92,7 +92,6 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
 
 📍 *RETIRADA: DENTRO do CHAVEIRO OCIAN*
 Rua Remo Estéfane, 50 – Ocian
-https://maps.app.goo.gl/3FzpDGgtgv9ipG1f9
 `;
 
   // MENSAGEM DE PEDIDO CONCLUÍDO
