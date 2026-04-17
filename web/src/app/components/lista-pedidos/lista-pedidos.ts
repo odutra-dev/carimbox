@@ -77,7 +77,9 @@ ${pedido.observacao ? `📝 Observação: ${pedido.observacao}` : ''}
 💵 Valor total: R$ ${pedido.valor?.toFixed(2)}
 📅 Entrega Prevista: ${dataEntrega.replace(',', ' às')}
 
-🙏 Agradecemos pela preferência!`;
+*RETIRADA*:  DENTRO do CHAVEIRO OCIAN
+Rua Remo Estéfane, 50 – Ocian
+https://maps.app.goo.gl/3FzpDGgtgv9ipG1f9`;
   }
 
   // ✅ Mensagem de pedido concluído
