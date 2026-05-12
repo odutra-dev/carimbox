@@ -77,7 +77,7 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
 💵 Valor total: R$ ${valor.toFixed(2).replace(".", ",")}
 
 ━━━━━━━━━━━━━━━━━
-📦 ENTREGA PREVISTA
+📦 RETIRADA A PARTIR DE
 📅 ${new Date(data_entrega)
     .toLocaleString("pt-BR", {
       day: "2-digit",
