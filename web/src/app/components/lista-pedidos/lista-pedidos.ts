@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Supabase } from '../../services/supabase';
+import { CupomService } from '../../services/cupom';
 import { Pedido } from '../../../@types/pedido';
 import { Router } from '@angular/router';
 
@@ -21,7 +22,16 @@ export class ListaPedidos implements OnInit {
   constructor(
     private supabaseService: Supabase,
     private router: Router,
+    private cupomService: CupomService,
   ) {}
+
+  // ✅ Dispara impressão do cupom do pedido
+  imprimirCupom(pedido: Pedido, event?: MouseEvent) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.cupomService.imprimir(pedido);
+  }
 
   async ngOnInit() {
     try {

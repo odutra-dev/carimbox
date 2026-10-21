@@ -61,13 +61,17 @@
         </ng-container>
 
         <div class="icon-container" (click)="$event.stopPropagation()">
+          <button class="icon icon-print" (click)="imprimirCupom(pedido, $event)" title="Imprimir Cupom">
+            <i class="bi bi-printer-fill"></i>
+          </button>
+
           <ng-container *ngIf="!pedido.entregue">
-            <button class="icon-check" (click)="marcarComoEntregue(pedido)">
+            <button class="icon-check" (click)="marcarComoEntregue(pedido)" title="Marcar como entregue">
               <i class="bi bi-check-circle-fill"></i>
             </button>
           </ng-container>
 
-          <button class="icon" (click)="enviarWhatsApp(pedido)">
+          <button class="icon" (click)="enviarWhatsApp(pedido)" title="Enviar no WhatsApp">
             <i class="bi bi-box-arrow-up-right"></i>
           </button>
         </div>
