@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Pedido } from '../../../@types/pedido';
 import { Supabase } from '../../services/supabase';
+import { CupomService } from '../../services/cupom';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -16,7 +17,11 @@ export class VerDetalhes {
   errorMsg = '';
   pedido: Pedido = {} as Pedido;
 
-  constructor(private supabaseService: Supabase, public router: Router) {}
+  constructor(
+    private supabaseService: Supabase,
+    public router: Router,
+    private cupomService: CupomService,
+  ) {}
   async ngOnInit() {
     try {
       const id = this.router.url.split('/').pop();
@@ -58,6 +63,12 @@ export class VerDetalhes {
 
     navigator.clipboard.writeText(texto);
     alert('Dados copiados para a área de transferência.');
+  }
+
+  imprimirCupom(): void {
+    if (this.pedido && this.pedido.id) {
+      this.cupomService.imprimir(this.pedido);
+    }
   }
 
   voltar() {
