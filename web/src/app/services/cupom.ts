@@ -221,6 +221,7 @@ export class CupomService {
     // Abre o PDF em aba independente para evitar bloqueio modal na aplicação
     const novaAba = window.open(pdfUrl, '_blank');
     if (!novaAba) {
+      // Caso popup blocker esteja ativo, baixa o PDF diretamente
       doc.save(`cupom-pedido-${pedido.id}.pdf`);
     }
   }
