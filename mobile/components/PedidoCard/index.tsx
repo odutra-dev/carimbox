@@ -77,7 +77,7 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
 💵 Valor total: R$ ${valor.toFixed(2).replace(".", ",")}
 
 ━━━━━━━━━━━━━━━━━
-📦 ENTREGA PREVISTA
+📦 RETIRADA A PARTIR DE
 📅 ${new Date(data_entrega)
     .toLocaleString("pt-BR", {
       day: "2-digit",
@@ -90,7 +90,8 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
     .replace(",", " às")}
 ━━━━━━━━━━━━━━━━━
 
-📦 Obs: Para retirar o pedido, basta informar o número do pedido enviado acima.
+📍 *RETIRADA: DENTRO do CHAVEIRO OCIAN*
+Rua Remo Estéfane, 50 – Ocian
 `;
 
   // MENSAGEM DE PEDIDO CONCLUÍDO
@@ -100,12 +101,9 @@ ${observacao ? `📝 Observação: ${observacao}` : ""}
 📦 Retirada com o nº do pedido: ${pedido.id}
 ━━━━━━━━━━━━━━━━━━━━━━━━
 
-📍 DENTRO do CHAVEIRO OCIAN
+📍 *RETIRADA: DENTRO do CHAVEIRO OCIAN*
 Rua Remo Estéfane, 50 – Ocian
 https://maps.app.goo.gl/3FzpDGgtgv9ipG1f9
-
-Avalie a Carimbos Ocian no Google:
-👉 https://g.page/r/CbOE8NI63dFnEBM/review
 
 💙 Agradecemos pela confiança! 💙
 `;
