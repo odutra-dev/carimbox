@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import type { jsPDF } from 'jspdf';
 import { Pedido } from '../../@types/pedido';
 
 @Injectable({
@@ -32,355 +33,202 @@ export class CupomService {
     });
   }
 
-  // Gera o HTML do cupom térmico/fiscal para impressão
-  gerarHtmlCupom(pedido: Pedido): string {
+  // Sanitiza texto para fontes padrão do jsPDF (WinAnsiEncoding)
+  private sanitizarTexto(t?: string | number | null): string {
+    if (t == null) return '';
+    return String(t)
+      .replace(/[\u2010-\u2015]/g, '-') // travessões unicode
+      .replace(/[\u2018\u2019]/g, '\'') // aspas simples curvas
+      .replace(/[\u201C\u201D]/g, '"') // aspas duplas curvas
+      .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '') // remove emojis incompatíveis com fontes básicas
+      .replace(/[^\x00-\xFF]/g, ''); // mantém apenas caracteres Latin-1 (português com acentos)
+  }
+
+  // Constrói o documento PDF com tamanho de cupom térmico (80mm) e cálculo dinâmico de altura
+  async gerarPdf(pedido: Pedido): Promise<jsPDF> {
+    const { jsPDF } = await import('jspdf');
+
+    const margem = 5;
+    const larguraUtil = 70;
+    const centro = 40;
+
+    // 1. Pré-calcula a altura necessária para textos multi-linha
+    const docCalc = new jsPDF({ unit: 'mm', format: [80, 600] });
+    docCalc.setFont('courier', 'normal');
+    docCalc.setFontSize(8.5);
+
+    const linhasTexto = docCalc.splitTextToSize(
+      this.sanitizarTexto(pedido.texto_logo || 'Sem descrição'),
+      larguraUtil - 4,
+    );
+    const alturaCaixaTexto = Math.max(linhasTexto.length * 3.8 + 4, 10);
+
+    let linhasObs: string[] = [];
+    let alturaCaixaObs = 0;
+    if (pedido.observacao) {
+      linhasObs = docCalc.splitTextToSize(this.sanitizarTexto(pedido.observacao), larguraUtil - 4);
+      alturaCaixaObs = linhasObs.length * 3.8 + 8;
+    }
+
+    // Altura total: cabeçalho + número gigante + datas + cliente/whats/modelo + caixas + total + rodapé
+    const alturaEstimada = Math.ceil(
+      18 + 22 + 15 + 18 + 6 + alturaCaixaTexto + alturaCaixaObs + 16 + 18 + 12,
+    );
+    const alturaFinal = Math.max(alturaEstimada, 145);
+
+    // 2. Cria o documento PDF final
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [80, alturaFinal],
+    });
+
+    let y = 8;
+
+    // Cabeçalho da loja
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('Carimbos Ocian', centro, y, { align: 'center' });
+    y += 4.5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.text('Rua Remo Estefane, 50 - Ocian', centro, y, { align: 'center' });
+    y += 4.5;
+
+    // Box do Número do Pedido Gigantesco
+    const boxY = y;
+    const boxH = 19;
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.6);
+    doc.roundedRect(margem, boxY, larguraUtil, boxH, 2, 2);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.text('PEDIDO', centro, boxY + 5, { align: 'center' });
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(26);
+    doc.text('#' + pedido.id, centro, boxY + 15, { align: 'center' });
+    y += boxH + 4;
+
+    const divisor = () => {
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.25);
+      doc.setLineDashPattern([1.5, 1], 0);
+      doc.line(margem, y, margem + larguraUtil, y);
+      y += 3.5;
+    };
+
+    const linhaDupla = (rotulo: string, valor: string) => {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.text(rotulo, margem, y);
+      doc.setFont('helvetica', 'normal');
+      doc.text(this.sanitizarTexto(valor), margem + larguraUtil, y, { align: 'right' });
+      y += 4;
+    };
+
+    divisor();
+
+    // Datas
     const dataPedido = this.formatarData(pedido.data_pedido);
     const dataEntrega = this.formatarData(pedido.data_entrega).replace(',', ' às');
-    const whatsapp = this.formatarWhatsapp(pedido.whatsapp);
-    const valor = Number(pedido.valor || 0).toLocaleString('pt-BR', {
+    linhaDupla('Data Pedido:', dataPedido);
+    linhaDupla('Entrega Prevista:', dataEntrega);
+
+    divisor();
+
+    // Dados do Cliente
+    const whatsFormatado = this.formatarWhatsapp(pedido.whatsapp);
+    linhaDupla('Cliente:', pedido.cliente || 'Não informado');
+    linhaDupla('WhatsApp:', whatsFormatado || 'Não informado');
+    linhaDupla('Modelo:', pedido.tipo_modelo || 'N/A');
+
+    divisor();
+
+    // Descrição / Texto / Logo
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.text('Descrição / Texto / Logo:', margem, y);
+    y += 3;
+
+    doc.setDrawColor(180, 180, 180);
+    doc.setLineWidth(0.2);
+    doc.setLineDashPattern([], 0);
+    doc.rect(margem, y, larguraUtil, alturaCaixaTexto);
+
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(8.5);
+    doc.text(linhasTexto, margem + 2, y + 3.5);
+    y += alturaCaixaTexto + 3.5;
+
+    // Observação (se houver)
+    if (pedido.observacao) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.text('Observação:', margem, y);
+      y += 3;
+
+      doc.setDrawColor(180, 180, 180);
+      doc.setLineWidth(0.2);
+      doc.rect(margem, y, larguraUtil, linhasObs.length * 3.8 + 4);
+
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(8.5);
+      doc.text(linhasObs, margem + 2, y + 3.5);
+      y += linhasObs.length * 3.8 + 7;
+    }
+
+    divisor();
+
+    // Pagamento e Total
+    linhaDupla('Pagamento:', pedido.tipo_pagamento || 'N/A');
+
+    const valorFormatado = Number(pedido.valor || 0).toLocaleString('pt-BR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
 
-    const escapeHtml = (text: string = '') =>
-      text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text('VALOR TOTAL:', margem, y);
+    doc.setFontSize(11);
+    doc.text('R$ ' + valorFormatado, margem + larguraUtil, y, { align: 'right' });
+    y += 5.5;
 
-    return `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cupom - Pedido #${pedido.id}</title>
-  <style>
-    @page {
-      size: 80mm auto;
-      margin: 3mm;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: 'Courier New', Courier, monospace, -apple-system, sans-serif;
-      font-size: 13px;
-      line-height: 1.35;
-      color: #000;
-      background: #f1f5f9;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .toolbar {
-      width: 100%;
-      max-width: 340px;
-      display: flex;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .toolbar button {
-      flex: 1;
-      padding: 10px;
-      font-size: 14px;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .btn-print {
-      background-color: #2563eb;
-      color: #ffffff;
-    }
-    .btn-print:hover {
-      background-color: #1d4ed8;
-    }
-    .btn-close {
-      background-color: #e2e8f0;
-      color: #334155;
-    }
-    .btn-close:hover {
-      background-color: #cbd5e1;
-    }
-    .cupom-card {
-      width: 100%;
-      max-width: 340px;
-      background: #fff;
-      padding: 18px 14px;
-      border: 1px solid #cbd5e1;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      border-radius: 4px;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 6px;
-    }
-    .loja-nome {
-      font-size: 22px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #000;
-    }
-    .loja-endereco {
-      font-size: 13px;
-      margin-top: 3px;
-      color: #111;
-      font-weight: 600;
-    }
-    .bloco-numero {
-      text-align: center;
-      padding: 8px 0;
-      border: 3px solid #000;
-      border-radius: 8px;
-      margin: 10px 0;
-      background-color: #fafafa;
-    }
-    .rotulo-pedido {
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      color: #222;
-      text-transform: uppercase;
-    }
-    .numero-gigante {
-      font-size: 52px;
-      font-weight: 900;
-      line-height: 1.05;
-      letter-spacing: -1px;
-      color: #000;
-    }
-    .divisor {
-      border: none;
-      border-top: 2px dashed #000;
-      margin: 10px 0;
-    }
-    .divisor-fino {
-      border: none;
-      border-top: 1px dashed #777;
-      margin: 8px 0;
-    }
-    .linha {
-      margin-bottom: 5px;
-      font-size: 13px;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-      word-break: break-word;
-    }
-    .linha-coluna {
-      margin-bottom: 5px;
-      font-size: 13px;
-      word-break: break-word;
-    }
-    .rotulo {
-      font-weight: 700;
-      color: #000;
-    }
-    .conteudo-caixa {
-      white-space: pre-wrap;
-      font-family: inherit;
-      background: #f8fafc;
-      border: 1px dashed #999;
-      padding: 8px;
-      margin-top: 4px;
-      margin-bottom: 6px;
-      border-radius: 4px;
-      font-size: 13px;
-      line-height: 1.4;
-      color: #000;
-    }
-    .linha-total {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-size: 15px;
-      font-weight: 700;
-      margin-top: 6px;
-      padding-top: 4px;
-    }
-    .valor-total {
-      font-size: 20px;
-      font-weight: 900;
-      color: #000;
-    }
-    .rodape {
-      text-align: center;
-      font-size: 11px;
-      color: #222;
-      margin-top: 10px;
-      line-height: 1.45;
-    }
-    .rodape-destaque {
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-    @media print {
-      body {
-        background: #fff;
-        padding: 0;
-      }
-      .toolbar {
-        display: none !important;
-      }
-      .cupom-card {
-        border: none;
-        box-shadow: none;
-        padding: 0;
-        max-width: 100%;
-        width: 100%;
-      }
-      .conteudo-caixa {
-        background: transparent;
-        border: 1px dashed #555;
-      }
-      .bloco-numero {
-        background: transparent;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="toolbar">
-    <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
-    <button class="btn-close" onclick="window.close()">✕ Fechar</button>
-  </div>
+    divisor();
 
-  <div class="cupom-card">
-    <div class="header">
-      <h1 class="loja-nome">Carimbos Ocian</h1>
-      <p class="loja-endereco">Rua Remo Estéfane, 50 – Ocian</p>
-    </div>
+    // Rodapé de retirada
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.text('RETIRADA: DENTRO DO CHAVEIRO OCIAN', centro, y, { align: 'center' });
+    y += 3.5;
+    doc.setFont('helvetica', 'normal');
+    doc.text('Rua Remo Estefane, 50 - Ocian', centro, y, { align: 'center' });
 
-    <div class="bloco-numero">
-      <div class="rotulo-pedido">PEDIDO</div>
-      <div class="numero-gigante">#${pedido.id}</div>
-    </div>
-
-    <hr class="divisor" />
-
-    <div class="linha">
-      <span class="rotulo">Data do Pedido:</span>
-      <span>${dataPedido}</span>
-    </div>
-
-    <div class="linha">
-      <span class="rotulo">Entrega Prevista:</span>
-      <span>${dataEntrega}</span>
-    </div>
-
-    <hr class="divisor-fino" />
-
-    <div class="linha-coluna">
-      <span class="rotulo">Cliente:</span>
-      <span>${escapeHtml(pedido.cliente || 'Não informado')}</span>
-    </div>
-
-    <div class="linha-coluna">
-      <span class="rotulo">WhatsApp:</span>
-      <span>${whatsapp || 'Não informado'}</span>
-    </div>
-
-    <div class="linha-coluna">
-      <span class="rotulo">Modelo:</span>
-      <span>${escapeHtml(pedido.tipo_modelo || 'N/A')}</span>
-    </div>
-
-    <hr class="divisor-fino" />
-
-    <div class="linha-coluna">
-      <span class="rotulo">Descrição / Texto / Logo:</span>
-      <div class="conteudo-caixa">${escapeHtml(pedido.texto_logo || 'Sem descrição')}</div>
-    </div>
-
-    ${
-      pedido.observacao
-        ? `
-    <div class="linha-coluna">
-      <span class="rotulo">Observação:</span>
-      <div class="conteudo-caixa">${escapeHtml(pedido.observacao)}</div>
-    </div>
-    `
-        : ''
-    }
-
-    <hr class="divisor-fino" />
-
-    <div class="linha">
-      <span class="rotulo">Forma de Pagamento:</span>
-      <span>${escapeHtml(pedido.tipo_pagamento || 'N/A')}</span>
-    </div>
-
-    <div class="linha-total">
-      <span class="rotulo">VALOR TOTAL:</span>
-      <span class="valor-total">R$ ${valor}</span>
-    </div>
-
-    <hr class="divisor" />
-
-    <div class="rodape">
-      <p class="rodape-destaque">RETIRADA: DENTRO DO CHAVEIRO OCIAN</p>
-      <p>Rua Remo Estéfane, 50 – Ocian</p>
-      <p style="margin-top: 6px;">Agradecemos pela preferência!</p>
-    </div>
-  </div>
-
-  <script>
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        window.print();
-      }, 300);
-    });
-  </script>
-</body>
-</html>`;
+    return doc;
   }
 
-  // Dispara a impressão
-  imprimir(pedido: Pedido): void {
-    const conteudoHtml = this.gerarHtmlCupom(pedido);
-    const printWindow = window.open('', '_blank', 'width=420,height=720');
+  // Gera o PDF e abre em uma aba independente sem travar a aplicação principal
+  async imprimir(pedido: Pedido): Promise<void> {
+    const doc = await this.gerarPdf(pedido);
+    doc.autoPrint();
 
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(conteudoHtml);
-      printWindow.document.close();
-      printWindow.focus();
-    } else {
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'fixed';
-      iframe.style.right = '0';
-      iframe.style.bottom = '0';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
-      iframe.style.border = '0';
-      document.body.appendChild(iframe);
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
 
-      const doc = iframe.contentWindow?.document;
-      if (doc) {
-        doc.open();
-        doc.write(conteudoHtml);
-        doc.close();
-        iframe.contentWindow?.focus();
-        setTimeout(() => {
-          iframe.contentWindow?.print();
-          setTimeout(() => {
-            if (document.body.contains(iframe)) {
-              document.body.removeChild(iframe);
-            }
-          }, 1500);
-        }, 400);
-      }
+    // Abre o PDF em aba independente para evitar bloqueio modal na aplicação
+    const novaAba = window.open(pdfUrl, '_blank');
+    if (!novaAba) {
+      // Caso popup blocker esteja ativo, baixa o PDF diretamente
+      doc.save(`cupom-pedido-${pedido.id}.pdf`);
     }
+  }
+
+  // Download direto do arquivo PDF do cupom
+  async baixarPdf(pedido: Pedido): Promise<void> {
+    const doc = await this.gerarPdf(pedido);
+    doc.save(`cupom-pedido-${pedido.id}.pdf`);
   }
 }

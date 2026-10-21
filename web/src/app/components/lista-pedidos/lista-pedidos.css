@@ -75,7 +75,8 @@
 
       .icon,
       .icon-check,
-      .icon-print {
+      .icon-print,
+      .icon-delete {
         font-size: 24px;
         background: none;
         border: none;
@@ -97,6 +98,10 @@
 
       .icon-check {
         color: var(--success);
+      }
+
+      .icon-delete {
+        color: var(--error);
       }
     }
   }
