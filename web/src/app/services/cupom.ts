@@ -213,7 +213,6 @@ export class CupomService {
   // Gera o PDF e abre em uma aba independente sem travar a aplicação principal
   async imprimir(pedido: Pedido): Promise<void> {
     const doc = await this.gerarPdf(pedido);
-    doc.autoPrint();
 
     const pdfBlob = doc.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
