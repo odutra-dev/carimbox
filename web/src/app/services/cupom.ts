@@ -44,14 +44,15 @@ export class CupomService {
       .replace(/[^\x00-\xFF]/g, ''); // mantém apenas caracteres Latin-1 (português com acentos)
   }
 
-  // Constrói o documento PDF com tamanho de cupom térmico (70mm) e cálculo dinâmico otimizado
+  // Constrói o documento PDF com tamanho de cupom térmico e cálculo dinâmico otimizado
   async gerarPdf(pedido: Pedido): Promise<jsPDF> {
     const { jsPDF } = await import('jspdf');
 
-    const larguraPapel = 70; // Largura total da bobina em mm
-    const margem = 3;        // Margem lateral menor para aproveitar melhor o espaço
-    const larguraUtil = larguraPapel - (margem * 2); // 64mm úteis
-    const centro = larguraPapel / 2; // 35mm
+    // AJUSTE 1: Largura ajustada para 80mm (Padrão da Tanca TP-650)
+    const larguraPapel = 80;
+    const margem = 4;
+    const larguraUtil = larguraPapel - (margem * 2); // 72mm úteis
+    const centro = larguraPapel / 2; // 40mm
 
     // 1. Pré-calcula a altura necessária para textos multi-linha
     const docCalc = new jsPDF({ unit: 'mm', format: [larguraPapel, 600] });
@@ -75,9 +76,12 @@ export class CupomService {
     const alturaEstimada = Math.ceil(
       16 + 20 + 12 + 16 + 5 + alturaCaixaTexto + alturaCaixaObs + 14 + 16 + 10,
     );
-    const alturaFinal = Math.max(alturaEstimada, 120);
 
-    // 2. Cria o documento PDF final com dimensões exatas de 70mm de largura
+    // AJUSTE 2: Remoção da altura mínima forçada (120mm). 
+    // Agora a altura do PDF termina exatamente onde o conteúdo acaba (+ 5mm para o corte).
+    const alturaFinal = alturaEstimada + 5;
+
+    // 2. Cria o documento PDF final com dimensões exatas da bobina
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
