@@ -48,7 +48,6 @@ export class CupomService {
   async gerarPdf(pedido: Pedido): Promise<jsPDF> {
     const { jsPDF } = await import('jspdf');
 
-    // AJUSTE 1: Largura ajustada para 80mm (Padrão da Tanca TP-650)
     const larguraPapel = 80;
     const margem = 4;
     const larguraUtil = larguraPapel - (margem * 2); // 72mm úteis
@@ -72,20 +71,20 @@ export class CupomService {
       alturaCaixaObs = linhasObs.length * 3.5 + 6;
     }
 
-    // Altura total estimada ajustada de forma compacta
-    const alturaEstimada = Math.ceil(
-      16 + 20 + 12 + 16 + 5 + alturaCaixaTexto + alturaCaixaObs + 14 + 16 + 10,
-    );
+    // 2. Altura real baseada na soma exata dos blocos (evita o espaço em branco no final)
+    let alturaReal = 6 + 12 + 4 + 17 + 3 + 3 + (3.5 * 2) + 3 + 3 + 3.5 + 2.5 + alturaCaixaTexto + 3;
 
-    // AJUSTE 2: Remoção da altura mínima forçada (120mm). 
-    // Agora a altura do PDF termina exatamente onde o conteúdo acaba (+ 5mm para o corte).
-    const alturaFinal = alturaEstimada + 5;
+    if (pedido.observacao) {
+      alturaReal += 2.5 + alturaCaixaObs + 3;
+    }
 
-    // 2. Cria o documento PDF final com dimensões exatas da bobina
+    alturaReal += 3 + 3.5 + 5 + 3 + 6 + 6; // Pagamento, Total, Rodapé e pequena margem de respiro
+
+    // 3. Cria o documento PDF final com dimensões exatas calculadas
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: [larguraPapel, alturaFinal],
+      format: [larguraPapel, alturaReal],
     });
 
     let y = 6;
@@ -114,7 +113,7 @@ export class CupomService {
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(22);
-    doc.text('#' + pedido.id, centro, boxY + 13.5, { align: 'center' });
+    doc.text('' + pedido.id, centro, boxY + 13.5, { align: 'center' });
     y += boxH + 3;
 
     const divisor = () => {
@@ -144,10 +143,7 @@ export class CupomService {
 
     divisor();
 
-    // Dados do Cliente
-    const whatsFormatado = this.formatarWhatsapp(pedido.whatsapp);
-    //linhaDupla('Cliente:', pedido.cliente || 'Não informado');
-    //linhaDupla('WhatsApp:', whatsFormatado || 'Não informado');
+    // Dados do Cliente / Modelo
     linhaDupla('Modelo:', pedido.tipo_modelo || 'N/A');
 
     divisor();
