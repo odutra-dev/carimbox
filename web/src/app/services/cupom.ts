@@ -142,8 +142,8 @@ export class CupomService {
 
     // Dados do Cliente
     const whatsFormatado = this.formatarWhatsapp(pedido.whatsapp);
-    linhaDupla('Cliente:', pedido.cliente || 'Não informado');
-    linhaDupla('WhatsApp:', whatsFormatado || 'Não informado');
+    //linhaDupla('Cliente:', pedido.cliente || 'Não informado');
+    //linhaDupla('WhatsApp:', whatsFormatado || 'Não informado');
     linhaDupla('Modelo:', pedido.tipo_modelo || 'N/A');
 
     divisor();
@@ -195,7 +195,7 @@ export class CupomService {
     doc.setFontSize(8.5);
     doc.text('VALOR TOTAL:', margem, y);
     doc.setFontSize(10.5);
-    doc.text('R$ ' + valorFormatado, margem + larguraUtil, y, { align: 'right' });
+    doc.text('R$ ' + valorFormatado, margem + larguraUtil, y + 1, { align: 'right' });
     y += 5;
 
     divisor();
