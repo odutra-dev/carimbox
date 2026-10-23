@@ -82,9 +82,9 @@ export class CupomService {
 
     // 2. Altura real baseada na soma exata dos blocos
     let alturaReal = margemTop;
-    alturaReal += 3.5; // Divisor no topo
-    alturaReal += 4.5; // Cabeçalho: Título da loja
-    alturaReal += 4.5; // Cabeçalho: Endereço da loja
+    alturaReal += 5.5; // Espaçamento do divisor no topo até o título da loja
+    alturaReal += 5.0; // Cabeçalho: Título da loja até endereço
+    alturaReal += 3.5; // Endereço até o divisor
     alturaReal += 3.5; // Divisor abaixo do cabeçalho
     alturaReal += 18 + 3.5; // Box do número do pedido + espaçamento
     alturaReal += 3.5; // Divisor
@@ -124,19 +124,23 @@ export class CupomService {
       y += 3.5;
     };
 
-    // Divisor lá em cima delimitando o início da impressão
-    divisor();
+    // Divisor lá em cima delimitando o início da impressão (com respiro para não colar no texto)
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.2);
+    doc.setLineDashPattern([1.2, 0.8], 0);
+    doc.line(margem, y, margem + larguraUtil, y);
+    y += 5.5;
 
     // Cabeçalho da loja (padronizado em Arial/Helvetica negrito para máxima legibilidade)
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(13);
     doc.text('Carimbos Ocian', centro, y, { align: 'center' });
-    y += 4.5;
+    y += 5.0;
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.5);
     doc.text('Rua Remo Estefane, 50 - Ocian', centro, y, { align: 'center' });
-    y += 4.5;
+    y += 3.5;
 
     // Divisor separando o cabeçalho do box do pedido
     divisor();
