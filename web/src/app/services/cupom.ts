@@ -53,6 +53,9 @@ export class CupomService {
     const larguraUtil = larguraPapel - (margem * 2); // 72mm úteis
     const centro = larguraPapel / 2; // 40mm
 
+    // Área em branco ao final do cupom para a distância entre a cabeça de impressão e a guilhotina da Tanca TP 650
+    const margemCorte = 12; // 12mm de respiro para não imprimir ao infinito
+
     // 1. Pré-calcula a altura necessária para textos multi-linha
     const docCalc = new jsPDF({ unit: 'mm', format: [larguraPapel, 600] });
     docCalc.setFont('courier', 'normal');
@@ -71,7 +74,7 @@ export class CupomService {
       alturaCaixaObs = linhasObs.length * 3.5 + 6;
     }
 
-    // 2. Altura real baseada na soma exata dos blocos (evita o espaço em branco no final)
+    // 2. Altura real baseada na soma exata dos blocos
     let alturaReal = 6 + 12 + 4 + 17 + 3 + 3 + (3.5 * 2) + 3 + 3 + 3.5 + 2.5 + alturaCaixaTexto + 3;
 
     if (pedido.observacao) {
@@ -80,7 +83,10 @@ export class CupomService {
 
     alturaReal += 3 + 3.5 + 5 + 3 + 6 + 6; // Pagamento, Total, Rodapé e pequena margem de respiro
 
-    // 3. Cria o documento PDF final com dimensões exatas calculadas
+    // 3. Adiciona a margem de corte da impressora térmica (avanço do papel)
+    alturaReal += margemCorte;
+
+    // 4. Cria o documento PDF final com dimensões exatas calculadas
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
