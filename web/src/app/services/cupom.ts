@@ -62,9 +62,9 @@ export class CupomService {
     // Margem inferior de respiro e avanço para que a guilhotina da impressora térmica não corte nenhuma informação
     const margemCorte = 18; // 18mm de avanço após o término das informações
 
-    // 1. Pré-calcula a altura necessária para textos multi-linha (fontes maiores e em negrito)
+    // 1. Pré-calcula a altura necessária para textos multi-linha (padronizado em Arial/Helvetica negrito)
     const docCalc = new jsPDF({ unit: 'mm', format: [larguraPapel, 800] });
-    docCalc.setFont('courier', 'bold');
+    docCalc.setFont('helvetica', 'bold');
     docCalc.setFontSize(9);
 
     const linhasTexto = docCalc.splitTextToSize(
@@ -82,8 +82,10 @@ export class CupomService {
 
     // 2. Altura real baseada na soma exata dos blocos
     let alturaReal = margemTop;
+    alturaReal += 3.5; // Divisor no topo
     alturaReal += 4.5; // Cabeçalho: Título da loja
     alturaReal += 4.5; // Cabeçalho: Endereço da loja
+    alturaReal += 3.5; // Divisor abaixo do cabeçalho
     alturaReal += 18 + 3.5; // Box do número do pedido + espaçamento
     alturaReal += 3.5; // Divisor
     alturaReal += 4.2 * 2; // Datas (Pedido e Entrega)
@@ -114,7 +116,18 @@ export class CupomService {
 
     let y = margemTop;
 
-    // Cabeçalho da loja (fontes levemente maiores e em negrito para melhor nitidez)
+    const divisor = () => {
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.2);
+      doc.setLineDashPattern([1.2, 0.8], 0);
+      doc.line(margem, y, margem + larguraUtil, y);
+      y += 3.5;
+    };
+
+    // Divisor lá em cima delimitando o início da impressão
+    divisor();
+
+    // Cabeçalho da loja (padronizado em Arial/Helvetica negrito para máxima legibilidade)
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(13);
     doc.text('Carimbos Ocian', centro, y, { align: 'center' });
@@ -124,6 +137,9 @@ export class CupomService {
     doc.setFontSize(8.5);
     doc.text('Rua Remo Estefane, 50 - Ocian', centro, y, { align: 'center' });
     y += 4.5;
+
+    // Divisor separando o cabeçalho do box do pedido
+    divisor();
 
     // Box do Número do Pedido
     const boxY = y;
@@ -141,15 +157,7 @@ export class CupomService {
     doc.text('' + pedido.id, centro, boxY + 14.5, { align: 'center' });
     y += boxH + 3.5;
 
-    const divisor = () => {
-      doc.setDrawColor(0, 0, 0);
-      doc.setLineWidth(0.2);
-      doc.setLineDashPattern([1.2, 0.8], 0);
-      doc.line(margem, y, margem + larguraUtil, y);
-      y += 3.5;
-    };
-
-    // Linha dupla com rótulo e valor - ambos em negrito e tamanho maior para visualização rápida
+    // Linha dupla com rótulo e valor - ambos em negrito e Arial/Helvetica
     const linhaDupla = (rotulo: string, valor: string) => {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8.5);
@@ -173,7 +181,7 @@ export class CupomService {
 
     divisor();
 
-    // Descrição / Texto / Logo (caixa com texto em negrito para facilitar a produção)
+    // Descrição / Texto / Logo (padronizado em Arial/Helvetica negrito para facilitar a produção)
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.5);
     doc.text('Descrição / Texto / Logo:', margem, y);
@@ -184,12 +192,12 @@ export class CupomService {
     doc.setLineDashPattern([], 0);
     doc.rect(margem, y, larguraUtil, alturaCaixaTexto);
 
-    doc.setFont('courier', 'bold');
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
     doc.text(linhasTexto, margem + 2, y + 3.5);
     y += alturaCaixaTexto + 3.5;
 
-    // Observação (se houver)
+    // Observação (se houver - padronizado em Arial/Helvetica negrito)
     if (pedido.observacao) {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8.5);
@@ -200,7 +208,7 @@ export class CupomService {
       doc.setLineWidth(0.15);
       doc.rect(margem, y, larguraUtil, alturaCaixaObs);
 
-      doc.setFont('courier', 'bold');
+      doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.text(linhasObs, margem + 2, y + 3.5);
       y += alturaCaixaObs + 3.5;
