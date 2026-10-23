@@ -1,116 +1,123 @@
 <div class="container">
-  <div class="header">
-    <button class="back-button" type="button" aria-label="Voltar" (click)="goBack()">
-      <i class="bi bi-arrow-left"></i>
-    </button>
-    <h1>📝 Novo Pedido</h1>
+  <div class="main-card">
+    <div class="page-header">
+      <div class="header-left">
+        <button class="back-button" type="button" aria-label="Voltar" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <div>
+          <h1 class="page-title">📝 Novo Pedido</h1>
+          <p class="page-subtitle">Preencha os dados abaixo para registrar um novo pedido</p>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="pedidoForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="cliente" class="form-label">Cliente</label>
+        <input
+          type="text"
+          id="cliente"
+          class="form-control"
+          placeholder="Nome do cliente"
+          formControlName="cliente"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="whatsapp" class="form-label">WhatsApp <span class="required">*</span></label>
+        <input
+          type="tel"
+          id="whatsapp"
+          class="form-control"
+          placeholder="Ex: 5511999999999"
+          formControlName="whatsapp"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="tipo_modelo" class="form-label">Modelo</label>
+        <input
+          type="text"
+          id="tipo_modelo"
+          class="form-control"
+          placeholder="Ex: Automático, Trodat 4911"
+          formControlName="tipo_modelo"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="texto_logo" class="form-label">Descrição <span class="required">*</span></label>
+        <textarea
+          id="texto_logo"
+          rows="3"
+          class="form-control"
+          placeholder="Digite o texto do carimbo"
+          formControlName="texto_logo"
+        ></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label for="observacao" class="form-label">Observações</label>
+        <textarea
+          id="observacao"
+          rows="2"
+          class="form-control"
+          placeholder="Algum detalhe adicional?"
+          formControlName="observacao"
+        ></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="mb-3">
+          <label for="tipo_pagamento" class="form-label">Forma de Pagamento <span class="required">*</span></label>
+          <select id="tipo_pagamento" class="form-select" formControlName="tipo_pagamento">
+            <option value="" disabled>Selecione uma forma</option>
+            <option *ngFor="let op of formaPagamentoOptions" [value]="op">{{ op }}</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="valor" class="form-label">Valor (R$) <span class="required">*</span></label>
+          <input
+            type="number"
+            id="valor"
+            step="0.01"
+            min="0"
+            class="form-control"
+            placeholder="Ex: 79.90"
+            formControlName="valor"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="mb-3">
+          <label for="data_entrega" class="form-label">Data de entrega <span class="required">*</span></label>
+          <input
+            type="datetime-local"
+            id="data_entrega"
+            class="form-control"
+            formControlName="data_entrega"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="label" class="form-label">Etiqueta <span class="required">*</span></label>
+          <select id="label" class="form-select" formControlName="label">
+            <option *ngFor="let op of labelOptions" [value]="op">{{ op }}</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
+        <span *ngIf="loading" class="btn-spinner"></span>
+        <i *ngIf="!loading" class="bi bi-check2-circle"></i>
+        <span>{{ loading ? 'Enviando...' : 'Cadastrar Pedido' }}</span>
+      </button>
+    </form>
   </div>
-  <p class="subtitle">Preencha os dados abaixo para registrar um novo pedido</p>
-
-  <form [formGroup]="pedidoForm" (ngSubmit)="onSubmit()">
-    <div class="mb-3">
-      <label for="cliente" class="form-label">Cliente</label>
-      <input
-        type="text"
-        id="cliente"
-        class="form-control"
-        placeholder="Nome do cliente"
-        formControlName="cliente"
-        autocomplete="off"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="whatsapp" class="form-label">WhatsApp <span class="required">*</span></label>
-      <input
-        type="tel"
-        id="whatsapp"
-        class="form-control"
-        placeholder="Ex: 5511999999999"
-        formControlName="whatsapp"
-        autocomplete="off"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="tipo_modelo" class="form-label">Modelo</label>
-      <input
-        type="text"
-        id="tipo_modelo"
-        class="form-control"
-        placeholder="Ex: Automático, Trodat 4911"
-        formControlName="tipo_modelo"
-        autocomplete="off"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="texto_logo" class="form-label">Descrição <span class="required">*</span></label>
-      <textarea
-        id="texto_logo"
-        rows="3"
-        class="form-control"
-        placeholder="Digite o texto do carimbo"
-        formControlName="texto_logo"
-      ></textarea>
-    </div>
-
-    <div class="mb-3">
-      <label for="observacao" class="form-label">Observações</label>
-      <textarea
-        id="observacao"
-        rows="2"
-        class="form-control"
-        placeholder="Algum detalhe adicional?"
-        formControlName="observacao"
-      ></textarea>
-    </div>
-
-    <div class="form-row">
-      <div class="mb-3">
-        <label for="tipo_pagamento" class="form-label">Forma de Pagamento <span class="required">*</span></label>
-        <select id="tipo_pagamento" class="form-select" formControlName="tipo_pagamento">
-          <option value="" disabled>Selecione uma forma</option>
-          <option *ngFor="let op of formaPagamentoOptions" [value]="op">{{ op }}</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="valor" class="form-label">Valor (R$) <span class="required">*</span></label>
-        <input
-          type="number"
-          id="valor"
-          step="0.01"
-          min="0"
-          class="form-control"
-          placeholder="Ex: 79.90"
-          formControlName="valor"
-        />
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="mb-3">
-        <label for="data_entrega" class="form-label">Data de entrega <span class="required">*</span></label>
-        <input
-          type="datetime-local"
-          id="data_entrega"
-          class="form-control"
-          formControlName="data_entrega"
-        />
-      </div>
-
-      <div class="mb-3">
-        <label for="label" class="form-label">Etiqueta <span class="required">*</span></label>
-        <select id="label" class="form-select" formControlName="label">
-          <option *ngFor="let op of labelOptions" [value]="op">{{ op }}</option>
-        </select>
-      </div>
-    </div>
-
-    <button type="submit" class="btn btn-primary w-100" [disabled]="loading">
-      <i *ngIf="!loading" class="bi bi-check2-circle"></i>
-      {{ loading ? 'Enviando...' : 'Cadastrar Pedido' }}
-    </button>
-  </form>
 </div>

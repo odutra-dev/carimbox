@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Pedido } from '../../../@types/pedido';
 import { Supabase } from '../../services/supabase';
 import { CupomService } from '../../services/cupom';
@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './ver-detalhes.html',
   styleUrl: './ver-detalhes.css',
 })
-export class VerDetalhes {
+export class VerDetalhes implements OnInit {
   loading = true;
   errorMsg = '';
   pedido: Pedido = {} as Pedido;
@@ -22,20 +22,21 @@ export class VerDetalhes {
     public router: Router,
     private cupomService: CupomService,
   ) {}
+
   async ngOnInit() {
     try {
       const id = this.router.url.split('/').pop();
-
       this.pedido = await this.supabaseService.getPedidoById(Number(id));
     } catch (err) {
       console.error(err);
-      this.errorMsg = 'Erro ao carregar pedidos.';
+      this.errorMsg = 'Erro ao carregar pedido.';
     } finally {
       this.loading = false;
     }
   }
 
-  formatarWhatsapp(numero: string) {
+  formatarWhatsapp(numero: string): string {
+    if (!numero) return '';
     const num = numero.replace(/\D/g, '');
     if (num.length === 11) return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
     if (num.length === 10) return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
@@ -43,13 +44,13 @@ export class VerDetalhes {
   }
 
   copiarTexto(): void {
-    if (!this.pedido) return;
+    if (!this.pedido || !this.pedido.id) return;
     const p = this.pedido;
 
     const partes = [
       `Pedido #${p.id}`,
       p.cliente ? `Cliente: ${p.cliente}` : null,
-      p.whatsapp ? `WhatsApp: ${p.whatsapp}` : null,
+      p.whatsapp ? `WhatsApp: ${this.formatarWhatsapp(p.whatsapp.toString())}` : null,
       p.tipo_modelo ? `Modelo: ${p.tipo_modelo}` : null,
       p.texto_logo ? `Texto/Logo: ${p.texto_logo}` : null,
       p.tipo_pagamento ? `Pagamento: ${p.tipo_pagamento}` : null,
@@ -76,15 +77,37 @@ export class VerDetalhes {
   }
 
   editarPedido() {
-    if (this.pedido) {
+    if (this.pedido && this.pedido.id) {
       this.router.navigate(['/atualizar-pedido', this.pedido.id]);
+    }
+  }
+
+  // ✅ Marca pedido como entregue no Supabase
+  async marcarComoEntregue(pedido: Pedido) {
+    if (pedido.entregue) {
+      alert('Este pedido já está concluído!');
+      return;
+    }
+
+    const confirmar = confirm(`Deseja marcar o pedido #${pedido.id} como concluído?`);
+    if (!confirmar) return;
+
+    try {
+      const atualizado = await this.supabaseService.updatePedido(pedido.id, { entregue: true });
+      if (atualizado) {
+        pedido.entregue = true;
+        alert('Pedido concluído com sucesso!');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao atualizar o pedido.');
     }
   }
 
   // ✅ Marca pedido como não entregue no Supabase
   async marcarComoNaoEntregue(pedido: Pedido) {
     if (!pedido.entregue) {
-      alert('Este pedido não já está concluído!');
+      alert('Este pedido não está concluído!');
       return;
     }
 
@@ -94,7 +117,7 @@ export class VerDetalhes {
     try {
       const atualizado = await this.supabaseService.updatePedido(pedido.id, { entregue: false });
       if (atualizado) {
-        pedido.entregue = true;
+        pedido.entregue = false;
         alert('Pedido desmarcado como concluído com sucesso!');
       }
     } catch (err) {
