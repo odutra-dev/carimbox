@@ -107,7 +107,10 @@ export class CupomService {
     alturaReal += 4 + 3.5; // Espaçamento e linha divisória final
     alturaReal += margemCorte; // Margem de corte da impressora térmica (avanço do papel)
 
-    // 3. Cria o documento PDF final com dimensões exatas calculadas
+    // 3. Adiciona a margem de corte da impressora térmica (avanço do papel)
+    alturaReal += margemCorte;
+
+    // 4. Cria o documento PDF final com dimensões exatas calculadas
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
