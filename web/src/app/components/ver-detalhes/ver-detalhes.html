@@ -1,48 +1,167 @@
 <div class="container">
   <!-- Loading -->
-  <div *ngIf="loading" class="center">
+  <div *ngIf="loading" class="state-box">
     <div class="spinner"></div>
     <p>Carregando pedido...</p>
   </div>
 
-  <!-- Pedido não encontrado -->
-  <div *ngIf="!loading && !pedido" class="center">
-    <p>Pedido não encontrado.</p>
-    <button class="btn" (click)="voltar()">Voltar</button>
+  <!-- Pedido não encontrado ou erro -->
+  <div *ngIf="!loading && (!pedido || !pedido.id)" class="state-box error">
+    <i class="bi bi-search"></i>
+    <p>{{ errorMsg || 'Pedido não encontrado.' }}</p>
+    <div style="margin-top: 16px;">
+      <button type="button" class="btn btn-primary" (click)="voltar()">
+        <i class="bi bi-arrow-left"></i>
+        <span>Voltar para a lista</span>
+      </button>
+    </div>
   </div>
 
   <!-- Pedido encontrado -->
-  <div *ngIf="pedido" class="pedido-card">
-    <div class="header">
-      <button class="icon-btn" (click)="voltar()"><i class="bi bi-arrow-left"></i></button>
-      <h2>Pedido #{{ pedido.id }}</h2>
-      <div>
-        <button *ngIf="pedido.entregue" (click)="marcarComoNaoEntregue(pedido)" class="icon-btn">
-          <i class="bi bi-x-circle"></i>
+  <div *ngIf="!loading && pedido && pedido.id" class="main-card">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-left">
+        <button class="back-button" type="button" aria-label="Voltar" (click)="voltar()">
+          <i class="bi bi-arrow-left"></i>
         </button>
-        <button class="icon-btn" (click)="editarPedido()"><i class="bi bi-pencil-fill"></i></button>
+        <div>
+          <h1 class="page-title">
+            <span>Pedido #{{ pedido.id }}</span>
+          </h1>
+          <p class="page-subtitle">Detalhes e informações do pedido</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Alternar status de entrega -->
+        <button
+          *ngIf="pedido.entregue"
+          type="button"
+          (click)="marcarComoNaoEntregue(pedido)"
+          class="icon-btn"
+          title="Desmarcar entrega (tornar pendente)"
+          aria-label="Desmarcar entrega"
+        >
+          <i class="bi bi-arrow-counterclockwise text-warning"></i>
+        </button>
+
+        <button
+          *ngIf="!pedido.entregue"
+          type="button"
+          (click)="marcarComoEntregue(pedido)"
+          class="icon-btn"
+          title="Marcar como concluído"
+          aria-label="Marcar como concluído"
+        >
+          <i class="bi bi-check-circle-fill text-success"></i>
+        </button>
+
+        <!-- Editar pedido -->
+        <button
+          type="button"
+          class="icon-btn"
+          (click)="editarPedido()"
+          title="Editar pedido"
+          aria-label="Editar pedido"
+        >
+          <i class="bi bi-pencil-fill text-primary"></i>
+        </button>
       </div>
     </div>
 
-    <div class="info">
-      <p *ngIf="pedido.cliente"><strong>Cliente:</strong> {{ pedido.cliente }}</p>
-      <p><strong>WhatsApp:</strong> {{ formatarWhatsapp(pedido.whatsapp.toString()) }}</p>
-      <p *ngIf="pedido.tipo_modelo"><strong>Modelo:</strong> {{ pedido.tipo_modelo }}</p>
-      <p><strong>Texto/Logo:</strong> {{ pedido.texto_logo }}</p>
-      <p><strong>Forma de Pagamento:</strong> {{ pedido.tipo_pagamento }}</p>
-      <p><strong>Valor:</strong> R$ {{ pedido.valor | number : '1.2-2' }}</p>
-      <p><strong>Data do Pedido:</strong> {{ pedido.data_pedido | date : 'dd/MM/yyyy HH:mm' }}</p>
-      <p><strong>Entrega:</strong> {{ pedido.data_entrega | date : 'dd/MM/yyyy HH:mm' }}</p>
-      <p *ngIf="pedido.observacao">
-        <strong>Observação:</strong> {{ pedido.observacao || 'Nenhuma' }}
-      </p>
+    <!-- Status e etiqueta badges -->
+    <div class="status-banner">
+      <span
+        class="badge"
+        [ngClass]="pedido.entregue ? 'badge-success' : 'badge-warning'"
+      >
+        <i [class]="pedido.entregue ? 'bi bi-check-circle-fill' : 'bi bi-clock-fill'"></i>
+        {{ pedido.entregue ? 'Concluído' : 'Pendente' }}
+      </span>
+
+      <span
+        class="badge"
+        [ngClass]="{
+          'badge-carimbo': pedido.label === 'Carimbo',
+          'badge-mdf': pedido.label === 'Mdf/Acrílico',
+          'badge-outros': pedido.label === 'Outros',
+          'badge-default': !pedido.label || (pedido.label !== 'Carimbo' && pedido.label !== 'Mdf/Acrílico' && pedido.label !== 'Outros')
+        }"
+      >
+        <i class="bi bi-tag-fill"></i>
+        {{ pedido.label || 'Outros' }}
+      </span>
     </div>
 
-    <div class="footer">
-      <button class="btn btn-imprimir" (click)="imprimirCupom()">
-        <i class="bi bi-printer-fill"></i> Imprimir Cupom
+    <!-- Grid de informações -->
+    <div class="details-grid">
+      <div class="detail-item" *ngIf="pedido.cliente">
+        <span class="detail-label"><i class="bi bi-person"></i> Cliente</span>
+        <span class="detail-value font-semibold">{{ pedido.cliente }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label"><i class="bi bi-whatsapp"></i> WhatsApp</span>
+        <span class="detail-value font-mono">
+          {{ formatarWhatsapp(pedido.whatsapp ? pedido.whatsapp.toString() : '') }}
+        </span>
+      </div>
+
+      <div class="detail-item" *ngIf="pedido.tipo_modelo">
+        <span class="detail-label"><i class="bi bi-box-seam"></i> Modelo</span>
+        <span class="detail-value">{{ pedido.tipo_modelo }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label"><i class="bi bi-credit-card"></i> Pagamento</span>
+        <span class="detail-value">{{ pedido.tipo_pagamento }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label"><i class="bi bi-currency-dollar"></i> Valor Total</span>
+        <span class="detail-value value-highlight">R$ {{ pedido.valor | number : '1.2-2' }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label"><i class="bi bi-calendar-event"></i> Data do Pedido</span>
+        <span class="detail-value">{{ pedido.data_pedido | date : 'dd/MM/yyyy, HH:mm' }}</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label"><i class="bi bi-calendar-check"></i> Previsão de Entrega</span>
+        <span class="detail-value">{{ pedido.data_entrega | date : 'dd/MM/yyyy, HH:mm' }}</span>
+      </div>
+    </div>
+
+    <!-- Descrição / Texto do Carimbo -->
+    <div class="detail-box">
+      <span class="detail-label"><i class="bi bi-card-text"></i> Descrição / Texto do Carimbo</span>
+      <p class="detail-box-content">{{ pedido.texto_logo }}</p>
+    </div>
+
+    <!-- Observações (se houver) -->
+    <div class="detail-box" *ngIf="pedido.observacao">
+      <span class="detail-label"><i class="bi bi-chat-left-text"></i> Observações</span>
+      <p class="detail-box-content">{{ pedido.observacao }}</p>
+    </div>
+
+    <!-- Rodapé de Ações -->
+    <div class="footer-actions">
+      <button type="button" class="btn btn-secondary" (click)="imprimirCupom()">
+        <i class="bi bi-printer-fill"></i>
+        <span>Imprimir Cupom</span>
       </button>
-      <button class="btn" (click)="copiarTexto()">Copiar Pedido</button>
+
+      <button type="button" class="btn btn-outline" (click)="copiarTexto()">
+        <i class="bi bi-clipboard"></i>
+        <span>Copiar Pedido</span>
+      </button>
+
+      <button type="button" class="btn btn-primary" (click)="editarPedido()">
+        <i class="bi bi-pencil-square"></i>
+        <span>Editar Pedido</span>
+      </button>
     </div>
   </div>
 </div>

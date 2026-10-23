@@ -17,7 +17,14 @@ import { Supabase } from '../../services/supabase';
 export class AtualizarPedido implements OnInit {
   pedidoForm: FormGroup;
   loading = false;
-  formaPagamentoOptions = ['Pix', 'Cartão de Crédito', 'Cartão de Débito', 'Dinheiro', 'A pagar'];
+  formaPagamentoOptions = [
+    'Pix',
+    'Cartão de Crédito',
+    'Cartão de Débito',
+    'Dinheiro',
+    'Link de pagamento',
+    'A pagar',
+  ];
   labelOptions = ['Carimbo', 'Mdf/Acrílico', 'Outros'];
   pedidoId!: number;
 

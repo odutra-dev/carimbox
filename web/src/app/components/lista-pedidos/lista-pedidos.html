@@ -1,78 +1,146 @@
 <div class="container">
-  <!-- Header personalizado -->
-  <div class="app-header">
-    <h1>Carimbox</h1>
-    <button class="btn-novo-pedido" (click)="novoPedido()">
-      <i class="bi bi-plus-circle"></i> Novo Pedido
+  <!-- Header da Lista -->
+  <div class="page-header app-header">
+    <div class="header-left">
+      <div class="brand-badge">📦</div>
+      <div>
+        <h1 class="page-title">Carimbox</h1>
+        <p class="page-subtitle">Gerenciamento de pedidos</p>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-novo-pedido" (click)="novoPedido()">
+      <i class="bi bi-plus-lg"></i>
+      <span>Novo Pedido</span>
     </button>
   </div>
 
   <!-- Filtros -->
   <div class="filtros">
-    <button [class.active]="filtro === 'pendentes'" (click)="setFiltro('pendentes')">
-      Pendentes
+    <button
+      type="button"
+      [class.active]="filtro === 'pendentes'"
+      (click)="setFiltro('pendentes')"
+    >
+      <i class="bi bi-clock"></i>
+      <span>Pendentes</span>
     </button>
 
-    <button [class.active]="filtro === 'concluidos'" (click)="setFiltro('concluidos')">
-      Concluídos
+    <button
+      type="button"
+      [class.active]="filtro === 'concluidos'"
+      (click)="setFiltro('concluidos')"
+    >
+      <i class="bi bi-check2-circle"></i>
+      <span>Concluídos</span>
     </button>
 
-    <button [class.active]="filtro === 'todos'" (click)="setFiltro('todos')">Todos</button>
+    <button
+      type="button"
+      [class.active]="filtro === 'todos'"
+      (click)="setFiltro('todos')"
+    >
+      <i class="bi bi-list-ul"></i>
+      <span>Todos</span>
+    </button>
   </div>
 
   <!-- Mensagens de loading ou erro -->
-  <div *ngIf="loading" class="loading">Carregando...</div>
-  <div *ngIf="errorMsg" class="error">{{ errorMsg }}</div>
+  <div *ngIf="loading" class="state-box loading">
+    <div class="spinner"></div>
+    <p>Carregando pedidos...</p>
+  </div>
+
+  <div *ngIf="errorMsg" class="state-box error">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ errorMsg }}</p>
+  </div>
 
   <!-- Lista de pedidos filtrada -->
-  <div *ngIf="!loading && pedidosFiltrados.length > 0">
+  <div *ngIf="!loading && pedidosFiltrados.length > 0" class="pedidos-list">
     <div
       *ngFor="let pedido of pedidosFiltrados"
       class="pedido-card"
       (click)="verDetalhes(pedido.id)"
     >
-      <div class="header">
-        <div class="info">
-          <!-- Barra colorida corrigida -->
-          <div
-            class="label-bar"
-            [style.backgroundColor]="
-              pedido.label === 'Carimbo'
-                ? '#DA1325'
-                : pedido.label === 'Mdf/Acrílico'
-                  ? '#16A34A'
-                  : pedido.label === 'Outros'
-                    ? '#C59E0B'
-                    : '#9E9E9E'
-            "
-          ></div>
+      <div class="card-inner">
+        <!-- Indicador de cor à esquerda -->
+        <div
+          class="label-indicator"
+          [style.backgroundColor]="
+            pedido.label === 'Carimbo'
+              ? '#DA1325'
+              : pedido.label === 'Mdf/Acrílico'
+                ? '#16A34A'
+                : pedido.label === 'Outros'
+                  ? '#C59E0B'
+                  : '#9E9E9E'
+          "
+        ></div>
 
-          <p class="id-text">Pedido #{{ pedido.id }}</p>
-          <p class="data-text">
-            {{ pedido.data_pedido | date: 'dd/MM/yyyy, HH:mm' }}
-          </p>
-          <p class="cliente-text">
-            {{ formatarWhatsapp(pedido.whatsapp.toString()) }}
-          </p>
+        <!-- Conteúdo do card -->
+        <div class="info">
+          <div class="card-top-row">
+            <span class="id-text">Pedido #{{ pedido.id }}</span>
+          </div>
+
+          <div class="card-meta">
+            <p *ngIf="pedido.cliente" class="cliente-text">
+              <i class="bi bi-person"></i>
+              <strong>{{ pedido.cliente }}</strong>
+            </p>
+            <p class="data-text">
+              <i class="bi bi-calendar3"></i>
+              {{ pedido.data_pedido | date: 'dd/MM/yyyy, HH:mm' }}
+            </p>
+            <p class="phone-text">
+              <i class="bi bi-whatsapp"></i>
+              {{ formatarWhatsapp(pedido.whatsapp.toString()) }}
+            </p>
+          </div>
         </div>
 
+        <!-- Ações do pedido -->
         <div class="icon-container" (click)="$event.stopPropagation()">
-          <button class="icon icon-print" (click)="imprimirCupom(pedido, $event)" title="Imprimir Cupom">
+          <button
+            type="button"
+            class="icon icon-print"
+            (click)="imprimirCupom(pedido, $event)"
+            title="Imprimir Cupom"
+            aria-label="Imprimir Cupom"
+          >
             <i class="bi bi-printer-fill"></i>
           </button>
 
           <ng-container *ngIf="!pedido.entregue">
-            <button class="icon-check" (click)="marcarComoEntregue(pedido)" title="Marcar como entregue">
+            <button
+              type="button"
+              class="icon-check"
+              (click)="marcarComoEntregue(pedido)"
+              title="Marcar como entregue"
+              aria-label="Marcar como entregue"
+            >
               <i class="bi bi-check-circle-fill"></i>
             </button>
           </ng-container>
 
-          <button class="icon" (click)="enviarWhatsApp(pedido)" title="Enviar no WhatsApp">
+          <button
+            type="button"
+            class="icon icon-whatsapp"
+            (click)="enviarWhatsApp(pedido)"
+            title="Enviar no WhatsApp"
+            aria-label="Enviar no WhatsApp"
+          >
             <i class="bi bi-box-arrow-up-right"></i>
           </button>
 
           <ng-container *ngIf="!pedido.entregue">
-            <button class="icon icon-delete" (click)="excluirPedido(pedido, $event)" title="Remover pedido">
+            <button
+              type="button"
+              class="icon icon-delete"
+              (click)="excluirPedido(pedido, $event)"
+              title="Remover pedido"
+              aria-label="Remover pedido"
+            >
               <i class="bi bi-trash3-fill"></i>
             </button>
           </ng-container>
@@ -82,7 +150,8 @@
   </div>
 
   <!-- Mensagem caso não haja pedidos filtrados -->
-  <div *ngIf="!loading && pedidosFiltrados.length === 0" class="empty">
-    Nenhum pedido encontrado.
+  <div *ngIf="!loading && pedidosFiltrados.length === 0" class="state-box empty">
+    <i class="bi bi-inbox"></i>
+    <p>Nenhum pedido encontrado nesta categoria.</p>
   </div>
 </div>
