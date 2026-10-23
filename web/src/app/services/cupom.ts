@@ -48,95 +48,114 @@ export class CupomService {
   async gerarPdf(pedido: Pedido): Promise<jsPDF> {
     const { jsPDF } = await import('jspdf');
 
-    const larguraPapel = 80;
-    const margem = 4;
-    const larguraUtil = larguraPapel - (margem * 2); // 72mm úteis
-    const centro = larguraPapel / 2; // 40mm
+    // -------------------------------------------------------------
+    // Dimensões do Cupom Térmico (limite de 70mm de largura)
+    // -------------------------------------------------------------
+    const larguraPapel = 70; // Limite de 70mm de largura conforme solicitado
+    const margem = 4; // Margem lateral de 4mm de cada lado
+    const larguraUtil = larguraPapel - (margem * 2); // 62mm de largura útil para o conteúdo
+    const centro = larguraPapel / 2; // 35mm (ponto central)
 
-    // Área em branco ao final do cupom para a distância entre a cabeça de impressão e a guilhotina da Tanca TP 650
-    const margemCorte = 12; // 12mm de respiro para não imprimir ao infinito
+    // Margem superior para que a cabeça de impressão não corte o cabeçalho
+    const margemTop = 10; // 10mm de margem no topo
 
-    // 1. Pré-calcula a altura necessária para textos multi-linha
-    const docCalc = new jsPDF({ unit: 'mm', format: [larguraPapel, 600] });
-    docCalc.setFont('courier', 'normal');
-    docCalc.setFontSize(8);
+    // Margem inferior de respiro e avanço para que a guilhotina da impressora térmica não corte nenhuma informação
+    const margemCorte = 18; // 18mm de avanço após o término das informações
+
+    // 1. Pré-calcula a altura necessária para textos multi-linha (fontes maiores e em negrito)
+    const docCalc = new jsPDF({ unit: 'mm', format: [larguraPapel, 800] });
+    docCalc.setFont('courier', 'bold');
+    docCalc.setFontSize(9);
 
     const linhasTexto = docCalc.splitTextToSize(
       this.sanitizarTexto(pedido.texto_logo || 'Sem descrição'),
       larguraUtil - 4,
     );
-    const alturaCaixaTexto = Math.max(linhasTexto.length * 3.5 + 3, 8);
+    const alturaCaixaTexto = Math.max(linhasTexto.length * 4.0 + 3.5, 9);
 
     let linhasObs: string[] = [];
     let alturaCaixaObs = 0;
     if (pedido.observacao) {
       linhasObs = docCalc.splitTextToSize(this.sanitizarTexto(pedido.observacao), larguraUtil - 4);
-      alturaCaixaObs = linhasObs.length * 3.5 + 6;
+      alturaCaixaObs = Math.max(linhasObs.length * 4.0 + 3.5, 8);
     }
 
     // 2. Altura real baseada na soma exata dos blocos
-    let alturaReal = 6 + 12 + 4 + 17 + 3 + 3 + (3.5 * 2) + 3 + 3 + 3.5 + 2.5 + alturaCaixaTexto + 3;
+    let alturaReal = margemTop;
+    alturaReal += 4.5; // Cabeçalho: Título da loja
+    alturaReal += 4.5; // Cabeçalho: Endereço da loja
+    alturaReal += 18 + 3.5; // Box do número do pedido + espaçamento
+    alturaReal += 3.5; // Divisor
+    alturaReal += 4.2 * 2; // Datas (Pedido e Entrega)
+    alturaReal += 3.5; // Divisor
+    alturaReal += 4.2; // Modelo
+    alturaReal += 3.5; // Divisor
+    alturaReal += 2.5 + alturaCaixaTexto + 3.5; // Descrição / Texto / Logo
 
     if (pedido.observacao) {
-      alturaReal += 2.5 + alturaCaixaObs + 3;
+      alturaReal += 2.5 + alturaCaixaObs + 3.5; // Observação
     }
 
-    alturaReal += 3 + 3.5 + 5 + 3 + 6 + 6; // Pagamento, Total, Rodapé e pequena margem de respiro
+    alturaReal += 3.5; // Divisor
+    alturaReal += 4.2; // Pagamento
+    alturaReal += 5.5; // Total
+    alturaReal += 3.5; // Divisor
+    alturaReal += 3.5; // Rodapé linha 1
+    alturaReal += 3.5; // Rodapé linha 2
+    alturaReal += 4 + 3.5; // Espaçamento e linha divisória final
+    alturaReal += margemCorte; // Margem de corte da impressora térmica (avanço do papel)
 
-    // 3. Adiciona a margem de corte da impressora térmica (avanço do papel)
-    alturaReal += margemCorte;
-
-    // 4. Cria o documento PDF final com dimensões exatas calculadas
+    // 3. Cria o documento PDF final com dimensões exatas calculadas
     const doc = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: [larguraPapel, alturaReal],
     });
 
-    let y = 6;
+    let y = margemTop;
 
-    // Cabeçalho da loja
+    // Cabeçalho da loja (fontes levemente maiores e em negrito para melhor nitidez)
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
+    doc.setFontSize(13);
     doc.text('Carimbos Ocian', centro, y, { align: 'center' });
-    y += 4;
+    y += 4.5;
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
     doc.text('Rua Remo Estefane, 50 - Ocian', centro, y, { align: 'center' });
-    y += 4;
+    y += 4.5;
 
     // Box do Número do Pedido
     const boxY = y;
-    const boxH = 17;
+    const boxH = 18;
     doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.5);
     doc.roundedRect(margem, boxY, larguraUtil, boxH, 1.5, 1.5);
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.text('PEDIDO', centro, boxY + 4.5, { align: 'center' });
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(22);
-    doc.text('' + pedido.id, centro, boxY + 13.5, { align: 'center' });
-    y += boxH + 3;
+    doc.text('' + pedido.id, centro, boxY + 14.5, { align: 'center' });
+    y += boxH + 3.5;
 
     const divisor = () => {
       doc.setDrawColor(0, 0, 0);
       doc.setLineWidth(0.2);
       doc.setLineDashPattern([1.2, 0.8], 0);
       doc.line(margem, y, margem + larguraUtil, y);
-      y += 3;
+      y += 3.5;
     };
 
+    // Linha dupla com rótulo e valor - ambos em negrito e tamanho maior para visualização rápida
     const linhaDupla = (rotulo: string, valor: string) => {
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
+      doc.setFontSize(8.5);
       doc.text(rotulo, margem, y);
-      doc.setFont('helvetica', 'normal');
       doc.text(this.sanitizarTexto(valor), margem + larguraUtil, y, { align: 'right' });
-      y += 3.5;
+      y += 4.2;
     };
 
     divisor();
@@ -154,9 +173,9 @@ export class CupomService {
 
     divisor();
 
-    // Descrição / Texto / Logo
+    // Descrição / Texto / Logo (caixa com texto em negrito para facilitar a produção)
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7.5);
+    doc.setFontSize(8.5);
     doc.text('Descrição / Texto / Logo:', margem, y);
     y += 2.5;
 
@@ -165,26 +184,26 @@ export class CupomService {
     doc.setLineDashPattern([], 0);
     doc.rect(margem, y, larguraUtil, alturaCaixaTexto);
 
-    doc.setFont('courier', 'normal');
-    doc.setFontSize(8);
-    doc.text(linhasTexto, margem + 2, y + 3);
-    y += alturaCaixaTexto + 3;
+    doc.setFont('courier', 'bold');
+    doc.setFontSize(9);
+    doc.text(linhasTexto, margem + 2, y + 3.5);
+    y += alturaCaixaTexto + 3.5;
 
     // Observação (se houver)
     if (pedido.observacao) {
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
+      doc.setFontSize(8.5);
       doc.text('Observação:', margem, y);
       y += 2.5;
 
       doc.setDrawColor(180, 180, 180);
       doc.setLineWidth(0.15);
-      doc.rect(margem, y, larguraUtil, linhasObs.length * 3.5 + 4);
+      doc.rect(margem, y, larguraUtil, alturaCaixaObs);
 
-      doc.setFont('courier', 'normal');
-      doc.setFontSize(8);
-      doc.text(linhasObs, margem + 2, y + 3);
-      y += linhasObs.length * 3.5 + 6;
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(9);
+      doc.text(linhasObs, margem + 2, y + 3.5);
+      y += alturaCaixaObs + 3.5;
     }
 
     divisor();
@@ -198,21 +217,25 @@ export class CupomService {
     });
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
+    doc.setFontSize(9.5);
     doc.text('VALOR TOTAL:', margem, y);
-    doc.setFontSize(10.5);
-    doc.text('R$ ' + valorFormatado, margem + larguraUtil, y + 1, { align: 'right' });
-    y += 5;
+    doc.setFontSize(11.5);
+    doc.text('R$ ' + valorFormatado, margem + larguraUtil, y + 0.5, { align: 'right' });
+    y += 5.5;
 
     divisor();
 
     // Rodapé de retirada
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7);
+    doc.setFontSize(8);
     doc.text('RETIRADA: DENTRO DO CHAVEIRO OCIAN', centro, y, { align: 'center' });
-    y += 3;
-    doc.setFont('helvetica', 'normal');
+    y += 3.5;
+    doc.setFont('helvetica', 'bold');
     doc.text('Rua Remo Estefane, 50 - Ocian', centro, y, { align: 'center' });
+
+    // Linha divisória final para que a máquina entenda que ainda há texto e avance antes de cortar
+    y += 4;
+    divisor();
 
     return doc;
   }
