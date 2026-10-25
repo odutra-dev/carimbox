@@ -1,5 +1,6 @@
 package com.dutradev.carimbosocian.ui.components
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +43,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dutradev.carimbosocian.R
 import com.dutradev.carimbosocian.data.model.Pedido
+import com.dutradev.carimbosocian.ui.theme.LabelCarimbo
+import com.dutradev.carimbosocian.ui.theme.LabelDefault
+import com.dutradev.carimbosocian.ui.theme.LabelMdf
+import com.dutradev.carimbosocian.ui.theme.LabelOuthers
 import com.dutradev.carimbosocian.ui.theme.StatusDelivered
 import com.dutradev.carimbosocian.util.DateUtils
 import com.dutradev.carimbosocian.util.IntentUtils
@@ -57,34 +61,88 @@ fun PedidoCard(
     val context = LocalContext.current
     var showConfirmDialog by remember { mutableStateOf(false) }
 
+    // Cores exatas originais do tema (theme/index.ts)
     val labelColor = when (pedido.label) {
-        "Carimbo" -> Color(0xFF0284C7)
-        "Mdf/Acrílico" -> Color(0xFF8B5CF6)
-        "Outros" -> Color(0xFF10B981)
-        else -> Color(0xFF64748B)
+        "Carimbo" -> LabelCarimbo
+        "Mdf/Acrílico", "MDF/Acrílico" -> LabelMdf
+        "Outros" -> LabelOuthers
+        else -> LabelDefault
     }
 
+    val mensagemPedidoConcluido = """
+        ✅ Seu pedido já foi finalizado e está disponível para retirada! ✅
+
+        ━━━━━━━━━━━━━━━━━━━━━━━━
+        📦 Retirada com o nº do pedido: ${pedido.id ?: 0}
+        ━━━━━━━━━━━━━━━━━━━━━━━━
+
+        📍 *RETIRADA: DENTRO do CHAVEIRO OCIAN*
+        Rua Remo Estéfane, 50 – Ocian
+        https://maps.app.goo.gl/3FzpDGgtgv9ipG1f9
+
+        💙 Agradecemos pela confiança! 💙
+    """.trimIndent()
+
+    val mensagemNovoPedido = """
+        Segue o resumo do seu pedido:
+
+        ━━━━━━━━━━━━━━━━━
+        📦 Nº DO PEDIDO
+             *Nº: ${pedido.id ?: 0}*
+        ━━━━━━━━━━━━━━━━━
+
+        ${if (pedido.tipoModelo.isNotBlank()) "🔖 Modelo: ${pedido.tipoModelo}\n" else ""}✏ Descrição:
+        ${pedido.textoLogo}
+        ${if (!pedido.observacao.isNullOrBlank()) "\n📝 Observação: ${pedido.observacao}" else ""}
+
+        💰 Forma de pagamento: ${pedido.tipoPagamento}
+        💵 Valor total: ${IntentUtils.formatCurrency(pedido.valor)}
+
+        ━━━━━━━━━━━━━━━━━
+        📦 RETIRADA A PARTIR DE
+        📅 ${DateUtils.toDisplayDateTime(pedido.dataEntrega)}
+        ━━━━━━━━━━━━━━━━━
+
+        📍 *RETIRADA: DENTRO do CHAVEIRO OCIAN*
+        Rua Remo Estéfane, 50 – Ocian
+    """.trimIndent()
+
     if (showConfirmDialog) {
+        val titulo = if (pedido.entregue) {
+            stringResource(R.string.marcar_como_pendente_titulo)
+        } else {
+            stringResource(R.string.marcar_como_concluido_titulo)
+        }
+        val mensagem = if (pedido.entregue) {
+            stringResource(R.string.marcar_como_pendente_msg, pedido.id ?: 0)
+        } else {
+            stringResource(R.string.marcar_como_concluido_msg, pedido.id ?: 0)
+        }
+
         AlertDialog(
             onDismissRequest = { showConfirmDialog = false },
-            title = {
-                Text(
-                    text = if (pedido.entregue) {
-                        stringResource(R.string.marcar_como_pendente)
-                    } else {
-                        stringResource(R.string.marcar_como_concluido)
-                    }
-                )
-            },
-            text = {
-                Text("Deseja alterar o status do Pedido #${pedido.id}?")
-            },
+            title = { Text(titulo) },
+            text = { Text(mensagem) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         showConfirmDialog = false
                         pedido.id?.let { id ->
                             onToggleStatus(id, pedido.entregue)
+                            if (!pedido.entregue) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.pedido_marcado_concluido),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                IntentUtils.openWhatsApp(context, pedido.whatsapp)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.pedido_marcado_pendente),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
                 ) {
@@ -114,7 +172,7 @@ fun PedidoCard(
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
         ) {
-            // Faixa lateral colorida com base na Categoria/Label
+            // Faixa lateral colorida com a cor original da Etiqueta (labelColor)
             Box(
                 modifier = Modifier
                     .width(6.dp)
@@ -132,44 +190,32 @@ fun PedidoCard(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Pedido #${pedido.id ?: 0}",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                    Text(
+                        text = "${stringResource(R.string.pedido_id_card)} #${pedido.id ?: 0}",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        StatusBadge(isDelivered = pedido.entregue)
-                    }
+                    )
 
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = if (pedido.cliente.isNotBlank()) pedido.cliente else "Sem nome de cliente",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+                        text = DateUtils.toDisplayDateTime(pedido.dataPedido),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
 
                     Spacer(modifier = Modifier.height(2.dp))
 
+                    val whatsappStr = pedido.whatsapp.toString()
+                    val formattedPhone = formatWhatsApp(whatsappStr)
                     Text(
-                        text = "Data: ${DateUtils.toDisplayDateTime(pedido.dataPedido)}",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        text = if (pedido.cliente.isNotBlank()) "${pedido.cliente} • $formattedPhone" else formattedPhone,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
                     )
-
-                    if (pedido.dataEntrega != null) {
-                        Text(
-                            text = "Entrega: ${DateUtils.toDisplayDate(pedido.dataEntrega)}",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
                 }
 
                 Row(
@@ -184,7 +230,7 @@ fun PedidoCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
-                                contentDescription = "Concluir",
+                                contentDescription = stringResource(R.string.concluidos),
                                 tint = StatusDelivered,
                                 modifier = Modifier.size(28.dp)
                             )
@@ -193,7 +239,6 @@ fun PedidoCard(
 
                     IconButton(
                         onClick = {
-                            val msg = buildWhatsAppMessage(pedido)
                             IntentUtils.openWhatsApp(context, pedido.whatsapp)
                         },
                         modifier = Modifier
@@ -202,7 +247,7 @@ fun PedidoCard(
                     ) {
                         Icon(
                             imageVector = Icons.Default.OpenInNew,
-                            contentDescription = "WhatsApp",
+                            contentDescription = stringResource(R.string.abrir_whatsapp),
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(24.dp)
                         )
@@ -213,14 +258,11 @@ fun PedidoCard(
     }
 }
 
-private fun buildWhatsAppMessage(pedido: Pedido): String {
-    return """
-        📦 Nº DO PEDIDO: #${pedido.id ?: 0}
-        ${if (pedido.cliente.isNotBlank()) "👤 Cliente: ${pedido.cliente}" else ""}
-        ${if (pedido.tipoModelo.isNotBlank()) "🔖 Modelo: ${pedido.tipoModelo}" else ""}
-        ✏ Descrição: ${pedido.textoLogo}
-        ${if (!pedido.observacao.isNullOrBlank()) "📝 Obs: ${pedido.observacao}" else ""}
-        💰 Valor: ${IntentUtils.formatCurrency(pedido.valor)}
-        📅 Data de entrega: ${DateUtils.toDisplayDateTime(pedido.dataEntrega)}
-    """.trimIndent()
+private fun formatWhatsApp(numero: String): String {
+    val num = numero.filter { it.isDigit() }
+    return when (num.length) {
+        11 -> "(${num.substring(0, 2)}) ${num.substring(2, 7)}-${num.substring(7)}"
+        10 -> "(${num.substring(0, 2)}) ${num.substring(2, 6)}-${num.substring(6)}"
+        else -> numero
+    }
 }
