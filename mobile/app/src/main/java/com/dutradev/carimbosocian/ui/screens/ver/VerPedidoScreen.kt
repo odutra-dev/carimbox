@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -59,10 +60,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dutradev.carimbosocian.R
+import com.dutradev.carimbosocian.data.model.Pedido
 import com.dutradev.carimbosocian.ui.components.InfoRow
 import com.dutradev.carimbosocian.ui.components.StatusBadge
 import com.dutradev.carimbosocian.ui.theme.StatusDelivered
 import com.dutradev.carimbosocian.ui.theme.StatusPending
+import com.dutradev.carimbosocian.ui.util.isTabletOrLandscape
 import com.dutradev.carimbosocian.util.DateUtils
 import com.dutradev.carimbosocian.util.IntentUtils
 
@@ -78,6 +81,7 @@ fun VerPedidoScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    val isTablet = isTabletOrLandscape()
 
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -187,125 +191,271 @@ fun VerPedidoScreen(
         } else {
             val pedido = uiState.pedido!!
 
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .verticalScroll(scrollState)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .padding(innerPadding),
+                contentAlignment = Alignment.TopCenter
             ) {
-                // Card Principal de Detalhes
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .widthIn(max = 900.dp)
+                        .verticalScroll(scrollState)
+                        .padding(horizontal = if (isTablet) 32.dp else 16.dp, vertical = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
+                    if (isTablet) {
+                        // Layout 2 Colunas para Tablets
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Text(
-                                text = stringResource(R.string.detalhes_pedido),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            StatusBadge(isDelivered = pedido.entregue)
+                            // Coluna 1: Informações do Cliente e Descrição
+                            Card(
+                                modifier = Modifier.weight(1.1f),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(20.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.detalhes_pedido),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        StatusBadge(isDelivered = pedido.entregue)
+                                    }
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    InfoRow(
+                                        label = stringResource(R.string.cliente),
+                                        value = pedido.cliente,
+                                        icon = Icons.Default.Person
+                                    )
+
+                                    InfoRow(
+                                        label = stringResource(R.string.whatsapp),
+                                        value = pedido.whatsapp.toString(),
+                                        icon = Icons.Default.Phone,
+                                        enableCopy = true,
+                                        onClick = { IntentUtils.openWhatsApp(context, pedido.whatsapp) }
+                                    )
+
+                                    InfoRow(
+                                        label = stringResource(R.string.tipo_modelo),
+                                        value = pedido.tipoModelo,
+                                        icon = Icons.Default.Label
+                                    )
+
+                                    InfoRow(
+                                        label = stringResource(R.string.texto_logo),
+                                        value = pedido.textoLogo,
+                                        icon = Icons.Default.Description,
+                                        enableCopy = true
+                                    )
+
+                                    if (!pedido.observacao.isNullOrBlank()) {
+                                        InfoRow(
+                                            label = stringResource(R.string.observacao),
+                                            value = pedido.observacao,
+                                            icon = Icons.Default.Description
+                                        )
+                                    }
+                                }
+                            }
+
+                            // Coluna 2: Dados Financeiros, Datas e Ações Rápidas
+                            Column(
+                                modifier = Modifier.weight(0.9f),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(20.dp)
+                                    ) {
+                                        InfoRow(
+                                            label = stringResource(R.string.tipo_pagamento),
+                                            value = pedido.tipoPagamento,
+                                            icon = Icons.Default.Payments
+                                        )
+
+                                        InfoRow(
+                                            label = stringResource(R.string.valor),
+                                            value = IntentUtils.formatCurrency(pedido.valor),
+                                            icon = Icons.Default.Payments
+                                        )
+
+                                        InfoRow(
+                                            label = stringResource(R.string.data_pedido),
+                                            value = DateUtils.toDisplayDateTime(pedido.dataPedido),
+                                            icon = Icons.Default.CalendarToday
+                                        )
+
+                                        InfoRow(
+                                            label = stringResource(R.string.data_entrega),
+                                            value = DateUtils.toDisplayDateTime(pedido.dataEntrega),
+                                            icon = Icons.Default.CalendarToday
+                                        )
+                                    }
+                                }
+
+                                ActionButtons(
+                                    pedido = pedido,
+                                    context = context,
+                                    onToggleStatus = { viewModel.toggleStatus() }
+                                )
+                            }
+                        }
+                    } else {
+                        // Layout 1 Coluna para Celular
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.detalhes_pedido),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    StatusBadge(isDelivered = pedido.entregue)
+                                }
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                InfoRow(
+                                    label = stringResource(R.string.cliente),
+                                    value = pedido.cliente,
+                                    icon = Icons.Default.Person
+                                )
+
+                                InfoRow(
+                                    label = stringResource(R.string.whatsapp),
+                                    value = pedido.whatsapp.toString(),
+                                    icon = Icons.Default.Phone,
+                                    enableCopy = true,
+                                    onClick = { IntentUtils.openWhatsApp(context, pedido.whatsapp) }
+                                )
+
+                                InfoRow(
+                                    label = stringResource(R.string.tipo_modelo),
+                                    value = pedido.tipoModelo,
+                                    icon = Icons.Default.Label
+                                )
+
+                                InfoRow(
+                                    label = stringResource(R.string.texto_logo),
+                                    value = pedido.textoLogo,
+                                    icon = Icons.Default.Description,
+                                    enableCopy = true
+                                )
+
+                                InfoRow(
+                                    label = stringResource(R.string.tipo_pagamento),
+                                    value = pedido.tipoPagamento,
+                                    icon = Icons.Default.Payments
+                                )
+
+                                InfoRow(
+                                    label = stringResource(R.string.valor),
+                                    value = IntentUtils.formatCurrency(pedido.valor),
+                                    icon = Icons.Default.Payments
+                                )
+
+                                InfoRow(
+                                    label = stringResource(R.string.data_pedido),
+                                    value = DateUtils.toDisplayDateTime(pedido.dataPedido),
+                                    icon = Icons.Default.CalendarToday
+                                )
+
+                                InfoRow(
+                                    label = stringResource(R.string.data_entrega),
+                                    value = DateUtils.toDisplayDateTime(pedido.dataEntrega),
+                                    icon = Icons.Default.CalendarToday
+                                )
+
+                                if (!pedido.observacao.isNullOrBlank()) {
+                                    InfoRow(
+                                        label = stringResource(R.string.observacao),
+                                        value = pedido.observacao,
+                                        icon = Icons.Default.Description
+                                    )
+                                }
+                            }
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        InfoRow(
-                            label = stringResource(R.string.cliente),
-                            value = pedido.cliente,
-                            icon = Icons.Default.Person
+                        ActionButtons(
+                            pedido = pedido,
+                            context = context,
+                            onToggleStatus = { viewModel.toggleStatus() }
                         )
-
-                        InfoRow(
-                            label = stringResource(R.string.whatsapp),
-                            value = pedido.whatsapp.toString(),
-                            icon = Icons.Default.Phone,
-                            enableCopy = true,
-                            onClick = { IntentUtils.openWhatsApp(context, pedido.whatsapp) }
-                        )
-
-                        InfoRow(
-                            label = stringResource(R.string.tipo_modelo),
-                            value = pedido.tipoModelo,
-                            icon = Icons.Default.Label
-                        )
-
-                        InfoRow(
-                            label = stringResource(R.string.texto_logo),
-                            value = pedido.textoLogo,
-                            icon = Icons.Default.Description,
-                            enableCopy = true
-                        )
-
-                        InfoRow(
-                            label = stringResource(R.string.tipo_pagamento),
-                            value = pedido.tipoPagamento,
-                            icon = Icons.Default.Payments
-                        )
-
-                        InfoRow(
-                            label = stringResource(R.string.valor),
-                            value = IntentUtils.formatCurrency(pedido.valor),
-                            icon = Icons.Default.Payments
-                        )
-
-                        InfoRow(
-                            label = stringResource(R.string.data_pedido),
-                            value = DateUtils.toDisplayDateTime(pedido.dataPedido),
-                            icon = Icons.Default.CalendarToday
-                        )
-
-                        InfoRow(
-                            label = stringResource(R.string.data_entrega),
-                            value = DateUtils.toDisplayDateTime(pedido.dataEntrega),
-                            icon = Icons.Default.CalendarToday
-                        )
-
-                        if (!pedido.observacao.isNullOrBlank()) {
-                            InfoRow(
-                                label = stringResource(R.string.observacao),
-                                value = pedido.observacao,
-                                icon = Icons.Default.Description
-                            )
-                        }
                     }
                 }
+            }
+        }
+    }
+}
 
-                // Ação de Alterar Status
-                OutlinedButton(
-                    onClick = { viewModel.toggleStatus() },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = if (pedido.entregue) StatusPending else StatusDelivered
-                    )
-                ) {
-                    Text(
-                        text = if (pedido.entregue) {
-                            stringResource(R.string.reabrir_pedido)
-                        } else {
-                            stringResource(R.string.concluir_pedido)
-                        },
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+@Composable
+private fun ActionButtons(
+    pedido: Pedido,
+    context: android.content.Context,
+    onToggleStatus: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        OutlinedButton(
+            onClick = onToggleStatus,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = if (pedido.entregue) StatusPending else StatusDelivered
+            )
+        ) {
+            Text(
+                text = if (pedido.entregue) {
+                    stringResource(R.string.reabrir_pedido)
+                } else {
+                    stringResource(R.string.concluir_pedido)
+                },
+                fontWeight = FontWeight.SemiBold
+            )
+        }
 
-                // Botão Copiar Todos os Dados
-                Button(
-                    onClick = {
-                        val fullSummary = """
+        Button(
+            onClick = {
+                val fullSummary = """
 Pedido #${pedido.id}
 ${if (pedido.cliente.isNotBlank()) "Cliente: ${pedido.cliente}" else ""}
 WhatsApp: ${pedido.whatsapp}
@@ -317,51 +467,44 @@ Data do Pedido: ${DateUtils.toDisplayDateTime(pedido.dataPedido)}
 Data de Entrega: ${DateUtils.toDisplayDateTime(pedido.dataEntrega)}
 ${if (!pedido.observacao.isNullOrBlank()) "Observação: ${pedido.observacao}" else ""}
 Status: ${if (pedido.entregue) "Concluído" else "Pendente"}
-                        """.trimIndent()
+                """.trimIndent()
 
-                        IntentUtils.copyToClipboard(
-                            context = context,
-                            label = "Pedido #${pedido.id}",
-                            text = fullSummary,
-                            feedbackMessage = context.getString(R.string.dados_copiados)
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ContentCopy,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = stringResource(R.string.copiar_todos))
-                }
+                IntentUtils.copyToClipboard(
+                    context = context,
+                    label = "Pedido #${pedido.id}",
+                    text = fullSummary,
+                    feedbackMessage = context.getString(R.string.dados_copiados)
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ContentCopy,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = stringResource(R.string.copiar_todos))
+        }
 
-                // Botão Conversar no WhatsApp
-                Button(
-                    onClick = {
-                        val msg = """
-Olá ${if (pedido.cliente.isNotBlank()) pedido.cliente else ""}! 😄
-Aqui é da Carimbos Ocian a respeito do seu Pedido #${pedido.id}.
-                        """.trimIndent()
-                        IntentUtils.openWhatsApp(context, pedido.whatsapp)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = ColorGreenWhatsapp
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Message,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = stringResource(R.string.abrir_whatsapp))
-                }
-            }
+        Button(
+            onClick = {
+                IntentUtils.openWhatsApp(context, pedido.whatsapp)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ColorGreenWhatsapp
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Default.Message,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = stringResource(R.string.abrir_whatsapp))
         }
     }
 }

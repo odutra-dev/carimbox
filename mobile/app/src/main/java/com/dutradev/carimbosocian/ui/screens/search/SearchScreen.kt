@@ -12,9 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -80,106 +81,117 @@ fun SearchScreen(
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // Card de Filtros
-            Card(
+            // Card de Filtros Centralizado e Responsivo
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Column(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                        .widthIn(max = 760.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    OutlinedTextField(
-                        value = uiState.query,
-                        onValueChange = { viewModel.onQueryChange(it) },
-                        placeholder = { Text(stringResource(R.string.buscar_placeholder), fontSize = 14.sp) },
-                        leadingIcon = {
-                            Icon(imageVector = Icons.Default.Search, contentDescription = null)
-                        },
-                        trailingIcon = {
-                            if (uiState.query.isNotBlank()) {
-                                IconButton(onClick = { viewModel.onQueryChange("") }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = stringResource(R.string.limpar_filtros)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = uiState.query,
+                            onValueChange = { viewModel.onQueryChange(it) },
+                            placeholder = { Text(stringResource(R.string.buscar_placeholder), fontSize = 14.sp) },
+                            leadingIcon = {
+                                Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                            },
+                            trailingIcon = {
+                                if (uiState.query.isNotBlank()) {
+                                    IconButton(onClick = { viewModel.onQueryChange("") }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = stringResource(R.string.limpar_filtros)
+                                        )
+                                    }
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            singleLine = true
+                        )
+
+                        // Filtro por Data
+                        Column {
+                            Text(
+                                text = stringResource(R.string.filtro_data),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                listOf(
+                                    "dia" to stringResource(R.string.dia),
+                                    "mes" to stringResource(R.string.mes),
+                                    "ano" to stringResource(R.string.ano)
+                                ).forEach { (type, label) ->
+                                    val isSelected = uiState.dateFilterType == type
+                                    FilterChip(
+                                        selected = isSelected,
+                                        onClick = {
+                                            val cal = Calendar.getInstance()
+                                            DatePickerDialog(
+                                                context,
+                                                { _, year, month, dayOfMonth ->
+                                                    val picked = Calendar.getInstance().apply {
+                                                        set(year, month, dayOfMonth)
+                                                    }.time
+                                                    viewModel.setDateFilter(type, picked)
+                                                },
+                                                cal.get(Calendar.YEAR),
+                                                cal.get(Calendar.MONTH),
+                                                cal.get(Calendar.DAY_OF_MONTH)
+                                            ).show()
+                                        },
+                                        label = { Text(label, fontSize = 12.sp) }
                                     )
                                 }
                             }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp),
-                        singleLine = true
-                    )
+                        }
 
-                    // Filtro por Data
-                    Column {
-                        Text(
-                            text = stringResource(R.string.filtro_data),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
+                        // Botões de Ação
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            listOf("dia" to stringResource(R.string.dia), "mes" to stringResource(R.string.mes), "ano" to stringResource(R.string.ano)).forEach { (type, label) ->
-                                val isSelected = uiState.dateFilterType == type
-                                FilterChip(
-                                    selected = isSelected,
-                                    onClick = {
-                                        val cal = Calendar.getInstance()
-                                        DatePickerDialog(
-                                            context,
-                                            { _, year, month, dayOfMonth ->
-                                                val picked = Calendar.getInstance().apply {
-                                                    set(year, month, dayOfMonth)
-                                                }.time
-                                                viewModel.setDateFilter(type, picked)
-                                            },
-                                            cal.get(Calendar.YEAR),
-                                            cal.get(Calendar.MONTH),
-                                            cal.get(Calendar.DAY_OF_MONTH)
-                                        ).show()
-                                    },
-                                    label = { Text(label, fontSize = 12.sp) }
-                                )
+                            Button(
+                                onClick = { viewModel.search() },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text(stringResource(R.string.aplicar_filtros))
                             }
-                        }
-                    }
 
-                    // Botões de Ação
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Button(
-                            onClick = { viewModel.search() },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp)
-                        ) {
-                            Text(stringResource(R.string.aplicar_filtros))
-                        }
-
-                        OutlinedButton(
-                            onClick = { viewModel.clearFilters() },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp)
-                        ) {
-                            Text(stringResource(R.string.limpar_filtros))
+                            OutlinedButton(
+                                onClick = { viewModel.clearFilters() },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text(stringResource(R.string.limpar_filtros))
+                            }
                         }
                     }
                 }
             }
 
-            // Resultados
+            // Resultados Responsivos em Grid Adaptativo
             if (uiState.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -198,10 +210,12 @@ fun SearchScreen(
                     )
                 }
             } else {
-                LazyColumn(
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 340.dp),
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 80.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(
                         items = uiState.pedidos,
@@ -210,7 +224,7 @@ fun SearchScreen(
                         PedidoCard(
                             pedido = pedido,
                             onClick = { pedido.id?.let { onNavigateToDetail(it) } },
-                            onToggleStatus = { _, _ -> /* Na tela de busca, navega para detalhes */ }
+                            onToggleStatus = { _, _ -> }
                         )
                     }
                 }
