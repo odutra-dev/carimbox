@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Carimbos Ocian</string>
+    <string name="pedidos_titulo">Pedidos</string>
+    <string name="configuracoes_titulo">Configurações</string>
+    <string name="mensagem_home">Acompanhe os pedidos recentes</string>
+    <string name="pendentes">Pendentes</string>
+    <string name="concluidos">Concluídos</string>
+    <string name="todos">Todos</string>
+    <string name="modo_escuro">Modo escuro</string>
+    <string name="verificar_atualizacao">Verificar atualizações</string>
+    <string name="versao">Versão: %1$s</string>
+    <string name="nenhuma_atualizacao">Nenhuma atualização disponível</string>
+
+    <string name="pedido_id">Pedido #%1$d</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="cliente">Cliente</string>
+    <string name="tipo_modelo">Modelo</string>
+    <string name="texto_logo">Descrição / Logo</string>
+    <string name="observacao">Observação</string>
+    <string name="tipo_pagamento">Tipo de pagamento</string>
+    <string name="valor">Valor</string>
+    <string name="data_pedido">Data do pedido</string>
+    <string name="data_entrega">Data de entrega</string>
+    <string name="status">Status</string>
+    <string name="entregue">Entregue / Concluído</string>
+    <string name="categoria">Categoria / Label</string>
+
+    <string name="copiar_todos">Copiar todos os dados</string>
+    <string name="dados_copiados">Dados copiados para a área de transferência!</string>
+    <string name="abrir_whatsapp">Conversar no WhatsApp</string>
+    <string name="editar">Editar</string>
+    <string name="excluir">Excluir</string>
+    <string name="excluir_pedido">Excluir Pedido</string>
+    <string name="excluir_pedido_confirmacao">Tem certeza de que deseja excluir o Pedido #%1$d? Esta ação não pode ser desfeita.</string>
+    <string name="pedido_excluido_sucesso">Pedido excluído com sucesso!</string>
+
+    <string name="marcar_como_pendente">Marcar como pendente?</string>
+    <string name="marcar_como_concluido">Marcar como concluído?</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="salvar">Salvar</string>
+
+    <string name="novo_pedido_titulo">Novo Pedido</string>
+    <string name="novo_pedido_subtitulo">Preencha os campos abaixo para registrar um novo pedido</string>
+    <string name="editar_pedido_titulo">Editar Pedido</string>
+    <string name="pedido_criado_sucesso">Pedido criado com sucesso!</string>
+    <string name="pedido_atualizado_sucesso">Pedido atualizado com sucesso!</string>
+    <string name="alerta_campos_obrigatorios">Por favor, preencha os campos obrigatórios (*): WhatsApp, Descrição e Valor.</string>
+
+    <string name="buscar_placeholder">Buscar por cliente, texto ou whatsapp…</string>
+    <string name="nenhum_pedido_encontrado">Nenhum pedido encontrado</string>
+    <string name="filtro_data">Filtrar por data</string>
+    <string name="sem_filtro">Sem filtro</string>
+    <string name="dia">Dia</string>
+    <string name="mes">Mês</string>
+    <string name="ano">Ano</string>
+    <string name="selecionar_data">Selecionar Data</string>
+    <string name="erro_carregar_pedidos">Erro ao carregar pedidos. Verifique sua conexão.</string>
+</resources>
