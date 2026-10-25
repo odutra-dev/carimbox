@@ -1,0 +1,8 @@
+## Local properties template
+# Copie este arquivo para 'local.properties' e preencha as configurações.
+# O caminho do Android SDK geralmente é configurado automaticamente pelo Android Studio.
+# sdk.dir=/home/seu-usuario/Android/Sdk
+
+# Supabase Credentials
+SUPABASE_URL=https://seu-projeto.supabase.co
+SUPABASE_KEY=sua-chave-anon-publica
