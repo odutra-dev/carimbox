@@ -70,8 +70,30 @@ fun AtualizarPedidoScreen(
     var paymentDropdownExpanded by remember { mutableStateOf(false) }
     var labelDropdownExpanded by remember { mutableStateOf(false) }
 
-    val paymentOptions = listOf("Pix", "Dinheiro", "Cartão de Crédito", "Cartão de Débito", "A Combinar")
-    val labelOptions = listOf("Carimbo", "Mdf/Acrílico", "Outros")
+    val paymentOptions = listOf(
+        stringResource(R.string.pagamento_pix) to "Pix",
+        stringResource(R.string.pagamento_dinheiro) to "Dinheiro",
+        stringResource(R.string.pagamento_credito) to "Cartão de Crédito",
+        stringResource(R.string.pagamento_debito) to "Cartão de Débito",
+        stringResource(R.string.pagamento_a_pagar) to "A pagar",
+        stringResource(R.string.pagamento_link) to "Link de pagamento"
+    )
+
+    val labelOptions = listOf(
+        stringResource(R.string.label_carimbo) to "Carimbo",
+        stringResource(R.string.label_mdf) to "Mdf/Acrílico",
+        stringResource(R.string.label_outhers) to "Outros"
+    )
+
+    val selectedPaymentLabel = paymentOptions.find { it.second == uiState.tipoPagamento }?.first ?: uiState.tipoPagamento
+    val selectedCategoryLabel = labelOptions.find { it.second == uiState.label }?.first ?: uiState.label
+
+    LaunchedEffect(uiState.errorMessageResId) {
+        uiState.errorMessageResId?.let { resId ->
+            snackbarHostState.showSnackbar(context.getString(resId))
+            viewModel.clearErrorMessage()
+        }
+    }
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { msg ->
@@ -95,7 +117,7 @@ fun AtualizarPedidoScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Voltar"
+                            contentDescription = stringResource(R.string.voltar)
                         )
                     }
                 },
@@ -123,11 +145,18 @@ fun AtualizarPedidoScreen(
                     .padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                Text(
+                    text = stringResource(R.string.editar_pedido_subtitulo),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+
                 // Cliente
                 OutlinedTextField(
                     value = uiState.cliente,
                     onValueChange = { viewModel.onClienteChange(it) },
                     label = { Text(stringResource(R.string.cliente)) },
+                    placeholder = { Text(stringResource(R.string.cliente_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     singleLine = true
@@ -138,6 +167,7 @@ fun AtualizarPedidoScreen(
                     value = uiState.whatsapp,
                     onValueChange = { viewModel.onWhatsappChange(it) },
                     label = { Text("${stringResource(R.string.whatsapp)} *") },
+                    placeholder = { Text(stringResource(R.string.whatsapp_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
@@ -149,6 +179,7 @@ fun AtualizarPedidoScreen(
                     value = uiState.tipoModelo,
                     onValueChange = { viewModel.onTipoModeloChange(it) },
                     label = { Text(stringResource(R.string.tipo_modelo)) },
+                    placeholder = { Text(stringResource(R.string.tipo_modelo_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     singleLine = true
@@ -159,6 +190,7 @@ fun AtualizarPedidoScreen(
                     value = uiState.textoLogo,
                     onValueChange = { viewModel.onTextoLogoChange(it) },
                     label = { Text("${stringResource(R.string.texto_logo)} *") },
+                    placeholder = { Text(stringResource(R.string.texto_logo_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     minLines = 3
@@ -170,7 +202,7 @@ fun AtualizarPedidoScreen(
                     onExpandedChange = { paymentDropdownExpanded = it }
                 ) {
                     OutlinedTextField(
-                        value = uiState.tipoPagamento,
+                        value = selectedPaymentLabel,
                         onValueChange = {},
                         readOnly = true,
                         label = { Text(stringResource(R.string.tipo_pagamento)) },
@@ -187,9 +219,9 @@ fun AtualizarPedidoScreen(
                     ) {
                         paymentOptions.forEach { opt ->
                             DropdownMenuItem(
-                                text = { Text(opt) },
+                                text = { Text(opt.first) },
                                 onClick = {
-                                    viewModel.onTipoPagamentoChange(opt)
+                                    viewModel.onTipoPagamentoChange(opt.second)
                                     paymentDropdownExpanded = false
                                 }
                             )
@@ -202,6 +234,7 @@ fun AtualizarPedidoScreen(
                     value = uiState.valor,
                     onValueChange = { viewModel.onValorChange(it) },
                     label = { Text("${stringResource(R.string.valor)} *") },
+                    placeholder = { Text(stringResource(R.string.valor_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -218,7 +251,7 @@ fun AtualizarPedidoScreen(
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.CalendarToday,
-                            contentDescription = "Selecionar data",
+                            contentDescription = stringResource(R.string.selecionar_data),
                             modifier = Modifier.clickable {
                                 DatePickerDialog(
                                     context,
@@ -260,10 +293,10 @@ fun AtualizarPedidoScreen(
                     onExpandedChange = { labelDropdownExpanded = it }
                 ) {
                     OutlinedTextField(
-                        value = uiState.label,
+                        value = selectedCategoryLabel,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text(stringResource(R.string.categoria)) },
+                        label = { Text(stringResource(R.string.categoria_label)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = labelDropdownExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -277,9 +310,9 @@ fun AtualizarPedidoScreen(
                     ) {
                         labelOptions.forEach { opt ->
                             DropdownMenuItem(
-                                text = { Text(opt) },
+                                text = { Text(opt.first) },
                                 onClick = {
-                                    viewModel.onLabelChange(opt)
+                                    viewModel.onLabelChange(opt.second)
                                     labelDropdownExpanded = false
                                 }
                             )
@@ -292,6 +325,7 @@ fun AtualizarPedidoScreen(
                     value = uiState.observacao,
                     onValueChange = { viewModel.onObservacaoChange(it) },
                     label = { Text(stringResource(R.string.observacao)) },
+                    placeholder = { Text(stringResource(R.string.observacao_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     minLines = 2

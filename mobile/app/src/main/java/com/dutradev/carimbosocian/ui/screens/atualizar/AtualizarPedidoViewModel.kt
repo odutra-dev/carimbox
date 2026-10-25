@@ -2,6 +2,7 @@ package com.dutradev.carimbosocian.ui.screens.atualizar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dutradev.carimbosocian.R
 import com.dutradev.carimbosocian.data.model.PedidoUpdate
 import com.dutradev.carimbosocian.data.repository.PedidosRepository
 import com.dutradev.carimbosocian.util.DateUtils
@@ -25,6 +26,7 @@ data class AtualizarPedidoUiState(
     val label: String = "Carimbo",
     val isLoadingData: Boolean = true,
     val isSaving: Boolean = false,
+    val errorMessageResId: Int? = null,
     val errorMessage: String? = null,
     val isSuccess: Boolean = false
 )
@@ -43,7 +45,7 @@ class AtualizarPedidoViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoadingData = true, errorMessage = null) }
+            _uiState.update { it.copy(isLoadingData = true, errorMessage = null, errorMessageResId = null) }
             val result = repository.getPedidoById(pedidoId)
             result.onSuccess { pedido ->
                 _uiState.update {
@@ -64,7 +66,7 @@ class AtualizarPedidoViewModel(
                 _uiState.update {
                     it.copy(
                         isLoadingData = false,
-                        errorMessage = err.localizedMessage ?: "Erro ao carregar dados do pedido"
+                        errorMessage = err.localizedMessage
                     )
                 }
             }
@@ -90,12 +92,12 @@ class AtualizarPedidoViewModel(
 
         if (whatsappDigits.isBlank() || state.textoLogo.isBlank() || valorParsed == null) {
             _uiState.update {
-                it.copy(errorMessage = "Preencha os campos obrigatórios (*): WhatsApp, Descrição e Valor válido.")
+                it.copy(errorMessageResId = R.string.alerta_campos_obrigatorios)
             }
             return
         }
 
-        _uiState.update { it.copy(isSaving = true, errorMessage = null) }
+        _uiState.update { it.copy(isSaving = true, errorMessage = null, errorMessageResId = null) }
 
         viewModelScope.launch {
             val update = PedidoUpdate(
@@ -120,12 +122,12 @@ class AtualizarPedidoViewModel(
                 _uiState.update {
                     it.copy(
                         isSaving = false,
-                        errorMessage = err.localizedMessage ?: "Erro ao atualizar pedido"
+                        errorMessage = err.localizedMessage
                     )
                 }
             }
         }
     }
 
-    fun clearErrorMessage() = _uiState.update { it.copy(errorMessage = null) }
+    fun clearErrorMessage() = _uiState.update { it.copy(errorMessage = null, errorMessageResId = null) }
 }

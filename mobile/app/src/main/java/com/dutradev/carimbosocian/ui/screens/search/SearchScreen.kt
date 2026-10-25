@@ -64,7 +64,7 @@ fun SearchScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Buscar Pedidos",
+                        text = stringResource(R.string.search_titulo),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -105,7 +105,10 @@ fun SearchScreen(
                         trailingIcon = {
                             if (uiState.query.isNotBlank()) {
                                 IconButton(onClick = { viewModel.onQueryChange("") }) {
-                                    Icon(imageVector = Icons.Default.Close, contentDescription = "Limpar texto")
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = stringResource(R.string.limpar_filtros)
+                                    )
                                 }
                             }
                         },
@@ -162,7 +165,7 @@ fun SearchScreen(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text("Buscar")
+                            Text(stringResource(R.string.aplicar_filtros))
                         }
 
                         OutlinedButton(
@@ -170,7 +173,7 @@ fun SearchScreen(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text("Limpar")
+                            Text(stringResource(R.string.limpar_filtros))
                         }
                     }
                 }

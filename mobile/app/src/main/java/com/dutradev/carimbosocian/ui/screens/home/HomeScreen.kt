@@ -124,7 +124,10 @@ fun HomeScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Novo Pedido")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.novo_pedido_titulo)
+                )
             }
         }
     ) { innerPadding ->
@@ -206,7 +209,7 @@ fun HomeScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Limpar filtro de data",
+                            contentDescription = stringResource(R.string.limpar_filtros),
                             modifier = Modifier.size(16.dp)
                         )
                     }

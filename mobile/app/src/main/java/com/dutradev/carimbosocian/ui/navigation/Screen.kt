@@ -32,7 +32,7 @@ sealed class BottomNavItem(
 
     object Search : BottomNavItem(
         route = Screen.Search.route,
-        titleResId = com.dutradev.carimbosocian.R.string.buscar_placeholder,
+        titleResId = com.dutradev.carimbosocian.R.string.search_page,
         icon = Icons.Default.Search
     )
 

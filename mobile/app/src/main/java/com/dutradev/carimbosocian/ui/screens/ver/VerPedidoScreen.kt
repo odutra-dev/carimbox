@@ -135,7 +135,7 @@ fun VerPedidoScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Voltar"
+                            contentDescription = stringResource(R.string.voltar)
                         )
                     }
                 },
@@ -144,14 +144,14 @@ fun VerPedidoScreen(
                         IconButton(onClick = { onNavigateToEdit(id) }) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
-                                contentDescription = "Editar",
+                                contentDescription = stringResource(R.string.editar),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
                         IconButton(onClick = { showDeleteDialog = true }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Excluir",
+                                contentDescription = stringResource(R.string.excluir),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
@@ -213,7 +213,7 @@ fun VerPedidoScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Detalhes do Pedido",
+                                text = stringResource(R.string.detalhes_pedido),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -294,9 +294,9 @@ fun VerPedidoScreen(
                 ) {
                     Text(
                         text = if (pedido.entregue) {
-                            "Reabrir Pedido (Marcar como Pendente)"
+                            stringResource(R.string.reabrir_pedido)
                         } else {
-                            "Concluir Pedido (Marcar como Entregue)"
+                            stringResource(R.string.concluir_pedido)
                         },
                         fontWeight = FontWeight.SemiBold
                     )
@@ -319,7 +319,12 @@ ${if (!pedido.observacao.isNullOrBlank()) "Observação: ${pedido.observacao}" e
 Status: ${if (pedido.entregue) "Concluído" else "Pendente"}
                         """.trimIndent()
 
-                        IntentUtils.copyToClipboard(context, "Pedido #${pedido.id}", fullSummary, "Todos os dados copiados!")
+                        IntentUtils.copyToClipboard(
+                            context = context,
+                            label = "Pedido #${pedido.id}",
+                            text = fullSummary,
+                            feedbackMessage = context.getString(R.string.dados_copiados)
+                        )
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)

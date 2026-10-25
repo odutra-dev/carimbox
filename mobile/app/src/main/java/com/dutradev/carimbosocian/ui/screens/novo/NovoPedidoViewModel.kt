@@ -2,6 +2,7 @@ package com.dutradev.carimbosocian.ui.screens.novo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dutradev.carimbosocian.R
 import com.dutradev.carimbosocian.data.model.PedidoInsert
 import com.dutradev.carimbosocian.data.repository.PedidosRepository
 import com.dutradev.carimbosocian.util.DateUtils
@@ -24,6 +25,7 @@ data class NovoPedidoUiState(
     val dataEntrega: Date = Date(),
     val label: String = "Carimbo",
     val isLoading: Boolean = false,
+    val errorMessageResId: Int? = null,
     val errorMessage: String? = null,
     val isSuccess: Boolean = false
 )
@@ -55,12 +57,12 @@ class NovoPedidoViewModel(
 
         if (whatsappDigits.isBlank() || state.textoLogo.isBlank() || valorParsed == null) {
             _uiState.update {
-                it.copy(errorMessage = "Preencha os campos obrigatórios (*): WhatsApp, Descrição e Valor válido.")
+                it.copy(errorMessageResId = R.string.alerta_campos_obrigatorios)
             }
             return
         }
 
-        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+        _uiState.update { it.copy(isLoading = true, errorMessageResId = null, errorMessage = null) }
 
         viewModelScope.launch {
             val insert = PedidoInsert(
@@ -85,12 +87,12 @@ class NovoPedidoViewModel(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = err.localizedMessage ?: "Erro ao salvar pedido"
+                        errorMessage = err.localizedMessage
                     )
                 }
             }
         }
     }
 
-    fun clearErrorMessage() = _uiState.update { it.copy(errorMessage = null) }
+    fun clearErrorMessage() = _uiState.update { it.copy(errorMessage = null, errorMessageResId = null) }
 }

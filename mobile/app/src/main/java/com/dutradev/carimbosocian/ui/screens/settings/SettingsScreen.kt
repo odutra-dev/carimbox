@@ -148,7 +148,7 @@ fun SettingsScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
-                                contentDescription = "Verificar",
+                                contentDescription = stringResource(R.string.verificar_atualizacao),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
