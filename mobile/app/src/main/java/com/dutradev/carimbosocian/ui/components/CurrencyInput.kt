@@ -2,6 +2,10 @@ package com.dutradev.carimbosocian.ui.components
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,10 +32,17 @@ fun CurrencyInput(
             val clean = digits.trimStart('0').take(9)
             onCentsDigitsChange(clean)
         },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Payments,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
         label = { Text("${stringResource(R.string.valor)} *") },
         placeholder = { Text("R$ 0,00") },
         modifier = modifier,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(12.dp),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         singleLine = true,
         isError = errorMessage != null,

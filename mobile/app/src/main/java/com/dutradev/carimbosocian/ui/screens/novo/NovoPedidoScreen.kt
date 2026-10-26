@@ -16,13 +16,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.Notes
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,7 +58,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dutradev.carimbosocian.R
@@ -153,332 +160,505 @@ fun NovoPedidoScreen(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
 
-                // Cliente & WhatsApp (Linha dupla em Tablets, empilhado em Celular)
-                if (isTablet) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = uiState.cliente,
-                            onValueChange = { viewModel.onClienteChange(it) },
-                            label = { Text(stringResource(R.string.cliente)) },
-                            placeholder = { Text(stringResource(R.string.cliente_placeholder)) },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp),
-                            singleLine = true
-                        )
-
-                        PhoneWithDdiInput(
-                            selectedDdi = uiState.selectedDdi,
-                            phoneDigits = uiState.whatsapp,
-                            onDdiChange = { viewModel.onDdiChange(it) },
-                            onPhoneDigitsChange = { viewModel.onWhatsappChange(it) },
-                            errorMessage = uiState.whatsappErrorResId?.let { stringResource(it) },
-                            modifier = Modifier.weight(1.3f)
-                        )
-                    }
-                } else {
-                    OutlinedTextField(
-                        value = uiState.cliente,
-                        onValueChange = { viewModel.onClienteChange(it) },
-                        label = { Text(stringResource(R.string.cliente)) },
-                        placeholder = { Text(stringResource(R.string.cliente_placeholder)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp),
-                        singleLine = true
-                    )
-
-                    PhoneWithDdiInput(
-                        selectedDdi = uiState.selectedDdi,
-                        phoneDigits = uiState.whatsapp,
-                        onDdiChange = { viewModel.onDdiChange(it) },
-                        onPhoneDigitsChange = { viewModel.onWhatsappChange(it) },
-                        errorMessage = uiState.whatsappErrorResId?.let { stringResource(it) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                // Modelo & Valor
-                if (isTablet) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = uiState.tipoModelo,
-                            onValueChange = { viewModel.onTipoModeloChange(it) },
-                            label = { Text(stringResource(R.string.tipo_modelo)) },
-                            placeholder = { Text(stringResource(R.string.tipo_modelo_placeholder)) },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp),
-                            singleLine = true
-                        )
-
-                        CurrencyInput(
-                            centsDigits = uiState.valor,
-                            onCentsDigitsChange = { viewModel.onValorChange(it) },
-                            errorMessage = uiState.valorErrorResId?.let { stringResource(it) },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                } else {
-                    OutlinedTextField(
-                        value = uiState.tipoModelo,
-                        onValueChange = { viewModel.onTipoModeloChange(it) },
-                        label = { Text(stringResource(R.string.tipo_modelo)) },
-                        placeholder = { Text(stringResource(R.string.tipo_modelo_placeholder)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp),
-                        singleLine = true
-                    )
-
-                    CurrencyInput(
-                        centsDigits = uiState.valor,
-                        onCentsDigitsChange = { viewModel.onValorChange(it) },
-                        errorMessage = uiState.valorErrorResId?.let { stringResource(it) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                // Descrição / Logo
-                OutlinedTextField(
-                    value = uiState.textoLogo,
-                    onValueChange = { viewModel.onTextoLogoChange(it) },
-                    label = { Text("${stringResource(R.string.texto_logo)} *") },
-                    placeholder = { Text(stringResource(R.string.texto_logo_placeholder)) },
+                // ==============================
+                // Card 1: Dados do Cliente
+                // ==============================
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    minLines = 3,
-                    isError = uiState.textoLogoErrorResId != null,
-                    supportingText = uiState.textoLogoErrorResId?.let { { Text(stringResource(it)) } }
-                )
-
-                // Tipo de Pagamento & Categoria / Label
-                if (isTablet) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        ExposedDropdownMenuBox(
-                            expanded = paymentDropdownExpanded,
-                            onExpandedChange = { paymentDropdownExpanded = it },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            OutlinedTextField(
-                                value = selectedPaymentLabel,
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text(stringResource(R.string.tipo_pagamento)) },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = paymentDropdownExpanded) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .menuAnchor(),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-
-                            ExposedDropdownMenu(
-                                expanded = paymentDropdownExpanded,
-                                onDismissRequest = { paymentDropdownExpanded = false }
-                            ) {
-                                paymentOptions.forEach { opt ->
-                                    DropdownMenuItem(
-                                        text = { Text(opt.first) },
-                                        onClick = {
-                                            viewModel.onTipoPagamentoChange(opt.second)
-                                            paymentDropdownExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-
-                        ExposedDropdownMenuBox(
-                            expanded = labelDropdownExpanded,
-                            onExpandedChange = { labelDropdownExpanded = it },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            OutlinedTextField(
-                                value = selectedCategoryLabel,
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text(stringResource(R.string.categoria_label)) },
-                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = labelDropdownExpanded) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .menuAnchor(),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-
-                            ExposedDropdownMenu(
-                                expanded = labelDropdownExpanded,
-                                onDismissRequest = { labelDropdownExpanded = false }
-                            ) {
-                                labelOptions.forEach { opt ->
-                                    DropdownMenuItem(
-                                        text = { Text(opt.first) },
-                                        onClick = {
-                                            viewModel.onLabelChange(opt.second)
-                                            labelDropdownExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    ExposedDropdownMenuBox(
-                        expanded = paymentDropdownExpanded,
-                        onExpandedChange = { paymentDropdownExpanded = it }
-                    ) {
-                        OutlinedTextField(
-                            value = selectedPaymentLabel,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text(stringResource(R.string.tipo_pagamento)) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = paymentDropdownExpanded) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor(),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-
-                        ExposedDropdownMenu(
-                            expanded = paymentDropdownExpanded,
-                            onDismissRequest = { paymentDropdownExpanded = false }
-                        ) {
-                            paymentOptions.forEach { opt ->
-                                DropdownMenuItem(
-                                    text = { Text(opt.first) },
-                                    onClick = {
-                                        viewModel.onTipoPagamentoChange(opt.second)
-                                        paymentDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    ExposedDropdownMenuBox(
-                        expanded = labelDropdownExpanded,
-                        onExpandedChange = { labelDropdownExpanded = it }
-                    ) {
-                        OutlinedTextField(
-                            value = selectedCategoryLabel,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text(stringResource(R.string.categoria_label)) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = labelDropdownExpanded) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor(),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-
-                        ExposedDropdownMenu(
-                            expanded = labelDropdownExpanded,
-                            onDismissRequest = { labelDropdownExpanded = false }
-                        ) {
-                            labelOptions.forEach { opt ->
-                                DropdownMenuItem(
-                                    text = { Text(opt.first) },
-                                    onClick = {
-                                        viewModel.onLabelChange(opt.second)
-                                        labelDropdownExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Data e Horário de Entrega lado a lado
-                val cal = Calendar.getInstance().apply { time = uiState.dataEntrega }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    // Campo Data de Entrega
-                    Box(modifier = Modifier.weight(1.2f)) {
-                        OutlinedTextField(
-                            value = DateUtils.toDisplayDateOnly(uiState.dataEntrega),
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text(stringResource(R.string.data_entrega)) },
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.CalendarToday,
-                                    contentDescription = stringResource(R.string.selecionar_data)
-                                )
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable {
-                                    DatePickerDialog(
-                                        context,
-                                        { _, year, month, dayOfMonth ->
-                                            val updated = DateUtils.updateDate(uiState.dataEntrega, year, month, dayOfMonth)
-                                            viewModel.onDataEntregaChange(updated)
-                                        },
-                                        cal.get(Calendar.YEAR),
-                                        cal.get(Calendar.MONTH),
-                                        cal.get(Calendar.DAY_OF_MONTH)
-                                    ).show()
-                                }
-                        )
-                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = stringResource(R.string.secao_cliente),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
-                    // Campo Horário de Entrega
-                    Box(modifier = Modifier.weight(0.9f)) {
+                        if (isTablet) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                OutlinedTextField(
+                                    value = uiState.cliente,
+                                    onValueChange = { viewModel.onClienteChange(it) },
+                                    label = { Text(stringResource(R.string.cliente)) },
+                                    placeholder = { Text(stringResource(R.string.cliente_placeholder)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Person,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true
+                                )
+
+                                PhoneWithDdiInput(
+                                    selectedDdi = uiState.selectedDdi,
+                                    phoneDigits = uiState.whatsapp,
+                                    onDdiChange = { viewModel.onDdiChange(it) },
+                                    onPhoneDigitsChange = { viewModel.onWhatsappChange(it) },
+                                    errorMessage = uiState.whatsappErrorResId?.let { stringResource(it) },
+                                    modifier = Modifier.weight(1.3f)
+                                )
+                            }
+                        } else {
+                            OutlinedTextField(
+                                value = uiState.cliente,
+                                onValueChange = { viewModel.onClienteChange(it) },
+                                label = { Text(stringResource(R.string.cliente)) },
+                                placeholder = { Text(stringResource(R.string.cliente_placeholder)) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true
+                            )
+
+                            PhoneWithDdiInput(
+                                selectedDdi = uiState.selectedDdi,
+                                phoneDigits = uiState.whatsapp,
+                                onDdiChange = { viewModel.onDdiChange(it) },
+                                onPhoneDigitsChange = { viewModel.onWhatsappChange(it) },
+                                errorMessage = uiState.whatsappErrorResId?.let { stringResource(it) },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
+
+                // ==============================
+                // Card 2: Detalhes do Pedido
+                // ==============================
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Category,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = stringResource(R.string.secao_detalhes_pedido),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        // Categoria / Label & Tipo / Modelo
+                        if (isTablet) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                ExposedDropdownMenuBox(
+                                    expanded = labelDropdownExpanded,
+                                    onExpandedChange = { labelDropdownExpanded = it },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    OutlinedTextField(
+                                        value = selectedCategoryLabel,
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text(stringResource(R.string.categoria_label)) },
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Default.Bookmarks,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        },
+                                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = labelDropdownExpanded) },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .menuAnchor(),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+
+                                    ExposedDropdownMenu(
+                                        expanded = labelDropdownExpanded,
+                                        onDismissRequest = { labelDropdownExpanded = false }
+                                    ) {
+                                        labelOptions.forEach { opt ->
+                                            DropdownMenuItem(
+                                                text = { Text(opt.first) },
+                                                onClick = {
+                                                    viewModel.onLabelChange(opt.second)
+                                                    labelDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+
+                                OutlinedTextField(
+                                    value = uiState.tipoModelo,
+                                    onValueChange = { viewModel.onTipoModeloChange(it) },
+                                    label = { Text(stringResource(R.string.tipo_modelo)) },
+                                    placeholder = { Text(stringResource(R.string.tipo_modelo_placeholder)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Category,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true
+                                )
+                            }
+                        } else {
+                            ExposedDropdownMenuBox(
+                                expanded = labelDropdownExpanded,
+                                onExpandedChange = { labelDropdownExpanded = it }
+                            ) {
+                                OutlinedTextField(
+                                    value = selectedCategoryLabel,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text(stringResource(R.string.categoria_label)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Bookmarks,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    },
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = labelDropdownExpanded) },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .menuAnchor(),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+
+                                ExposedDropdownMenu(
+                                    expanded = labelDropdownExpanded,
+                                    onDismissRequest = { labelDropdownExpanded = false }
+                                ) {
+                                    labelOptions.forEach { opt ->
+                                        DropdownMenuItem(
+                                            text = { Text(opt.first) },
+                                            onClick = {
+                                                viewModel.onLabelChange(opt.second)
+                                                labelDropdownExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+
+                            OutlinedTextField(
+                                value = uiState.tipoModelo,
+                                onValueChange = { viewModel.onTipoModeloChange(it) },
+                                label = { Text(stringResource(R.string.tipo_modelo)) },
+                                placeholder = { Text(stringResource(R.string.tipo_modelo_placeholder)) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Category,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true
+                            )
+                        }
+
+                        // Descrição / Logo
                         OutlinedTextField(
-                            value = DateUtils.toDisplayTimeOnly(uiState.dataEntrega),
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text(stringResource(R.string.horario_entrega)) },
-                            trailingIcon = {
+                            value = uiState.textoLogo,
+                            onValueChange = { viewModel.onTextoLogoChange(it) },
+                            label = { Text("${stringResource(R.string.texto_logo)} *") },
+                            placeholder = { Text(stringResource(R.string.texto_logo_placeholder)) },
+                            leadingIcon = {
                                 Icon(
-                                    imageVector = Icons.Default.AccessTime,
-                                    contentDescription = stringResource(R.string.selecionar_horario)
+                                    imageVector = Icons.Default.EditNote,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(10.dp)
+                            shape = RoundedCornerShape(12.dp),
+                            minLines = 3,
+                            isError = uiState.textoLogoErrorResId != null,
+                            supportingText = uiState.textoLogoErrorResId?.let { { Text(stringResource(it)) } }
                         )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable {
-                                    TimePickerDialog(
-                                        context,
-                                        { _, hourOfDay, minute ->
-                                            val updated = DateUtils.updateTime(uiState.dataEntrega, hourOfDay, minute)
-                                            viewModel.onDataEntregaChange(updated)
-                                        },
-                                        cal.get(Calendar.HOUR_OF_DAY),
-                                        cal.get(Calendar.MINUTE),
-                                        true
-                                    ).show()
-                                }
+
+                        // Observação
+                        OutlinedTextField(
+                            value = uiState.observacao,
+                            onValueChange = { viewModel.onObservacaoChange(it) },
+                            label = { Text(stringResource(R.string.observacao)) },
+                            placeholder = { Text(stringResource(R.string.observacao_placeholder)) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Notes,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            minLines = 2
                         )
                     }
                 }
 
-                // Observação
-                OutlinedTextField(
-                    value = uiState.observacao,
-                    onValueChange = { viewModel.onObservacaoChange(it) },
-                    label = { Text(stringResource(R.string.observacao)) },
-                    placeholder = { Text(stringResource(R.string.observacao_placeholder)) },
+                // ==============================
+                // Card 3: Pagamento & Retirada
+                // ==============================
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    minLines = 2
-                )
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Payments,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = stringResource(R.string.secao_pagamento_retirada),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                        // Valor & Tipo de Pagamento
+                        if (isTablet) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                CurrencyInput(
+                                    centsDigits = uiState.valor,
+                                    onCentsDigitsChange = { viewModel.onValorChange(it) },
+                                    errorMessage = uiState.valorErrorResId?.let { stringResource(it) },
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                ExposedDropdownMenuBox(
+                                    expanded = paymentDropdownExpanded,
+                                    onExpandedChange = { paymentDropdownExpanded = it },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    OutlinedTextField(
+                                        value = selectedPaymentLabel,
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text(stringResource(R.string.tipo_pagamento)) },
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Default.AccountBalanceWallet,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        },
+                                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = paymentDropdownExpanded) },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .menuAnchor(),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+
+                                    ExposedDropdownMenu(
+                                        expanded = paymentDropdownExpanded,
+                                        onDismissRequest = { paymentDropdownExpanded = false }
+                                    ) {
+                                        paymentOptions.forEach { opt ->
+                                            DropdownMenuItem(
+                                                text = { Text(opt.first) },
+                                                onClick = {
+                                                    viewModel.onTipoPagamentoChange(opt.second)
+                                                    paymentDropdownExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            CurrencyInput(
+                                centsDigits = uiState.valor,
+                                onCentsDigitsChange = { viewModel.onValorChange(it) },
+                                errorMessage = uiState.valorErrorResId?.let { stringResource(it) },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            ExposedDropdownMenuBox(
+                                expanded = paymentDropdownExpanded,
+                                onExpandedChange = { paymentDropdownExpanded = it }
+                            ) {
+                                OutlinedTextField(
+                                    value = selectedPaymentLabel,
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text(stringResource(R.string.tipo_pagamento)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.AccountBalanceWallet,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    },
+                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = paymentDropdownExpanded) },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .menuAnchor(),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+
+                                ExposedDropdownMenu(
+                                    expanded = paymentDropdownExpanded,
+                                    onDismissRequest = { paymentDropdownExpanded = false }
+                                ) {
+                                    paymentOptions.forEach { opt ->
+                                        DropdownMenuItem(
+                                            text = { Text(opt.first) },
+                                            onClick = {
+                                                viewModel.onTipoPagamentoChange(opt.second)
+                                                paymentDropdownExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        // Data e Horário de Entrega lado a lado
+                        val cal = Calendar.getInstance().apply { time = uiState.dataEntrega }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            // Campo Data de Entrega
+                            Box(modifier = Modifier.weight(1.2f)) {
+                                OutlinedTextField(
+                                    value = DateUtils.toDisplayDateOnly(uiState.dataEntrega),
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text(stringResource(R.string.data_entrega)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.CalendarToday,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .clickable {
+                                            DatePickerDialog(
+                                                context,
+                                                { _, year, month, dayOfMonth ->
+                                                    val updated = DateUtils.updateDate(uiState.dataEntrega, year, month, dayOfMonth)
+                                                    viewModel.onDataEntregaChange(updated)
+                                                },
+                                                cal.get(Calendar.YEAR),
+                                                cal.get(Calendar.MONTH),
+                                                cal.get(Calendar.DAY_OF_MONTH)
+                                            ).show()
+                                        }
+                                )
+                            }
+
+                            // Campo Horário de Entrega
+                            Box(modifier = Modifier.weight(0.9f)) {
+                                OutlinedTextField(
+                                    value = DateUtils.toDisplayTimeOnly(uiState.dataEntrega),
+                                    onValueChange = {},
+                                    readOnly = true,
+                                    label = { Text(stringResource(R.string.horario_entrega)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.AccessTime,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .clickable {
+                                            TimePickerDialog(
+                                                context,
+                                                { _, hourOfDay, minute ->
+                                                    val updated = DateUtils.updateTime(uiState.dataEntrega, hourOfDay, minute)
+                                                    viewModel.onDataEntregaChange(updated)
+                                                },
+                                                cal.get(Calendar.HOUR_OF_DAY),
+                                                cal.get(Calendar.MINUTE),
+                                                true
+                                            ).show()
+                                        }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 // Botão Salvar
                 Button(

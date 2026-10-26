@@ -109,6 +109,11 @@
     <string name="pagamento_a_pagar">Por pagar</string>
     <string name="pagamento_link">Enlace de pago</string>
 
+    <!-- Secciones del formulario -->
+    <string name="secao_cliente">Datos del Cliente</string>
+    <string name="secao_detalhes_pedido">Detalles del Pedido</string>
+    <string name="secao_pagamento_retirada">Pago y Recogida</string>
+
     <!-- DDI & Países -->
     <string name="pais_brasil">Brasil</string>
     <string name="pais_portugal">Portugal</string>

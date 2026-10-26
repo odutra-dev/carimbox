@@ -109,6 +109,11 @@
     <string name="pagamento_a_pagar">To pay</string>
     <string name="pagamento_link">Link payment</string>
 
+    <!-- Form Sections -->
+    <string name="secao_cliente">Customer Information</string>
+    <string name="secao_detalhes_pedido">Order Details</string>
+    <string name="secao_pagamento_retirada">Payment &amp; Pickup</string>
+
     <!-- DDI & Countries -->
     <string name="pais_brasil">Brazil</string>
     <string name="pais_portugal">Portugal</string>
