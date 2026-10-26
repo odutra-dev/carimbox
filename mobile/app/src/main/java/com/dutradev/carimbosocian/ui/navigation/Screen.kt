@@ -1,7 +1,7 @@
 package com.dutradev.carimbosocian.ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -27,7 +27,7 @@ sealed class BottomNavItem(
     object Home : BottomNavItem(
         route = Screen.Home.route,
         titleResId = com.dutradev.carimbosocian.R.string.pedidos_titulo,
-        icon = Icons.Default.List
+        icon = Icons.Default.ReceiptLong
     )
 
     object Search : BottomNavItem(

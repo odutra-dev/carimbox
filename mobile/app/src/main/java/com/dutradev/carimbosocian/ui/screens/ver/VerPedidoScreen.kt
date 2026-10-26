@@ -19,12 +19,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Label
-import androidx.compose.material.icons.filled.Message
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -262,13 +262,13 @@ fun VerPedidoScreen(
                                     InfoRow(
                                         label = stringResource(R.string.tipo_modelo),
                                         value = pedido.tipoModelo,
-                                        icon = Icons.Default.Label
+                                        icon = Icons.Default.Category
                                     )
 
                                     InfoRow(
                                         label = stringResource(R.string.texto_logo),
                                         value = pedido.textoLogo,
-                                        icon = Icons.Default.Description,
+                                        icon = Icons.Default.EditNote,
                                         enableCopy = true
                                     )
 
@@ -276,7 +276,7 @@ fun VerPedidoScreen(
                                         InfoRow(
                                             label = stringResource(R.string.observacao),
                                             value = pedido.observacao,
-                                            icon = Icons.Default.Description
+                                            icon = Icons.Default.EditNote
                                         )
                                     }
                                 }
@@ -403,13 +403,13 @@ fun VerPedidoScreen(
                                 InfoRow(
                                     label = stringResource(R.string.tipo_modelo),
                                     value = pedido.tipoModelo,
-                                    icon = Icons.Default.Label
+                                    icon = Icons.Default.Category
                                 )
 
                                 InfoRow(
                                     label = stringResource(R.string.texto_logo),
                                     value = pedido.textoLogo,
-                                    icon = Icons.Default.Description,
+                                    icon = Icons.Default.EditNote,
                                     enableCopy = true
                                 )
 
@@ -441,7 +441,7 @@ fun VerPedidoScreen(
                                     InfoRow(
                                         label = stringResource(R.string.observacao),
                                         value = pedido.observacao,
-                                        icon = Icons.Default.Description
+                                        icon = Icons.Default.EditNote
                                     )
                                 }
                             }
@@ -558,7 +558,7 @@ Status: ${if (pedido.entregue) "Concluído" else "Pendente"}
             )
         ) {
             Icon(
-                imageVector = Icons.Default.Message,
+                imageVector = Icons.Default.Chat,
                 contentDescription = null,
                 modifier = Modifier.size(18.dp)
             )
