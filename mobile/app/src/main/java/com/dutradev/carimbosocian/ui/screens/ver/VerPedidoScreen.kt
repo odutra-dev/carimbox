@@ -1,5 +1,6 @@
 package com.dutradev.carimbosocian.ui.screens.ver
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -249,7 +250,13 @@ fun VerPedidoScreen(
                                         value = pedido.whatsapp.toString(),
                                         icon = Icons.Default.Phone,
                                         enableCopy = true,
-                                        onClick = { IntentUtils.openWhatsApp(context, pedido.whatsapp) }
+                                        onClick = {
+                                            IntentUtils.openWhatsApp(
+                                                context = context,
+                                                rawPhone = pedido.whatsapp,
+                                                message = IntentUtils.buildMensagemNovoPedido(pedido)
+                                            )
+                                        }
                                     )
 
                                     InfoRow(
@@ -320,7 +327,28 @@ fun VerPedidoScreen(
                                 ActionButtons(
                                     pedido = pedido,
                                     context = context,
-                                    onToggleStatus = { viewModel.toggleStatus() }
+                                    onToggleStatus = {
+                                        val willBeConcluded = !pedido.entregue
+                                        viewModel.toggleStatus()
+                                        if (willBeConcluded) {
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.pedido_marcado_concluido),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            IntentUtils.openWhatsApp(
+                                                context = context,
+                                                rawPhone = pedido.whatsapp,
+                                                message = IntentUtils.buildMensagemPedidoConcluido(pedido)
+                                            )
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.pedido_marcado_pendente),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
                                 )
                             }
                         }
@@ -363,7 +391,13 @@ fun VerPedidoScreen(
                                     value = pedido.whatsapp.toString(),
                                     icon = Icons.Default.Phone,
                                     enableCopy = true,
-                                    onClick = { IntentUtils.openWhatsApp(context, pedido.whatsapp) }
+                                    onClick = {
+                                        IntentUtils.openWhatsApp(
+                                            context = context,
+                                            rawPhone = pedido.whatsapp,
+                                            message = IntentUtils.buildMensagemNovoPedido(pedido)
+                                        )
+                                    }
                                 )
 
                                 InfoRow(
@@ -416,7 +450,28 @@ fun VerPedidoScreen(
                         ActionButtons(
                             pedido = pedido,
                             context = context,
-                            onToggleStatus = { viewModel.toggleStatus() }
+                            onToggleStatus = {
+                                val willBeConcluded = !pedido.entregue
+                                viewModel.toggleStatus()
+                                if (willBeConcluded) {
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.pedido_marcado_concluido),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    IntentUtils.openWhatsApp(
+                                        context = context,
+                                        rawPhone = pedido.whatsapp,
+                                        message = IntentUtils.buildMensagemPedidoConcluido(pedido)
+                                    )
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.pedido_marcado_pendente),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                         )
                     }
                 }
@@ -490,7 +545,11 @@ Status: ${if (pedido.entregue) "Concluído" else "Pendente"}
 
         Button(
             onClick = {
-                IntentUtils.openWhatsApp(context, pedido.whatsapp)
+                IntentUtils.openWhatsApp(
+                    context = context,
+                    rawPhone = pedido.whatsapp,
+                    message = IntentUtils.buildMensagemNovoPedido(pedido)
+                )
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),

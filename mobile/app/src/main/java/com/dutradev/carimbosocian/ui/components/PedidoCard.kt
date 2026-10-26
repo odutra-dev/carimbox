@@ -48,7 +48,6 @@ import com.dutradev.carimbosocian.ui.theme.LabelDefault
 import com.dutradev.carimbosocian.ui.theme.LabelMdf
 import com.dutradev.carimbosocian.ui.theme.LabelOuthers
 import com.dutradev.carimbosocian.ui.theme.StatusDelivered
-import com.dutradev.carimbosocian.util.DateUtils
 import com.dutradev.carimbosocian.util.IntentUtils
 
 @Composable
@@ -68,44 +67,6 @@ fun PedidoCard(
         "Outros" -> LabelOuthers
         else -> LabelDefault
     }
-
-    val mensagemPedidoConcluido = """
-        ✅ Seu pedido já foi finalizado e está disponível para retirada! ✅
-
-        ━━━━━━━━━━━━━━━━━━━━━━━━
-        📦 Retirada com o nº do pedido: ${pedido.id ?: 0}
-        ━━━━━━━━━━━━━━━━━━━━━━━━
-
-        📍 *RETIRADA: DENTRO do CHAVEIRO OCIAN*
-        Rua Remo Estéfane, 50 – Ocian
-        https://maps.app.goo.gl/3FzpDGgtgv9ipG1f9
-
-        💙 Agradecemos pela confiança! 💙
-    """.trimIndent()
-
-    val mensagemNovoPedido = """
-        Segue o resumo do seu pedido:
-
-        ━━━━━━━━━━━━━━━━━
-        📦 Nº DO PEDIDO
-             *Nº: ${pedido.id ?: 0}*
-        ━━━━━━━━━━━━━━━━━
-
-        ${if (pedido.tipoModelo.isNotBlank()) "🔖 Modelo: ${pedido.tipoModelo}\n" else ""}✏ Descrição:
-        ${pedido.textoLogo}
-        ${if (!pedido.observacao.isNullOrBlank()) "\n📝 Observação: ${pedido.observacao}" else ""}
-
-        💰 Forma de pagamento: ${pedido.tipoPagamento}
-        💵 Valor total: ${IntentUtils.formatCurrency(pedido.valor)}
-
-        ━━━━━━━━━━━━━━━━━
-        📦 RETIRADA A PARTIR DE
-        📅 ${DateUtils.toDisplayDateTime(pedido.dataEntrega)}
-        ━━━━━━━━━━━━━━━━━
-
-        📍 *RETIRADA: DENTRO do CHAVEIRO OCIAN*
-        Rua Remo Estéfane, 50 – Ocian
-    """.trimIndent()
 
     if (showConfirmDialog) {
         val titulo = if (pedido.entregue) {
@@ -135,7 +96,11 @@ fun PedidoCard(
                                     context.getString(R.string.pedido_marcado_concluido),
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                IntentUtils.openWhatsApp(context, pedido.whatsapp)
+                                IntentUtils.openWhatsApp(
+                                    context = context,
+                                    rawPhone = pedido.whatsapp,
+                                    message = IntentUtils.buildMensagemPedidoConcluido(pedido)
+                                )
                             } else {
                                 Toast.makeText(
                                     context,
@@ -221,6 +186,7 @@ fun PedidoCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Botão Marcar como Concluído (se não estiver entregue)
                     if (!pedido.entregue) {
                         IconButton(
                             onClick = { showConfirmDialog = true },
@@ -237,9 +203,14 @@ fun PedidoCard(
                         }
                     }
 
+                    // Botão Enviar WhatsApp (Resumo do Pedido)
                     IconButton(
                         onClick = {
-                            IntentUtils.openWhatsApp(context, pedido.whatsapp)
+                            IntentUtils.openWhatsApp(
+                                context = context,
+                                rawPhone = pedido.whatsapp,
+                                message = IntentUtils.buildMensagemNovoPedido(pedido)
+                            )
                         },
                         modifier = Modifier
                             .size(40.dp)

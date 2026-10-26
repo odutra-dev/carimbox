@@ -38,6 +38,18 @@ object DateUtils {
         }
     }
 
+    fun toDeliveryDisplay(isoString: String?): String {
+        if (isoString.isNullOrBlank()) return "-"
+        return try {
+            val date = parseAny(isoString)
+            val sdfDate = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
+            val sdfTime = SimpleDateFormat("HH:mm", Locale("pt", "BR"))
+            "${sdfDate.format(date)} às ${sdfTime.format(date)}"
+        } catch (_: Exception) {
+            isoString
+        }
+    }
+
     private fun parseAny(str: String): Date {
         val patterns = listOf(
             "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX",
