@@ -2,6 +2,9 @@ package com.dutradev.carimbosocian.ui.screens.home
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dutradev.carimbosocian.R
 import com.dutradev.carimbosocian.ui.components.PedidoCard
+import com.dutradev.carimbosocian.util.DateUtils
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -162,6 +166,7 @@ fun HomeScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -173,12 +178,25 @@ fun HomeScreen(
                     modifier = Modifier.padding(end = 8.dp)
                 )
 
-                listOf("dia" to stringResource(R.string.dia), "mes" to stringResource(R.string.mes), "ano" to stringResource(R.string.ano)).forEach { (type, label) ->
+                listOf(
+                    "dia" to stringResource(R.string.dia),
+                    "mes" to stringResource(R.string.mes),
+                    "ano" to stringResource(R.string.ano)
+                ).forEach { (type, label) ->
                     val isSelected = uiState.dateFilterType == type
+                    val chipLabel = if (isSelected) {
+                        val formatted = DateUtils.formatFilterLabel(type, uiState.dateFilterValue)
+                        "$label: $formatted"
+                    } else {
+                        label
+                    }
+
                     FilterChip(
                         selected = isSelected,
                         onClick = {
-                            val cal = Calendar.getInstance()
+                            val cal = Calendar.getInstance().apply {
+                                if (isSelected) time = uiState.dateFilterValue
+                            }
                             DatePickerDialog(
                                 context,
                                 { _, year, month, dayOfMonth ->
@@ -192,7 +210,18 @@ fun HomeScreen(
                                 cal.get(Calendar.DAY_OF_MONTH)
                             ).show()
                         },
-                        label = { Text(label, fontSize = 12.sp) },
+                        label = { Text(chipLabel, fontSize = 12.sp) },
+                        trailingIcon = if (isSelected) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.limpar_filtros),
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .clickable { viewModel.clearDateFilter() }
+                                )
+                            }
+                        } else null,
                         modifier = Modifier.padding(end = 6.dp)
                     )
                 }

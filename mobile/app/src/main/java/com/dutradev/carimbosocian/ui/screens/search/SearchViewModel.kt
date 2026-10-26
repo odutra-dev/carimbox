@@ -35,6 +35,10 @@ class SearchViewModel(
         _uiState.update { it.copy(dateFilterType = type, dateFilterValue = date) }
     }
 
+    fun clearDateFilter() {
+        _uiState.update { it.copy(dateFilterType = null) }
+    }
+
     fun clearFilters() {
         _uiState.update {
             it.copy(
