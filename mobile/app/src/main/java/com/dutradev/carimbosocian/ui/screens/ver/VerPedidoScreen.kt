@@ -69,6 +69,7 @@ import com.dutradev.carimbosocian.ui.theme.StatusPending
 import com.dutradev.carimbosocian.ui.util.isTabletOrLandscape
 import com.dutradev.carimbosocian.util.DateUtils
 import com.dutradev.carimbosocian.util.IntentUtils
+import com.dutradev.carimbosocian.util.PhoneUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -247,14 +248,19 @@ fun VerPedidoScreen(
 
                                     InfoRow(
                                         label = stringResource(R.string.whatsapp),
-                                        value = pedido.whatsapp.toString(),
+                                        value = PhoneUtils.formatPhoneDisplay(pedido.whatsapp),
                                         icon = Icons.Default.Phone,
                                         enableCopy = true,
                                         onClick = {
+                                            val message = if (pedido.entregue) {
+                                                IntentUtils.buildMensagemPedidoConcluido(pedido)
+                                            } else {
+                                                IntentUtils.buildMensagemNovoPedido(pedido)
+                                            }
                                             IntentUtils.openWhatsApp(
                                                 context = context,
                                                 rawPhone = pedido.whatsapp,
-                                                message = IntentUtils.buildMensagemNovoPedido(pedido)
+                                                message = message
                                             )
                                         }
                                     )
@@ -388,14 +394,19 @@ fun VerPedidoScreen(
 
                                 InfoRow(
                                     label = stringResource(R.string.whatsapp),
-                                    value = pedido.whatsapp.toString(),
+                                    value = PhoneUtils.formatPhoneDisplay(pedido.whatsapp),
                                     icon = Icons.Default.Phone,
                                     enableCopy = true,
                                     onClick = {
+                                        val message = if (pedido.entregue) {
+                                            IntentUtils.buildMensagemPedidoConcluido(pedido)
+                                        } else {
+                                            IntentUtils.buildMensagemNovoPedido(pedido)
+                                        }
                                         IntentUtils.openWhatsApp(
                                             context = context,
                                             rawPhone = pedido.whatsapp,
-                                            message = IntentUtils.buildMensagemNovoPedido(pedido)
+                                            message = message
                                         )
                                     }
                                 )
@@ -513,7 +524,7 @@ private fun ActionButtons(
                 val fullSummary = """
 Pedido #${pedido.id}
 ${if (pedido.cliente.isNotBlank()) "Cliente: ${pedido.cliente}" else ""}
-WhatsApp: ${pedido.whatsapp}
+WhatsApp: ${PhoneUtils.formatPhoneDisplay(pedido.whatsapp)}
 ${if (pedido.tipoModelo.isNotBlank()) "Modelo: ${pedido.tipoModelo}" else ""}
 Descrição/Logo: ${pedido.textoLogo}
 Pagamento: ${pedido.tipoPagamento}
@@ -545,10 +556,15 @@ Status: ${if (pedido.entregue) "Concluído" else "Pendente"}
 
         Button(
             onClick = {
+                val message = if (pedido.entregue) {
+                    IntentUtils.buildMensagemPedidoConcluido(pedido)
+                } else {
+                    IntentUtils.buildMensagemNovoPedido(pedido)
+                }
                 IntentUtils.openWhatsApp(
                     context = context,
                     rawPhone = pedido.whatsapp,
-                    message = IntentUtils.buildMensagemNovoPedido(pedido)
+                    message = message
                 )
             },
             modifier = Modifier.fillMaxWidth(),

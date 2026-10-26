@@ -50,6 +50,7 @@ import com.dutradev.carimbosocian.ui.theme.LabelOuthers
 import com.dutradev.carimbosocian.ui.theme.StatusDelivered
 import com.dutradev.carimbosocian.util.DateUtils
 import com.dutradev.carimbosocian.util.IntentUtils
+import com.dutradev.carimbosocian.util.PhoneUtils
 
 @Composable
 fun PedidoCard(
@@ -174,8 +175,7 @@ fun PedidoCard(
 
                     Spacer(modifier = Modifier.height(2.dp))
 
-                    val whatsappStr = pedido.whatsapp.toString()
-                    val formattedPhone = formatWhatsApp(whatsappStr)
+                    val formattedPhone = PhoneUtils.formatPhoneDisplay(pedido.whatsapp)
                     Text(
                         text = if (pedido.cliente.isNotBlank()) "${pedido.cliente} • $formattedPhone" else formattedPhone,
                         fontSize = 13.sp,
@@ -227,14 +227,5 @@ fun PedidoCard(
                 }
             }
         }
-    }
-}
-
-private fun formatWhatsApp(numero: String): String {
-    val num = numero.filter { it.isDigit() }
-    return when (num.length) {
-        11 -> "(${num.substring(0, 2)}) ${num.substring(2, 7)}-${num.substring(7)}"
-        10 -> "(${num.substring(0, 2)}) ${num.substring(2, 6)}-${num.substring(6)}"
-        else -> numero
     }
 }
