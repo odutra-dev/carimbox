@@ -35,7 +35,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -496,22 +495,6 @@ fun AtualizarPedidoScreen(
                         shape = RoundedCornerShape(10.dp),
                         minLines = 2
                     )
-
-                    // Switch Entregue
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(R.string.entregue),
-                            fontWeight = FontWeight.Medium
-                        )
-                        Switch(
-                            checked = uiState.entregue,
-                            onCheckedChange = { viewModel.onEntregueChange(it) }
-                        )
-                    }
 
                     Spacer(modifier = Modifier.height(10.dp))
 
