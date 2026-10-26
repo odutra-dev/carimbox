@@ -10,6 +10,10 @@
     <string name="concluidos">Concluídos</string>
     <string name="todos">Todos</string>
     <string name="modo_escuro">Modo escuro</string>
+    <string name="tema_aparencia">Aparência do Tema</string>
+    <string name="tema_sistema">Sistema</string>
+    <string name="tema_claro">Claro</string>
+    <string name="tema_escuro">Escuro</string>
     <string name="verificar_atualizacao">Verificar atualizações</string>
     <string name="versao">Versão: %1$s</string>
     <string name="nenhuma_atualizacao">Nenhuma atualização disponível</string>

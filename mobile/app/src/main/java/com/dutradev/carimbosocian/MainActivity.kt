@@ -8,6 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.compose.rememberNavController
+import com.dutradev.carimbosocian.data.model.ThemeMode
 import com.dutradev.carimbosocian.ui.navigation.CarimboxNavGraph
 import com.dutradev.carimbosocian.ui.theme.CarimboxTheme
 
@@ -20,9 +21,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val systemDark = isSystemInDarkTheme()
-            val userDarkMode by appContainer.preferencesDataStore.isDarkMode.collectAsState(initial = systemDark)
+            val themeMode by appContainer.preferencesDataStore.themeMode.collectAsState(initial = ThemeMode.SYSTEM)
+            val isDark = when (themeMode) {
+                ThemeMode.SYSTEM -> systemDark
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+            }
 
-            CarimboxTheme(darkTheme = userDarkMode) {
+            CarimboxTheme(darkTheme = isDark) {
                 val navController = rememberNavController()
                 CarimboxNavGraph(
                     navController = navController,

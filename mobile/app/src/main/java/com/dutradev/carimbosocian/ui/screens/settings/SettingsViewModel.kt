@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dutradev.carimbosocian.BuildConfig
 import com.dutradev.carimbosocian.data.local.PreferencesDataStore
+import com.dutradev.carimbosocian.data.model.ThemeMode
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -13,18 +14,18 @@ class SettingsViewModel(
     private val preferencesDataStore: PreferencesDataStore
 ) : ViewModel() {
 
-    val isDarkMode: StateFlow<Boolean> = preferencesDataStore.isDarkMode
+    val themeMode: StateFlow<ThemeMode> = preferencesDataStore.themeMode
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
+            initialValue = ThemeMode.SYSTEM
         )
 
     val appVersion: String = BuildConfig.VERSION_NAME
 
-    fun toggleDarkMode(enabled: Boolean) {
+    fun setThemeMode(mode: ThemeMode) {
         viewModelScope.launch {
-            preferencesDataStore.setDarkMode(enabled)
+            preferencesDataStore.setThemeMode(mode)
         }
     }
 }
