@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.dutradev.carimbosocian.data.model.AppLanguage
 import com.dutradev.carimbosocian.data.model.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -14,6 +15,7 @@ class PreferencesDataStore(private val context: Context) {
 
     companion object {
         private val KEY_THEME_MODE = stringPreferencesKey("theme_mode")
+        private val KEY_LANGUAGE = stringPreferencesKey("app_language")
     }
 
     val themeMode: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
@@ -28,6 +30,17 @@ class PreferencesDataStore(private val context: Context) {
     suspend fun setThemeMode(mode: ThemeMode) {
         context.dataStore.edit { preferences ->
             preferences[KEY_THEME_MODE] = mode.name
+        }
+    }
+
+    val language: Flow<AppLanguage> = context.dataStore.data.map { preferences ->
+        val raw = preferences[KEY_LANGUAGE]
+        AppLanguage.fromCode(raw)
+    }
+
+    suspend fun setLanguage(language: AppLanguage) {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_LANGUAGE] = language.code
         }
     }
 }
