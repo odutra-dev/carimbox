@@ -36,10 +36,14 @@ class PedidosRepositoryImpl(
                         eq("entregue", true)
                     }
 
-                    if (!startDate.isNullOrBlank()) {
+                    if (!startDate.isNullOrBlank() && !endDate.isNullOrBlank()) {
+                        and {
+                            gte("data_pedido", startDate)
+                            lte("data_pedido", endDate)
+                        }
+                    } else if (!startDate.isNullOrBlank()) {
                         gte("data_pedido", startDate)
-                    }
-                    if (!endDate.isNullOrBlank()) {
+                    } else if (!endDate.isNullOrBlank()) {
                         lte("data_pedido", endDate)
                     }
                 }
@@ -74,10 +78,14 @@ class PedidosRepositoryImpl(
                     if (!query.isNullOrBlank()) {
                         ilike("cliente", "%$query%")
                     }
-                    if (!startDate.isNullOrBlank()) {
+                    if (!startDate.isNullOrBlank() && !endDate.isNullOrBlank()) {
+                        and {
+                            gte("data_pedido", startDate)
+                            lte("data_pedido", endDate)
+                        }
+                    } else if (!startDate.isNullOrBlank()) {
                         gte("data_pedido", startDate)
-                    }
-                    if (!endDate.isNullOrBlank()) {
+                    } else if (!endDate.isNullOrBlank()) {
                         lte("data_pedido", endDate)
                     }
                 }

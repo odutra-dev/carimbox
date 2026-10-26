@@ -14,7 +14,7 @@ object DateUtils {
 
     private val displayDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
     private val displayDateTimeFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale("pt", "BR"))
-    private val queryDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+    private val queryDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
 
     fun toIsoString(date: Date): String = isoFormat.format(date)
 
