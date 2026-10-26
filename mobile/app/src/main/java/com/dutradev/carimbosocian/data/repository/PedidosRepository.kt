@@ -17,6 +17,7 @@ interface PedidosRepository {
 
     suspend fun searchPedidos(
         id: Long? = null,
+        phone: Long? = null,
         query: String? = null,
         startDate: String? = null,
         endDate: String? = null

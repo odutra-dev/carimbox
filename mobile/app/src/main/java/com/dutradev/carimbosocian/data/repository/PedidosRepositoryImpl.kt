@@ -64,6 +64,7 @@ class PedidosRepositoryImpl(
 
     override suspend fun searchPedidos(
         id: Long?,
+        phone: Long?,
         query: String?,
         startDate: String?,
         endDate: String?
@@ -75,8 +76,31 @@ class PedidosRepositoryImpl(
                     if (id != null) {
                         eq("id", id)
                     }
+                    if (phone != null) {
+                        val phoneStr = phone.toString()
+                        val altPhone = if (phoneStr.startsWith("55") && phoneStr.length in 12..13) {
+                            phoneStr.substring(2).toLongOrNull()
+                        } else if (phoneStr.length in 10..11) {
+                            "55$phoneStr".toLongOrNull()
+                        } else {
+                            null
+                        }
+
+                        if (altPhone != null) {
+                            or {
+                                eq("whatsapp", phone)
+                                eq("whatsapp", altPhone)
+                            }
+                        } else {
+                            eq("whatsapp", phone)
+                        }
+                    }
                     if (!query.isNullOrBlank()) {
-                        ilike("cliente", "%$query%")
+                        or {
+                            ilike("cliente", "%$query%")
+                            ilike("texto_logo", "%$query%")
+                            ilike("tipo_modelo", "%$query%")
+                        }
                     }
                     if (!startDate.isNullOrBlank() && !endDate.isNullOrBlank()) {
                         and {

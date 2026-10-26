@@ -192,23 +192,26 @@ fun PhoneWithDdiInput(
             }
         }
 
-        // Campo de Telefone com Máscara
-        val formattedDisplay = if (selectedDdi == "55") {
-            PhoneUtils.formatBrazilianPhone(phoneDigits)
-        } else {
-            phoneDigits
-        }
+        // Campo de Telefone com Máscara Dinâmica por DDI
+        val formattedDisplay = PhoneUtils.formatInputForDdi(selectedDdi, phoneDigits)
 
         OutlinedTextField(
             value = formattedDisplay,
             onValueChange = { input ->
                 val clean = input.filter { it.isDigit() }
-                val maxLen = if (selectedDdi == "55") 11 else 15
+                val maxLen = when (selectedDdi) {
+                    "55" -> 11
+                    "1" -> 10
+                    "351" -> 9
+                    "34" -> 9
+                    "54" -> 11
+                    else -> 15
+                }
                 onPhoneDigitsChange(clean.take(maxLen))
             },
             label = { Text("${stringResource(R.string.whatsapp)} *") },
             placeholder = {
-                Text(if (selectedDdi == "55") "(13) 99999-9999" else "123456789")
+                Text(PhoneUtils.getPlaceholderForDdi(selectedDdi))
             },
             modifier = Modifier.weight(1f),
             shape = RoundedCornerShape(10.dp),

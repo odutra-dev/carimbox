@@ -14,12 +14,10 @@ import java.util.Locale
 object IntentUtils {
 
     fun openWhatsApp(context: Context, rawPhone: Long, message: String? = null) {
-        val phoneString = rawPhone.toString().filter { it.isDigit() }
-        // Se for número brasileiro padrão (10 ou 11 dígitos), adiciona o DDI 55
-        val formattedNumber = if (phoneString.length in 10..11 && (phoneString.length == 10 || phoneString[2] == '9')) {
-            "55$phoneString"
-        } else {
-            phoneString
+        val formattedNumber = PhoneUtils.getWhatsAppTargetPhone(rawPhone)
+        if (formattedNumber.isBlank()) {
+            Toast.makeText(context, "Telefone inválido para WhatsApp", Toast.LENGTH_SHORT).show()
+            return
         }
 
         try {

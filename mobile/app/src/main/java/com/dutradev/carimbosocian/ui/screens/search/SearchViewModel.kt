@@ -55,8 +55,32 @@ class SearchViewModel(
     fun search() {
         val state = _uiState.value
         val trimmed = state.query.trim()
-        val id = trimmed.toLongOrNull()
-        val textQuery = if (id == null) trimmed.ifBlank { null } else null
+        val digits = trimmed.filter { it.isDigit() }
+
+        val id: Long?
+        val phone: Long?
+        val textQuery: String?
+
+        when {
+            // Se tiver entre 8 e 15 dígitos, é um telefone (nacional ou internacional)
+            digits.length in 8..15 -> {
+                id = null
+                phone = digits.toLongOrNull()
+                textQuery = trimmed.ifBlank { null }
+            }
+            // Se for número puro com até 7 dígitos, é busca por ID do pedido
+            digits.isNotEmpty() && digits == trimmed -> {
+                id = digits.toLongOrNull()
+                phone = null
+                textQuery = null
+            }
+            // Caso contrário, busca textual normal
+            else -> {
+                id = null
+                phone = null
+                textQuery = trimmed.ifBlank { null }
+            }
+        }
 
         val range = when (state.dateFilterType) {
             "dia" -> DateUtils.getDayRange(state.dateFilterValue)
@@ -70,6 +94,7 @@ class SearchViewModel(
         viewModelScope.launch {
             val result = repository.searchPedidos(
                 id = id,
+                phone = phone,
                 query = textQuery,
                 startDate = range?.first,
                 endDate = range?.second
