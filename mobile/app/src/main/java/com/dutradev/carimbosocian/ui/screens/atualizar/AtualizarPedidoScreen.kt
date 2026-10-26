@@ -1,6 +1,7 @@
 package com.dutradev.carimbosocian.ui.screens.atualizar
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -409,51 +411,80 @@ fun AtualizarPedidoScreen(
                         }
                     }
 
-                    // Data de Entrega
+                    // Data e Horário de Entrega lado a lado
                     val cal = Calendar.getInstance().apply { time = uiState.dataEntrega }
-                    OutlinedTextField(
-                        value = DateUtils.toDisplayDateTime(DateUtils.toIsoString(uiState.dataEntrega)),
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text(stringResource(R.string.data_entrega)) },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.CalendarToday,
-                                contentDescription = stringResource(R.string.selecionar_data),
-                                modifier = Modifier.clickable {
-                                    DatePickerDialog(
-                                        context,
-                                        { _, year, month, dayOfMonth ->
-                                            val newDate = Calendar.getInstance().apply {
-                                                set(year, month, dayOfMonth)
-                                            }.time
-                                            viewModel.onDataEntregaChange(newDate)
-                                        },
-                                        cal.get(Calendar.YEAR),
-                                        cal.get(Calendar.MONTH),
-                                        cal.get(Calendar.DAY_OF_MONTH)
-                                    ).show()
-                                }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        // Campo Data de Entrega
+                        Box(modifier = Modifier.weight(1.2f)) {
+                            OutlinedTextField(
+                                value = DateUtils.toDisplayDateOnly(uiState.dataEntrega),
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text(stringResource(R.string.data_entrega)) },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.CalendarToday,
+                                        contentDescription = stringResource(R.string.selecionar_data)
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(10.dp)
                             )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                DatePickerDialog(
-                                    context,
-                                    { _, year, month, dayOfMonth ->
-                                        val newDate = Calendar.getInstance().apply {
-                                            set(year, month, dayOfMonth)
-                                        }.time
-                                        viewModel.onDataEntregaChange(newDate)
-                                    },
-                                    cal.get(Calendar.YEAR),
-                                    cal.get(Calendar.MONTH),
-                                    cal.get(Calendar.DAY_OF_MONTH)
-                                ).show()
-                            },
-                        shape = RoundedCornerShape(10.dp)
-                    )
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .clickable {
+                                        DatePickerDialog(
+                                            context,
+                                            { _, year, month, dayOfMonth ->
+                                                val updated = DateUtils.updateDate(uiState.dataEntrega, year, month, dayOfMonth)
+                                                viewModel.onDataEntregaChange(updated)
+                                            },
+                                            cal.get(Calendar.YEAR),
+                                            cal.get(Calendar.MONTH),
+                                            cal.get(Calendar.DAY_OF_MONTH)
+                                        ).show()
+                                    }
+                            )
+                        }
+
+                        // Campo Horário de Entrega
+                        Box(modifier = Modifier.weight(0.9f)) {
+                            OutlinedTextField(
+                                value = DateUtils.toDisplayTimeOnly(uiState.dataEntrega),
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text(stringResource(R.string.horario_entrega)) },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.AccessTime,
+                                        contentDescription = stringResource(R.string.selecionar_horario)
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .clickable {
+                                        TimePickerDialog(
+                                            context,
+                                            { _, hourOfDay, minute ->
+                                                val updated = DateUtils.updateTime(uiState.dataEntrega, hourOfDay, minute)
+                                                viewModel.onDataEntregaChange(updated)
+                                            },
+                                            cal.get(Calendar.HOUR_OF_DAY),
+                                            cal.get(Calendar.MINUTE),
+                                            true
+                                        ).show()
+                                    }
+                            )
+                        }
+                    }
 
                     // Observação
                     OutlinedTextField(

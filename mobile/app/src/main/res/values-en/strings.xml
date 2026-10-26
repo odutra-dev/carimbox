@@ -25,6 +25,8 @@
     <string name="valor">Amount</string>
     <string name="data_pedido">Order date</string>
     <string name="data_entrega">Delivery date</string>
+    <string name="horario_entrega">Time</string>
+    <string name="selecionar_horario">Select Time</string>
     <string name="status">Status</string>
     <string name="entregue">Delivered</string>
     <string name="categoria_label">Label</string>

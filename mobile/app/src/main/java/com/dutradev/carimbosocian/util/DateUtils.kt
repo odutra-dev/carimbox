@@ -50,6 +50,47 @@ object DateUtils {
         }
     }
 
+    fun toDisplayDateOnly(date: Date): String {
+        return displayDateFormat.format(date)
+    }
+
+    fun toDisplayTimeOnly(date: Date): String {
+        val sdfTime = SimpleDateFormat("HH:mm", Locale("pt", "BR"))
+        return sdfTime.format(date)
+    }
+
+    fun formatFilterLabel(type: String, date: Date): String {
+        return when (type) {
+            "dia" -> SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR")).format(date)
+            "mes" -> {
+                val sdf = SimpleDateFormat("MMM/yyyy", Locale("pt", "BR"))
+                sdf.format(date).replaceFirstChar { it.uppercase() }
+            }
+            "ano" -> SimpleDateFormat("yyyy", Locale("pt", "BR")).format(date)
+            else -> ""
+        }
+    }
+
+    fun updateDate(current: Date, year: Int, month: Int, dayOfMonth: Int): Date {
+        val cal = Calendar.getInstance().apply {
+            time = current
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, month)
+            set(Calendar.DAY_OF_MONTH, dayOfMonth)
+        }
+        return cal.time
+    }
+
+    fun updateTime(current: Date, hourOfDay: Int, minute: Int): Date {
+        val cal = Calendar.getInstance().apply {
+            time = current
+            set(Calendar.HOUR_OF_DAY, hourOfDay)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, 0)
+        }
+        return cal.time
+    }
+
     private fun parseAny(str: String): Date {
         val patterns = listOf(
             "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX",
