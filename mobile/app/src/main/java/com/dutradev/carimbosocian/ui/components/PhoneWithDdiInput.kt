@@ -192,23 +192,24 @@ fun PhoneWithDdiInput(
             }
         }
 
-        // Campo de Telefone com Máscara Dinâmica por DDI
-        val formattedDisplay = PhoneUtils.formatInputForDdi(selectedDdi, phoneDigits)
+        // Campo de Telefone com VisualTransformation nativo do Jetpack Compose (sem bugs de cursor)
+        val maxLen = when (selectedDdi) {
+            "55" -> 11
+            "1" -> 10
+            "351" -> 9
+            "34" -> 9
+            "54" -> 11
+            else -> 15
+        }
+        val cleanDigits = phoneDigits.filter { it.isDigit() }.take(maxLen)
 
         OutlinedTextField(
-            value = formattedDisplay,
+            value = cleanDigits,
             onValueChange = { input ->
-                val clean = input.filter { it.isDigit() }
-                val maxLen = when (selectedDdi) {
-                    "55" -> 11
-                    "1" -> 10
-                    "351" -> 9
-                    "34" -> 9
-                    "54" -> 11
-                    else -> 15
-                }
-                onPhoneDigitsChange(clean.take(maxLen))
+                val clean = input.filter { it.isDigit() }.take(maxLen)
+                onPhoneDigitsChange(clean)
             },
+            visualTransformation = PhoneVisualTransformation(selectedDdi),
             label = { Text("${stringResource(R.string.whatsapp)} *") },
             placeholder = {
                 Text(PhoneUtils.getPlaceholderForDdi(selectedDdi))
