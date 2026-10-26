@@ -54,6 +54,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dutradev.carimbosocian.R
+import com.dutradev.carimbosocian.ui.components.CurrencyInput
+import com.dutradev.carimbosocian.ui.components.PhoneWithDdiInput
 import com.dutradev.carimbosocian.ui.util.isTabletOrLandscape
 import com.dutradev.carimbosocian.util.DateUtils
 import java.util.Calendar
@@ -167,15 +169,13 @@ fun NovoPedidoScreen(
                             singleLine = true
                         )
 
-                        OutlinedTextField(
-                            value = uiState.whatsapp,
-                            onValueChange = { viewModel.onWhatsappChange(it) },
-                            label = { Text("${stringResource(R.string.whatsapp)} *") },
-                            placeholder = { Text(stringResource(R.string.whatsapp_placeholder)) },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                            singleLine = true
+                        PhoneWithDdiInput(
+                            selectedDdi = uiState.selectedDdi,
+                            phoneDigits = uiState.whatsapp,
+                            onDdiChange = { viewModel.onDdiChange(it) },
+                            onPhoneDigitsChange = { viewModel.onWhatsappChange(it) },
+                            errorMessage = uiState.whatsappErrorResId?.let { stringResource(it) },
+                            modifier = Modifier.weight(1.3f)
                         )
                     }
                 } else {
@@ -189,15 +189,13 @@ fun NovoPedidoScreen(
                         singleLine = true
                     )
 
-                    OutlinedTextField(
-                        value = uiState.whatsapp,
-                        onValueChange = { viewModel.onWhatsappChange(it) },
-                        label = { Text("${stringResource(R.string.whatsapp)} *") },
-                        placeholder = { Text(stringResource(R.string.whatsapp_placeholder)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        singleLine = true
+                    PhoneWithDdiInput(
+                        selectedDdi = uiState.selectedDdi,
+                        phoneDigits = uiState.whatsapp,
+                        onDdiChange = { viewModel.onDdiChange(it) },
+                        onPhoneDigitsChange = { viewModel.onWhatsappChange(it) },
+                        errorMessage = uiState.whatsappErrorResId?.let { stringResource(it) },
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 
@@ -217,15 +215,11 @@ fun NovoPedidoScreen(
                             singleLine = true
                         )
 
-                        OutlinedTextField(
-                            value = uiState.valor,
-                            onValueChange = { viewModel.onValorChange(it) },
-                            label = { Text("${stringResource(R.string.valor)} *") },
-                            placeholder = { Text(stringResource(R.string.valor_placeholder)) },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                            singleLine = true
+                        CurrencyInput(
+                            centsDigits = uiState.valor,
+                            onCentsDigitsChange = { viewModel.onValorChange(it) },
+                            errorMessage = uiState.valorErrorResId?.let { stringResource(it) },
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 } else {
@@ -239,15 +233,11 @@ fun NovoPedidoScreen(
                         singleLine = true
                     )
 
-                    OutlinedTextField(
-                        value = uiState.valor,
-                        onValueChange = { viewModel.onValorChange(it) },
-                        label = { Text("${stringResource(R.string.valor)} *") },
-                        placeholder = { Text(stringResource(R.string.valor_placeholder)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        singleLine = true
+                    CurrencyInput(
+                        centsDigits = uiState.valor,
+                        onCentsDigitsChange = { viewModel.onValorChange(it) },
+                        errorMessage = uiState.valorErrorResId?.let { stringResource(it) },
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 
@@ -259,7 +249,9 @@ fun NovoPedidoScreen(
                     placeholder = { Text(stringResource(R.string.texto_logo_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
-                    minLines = 3
+                    minLines = 3,
+                    isError = uiState.textoLogoErrorResId != null,
+                    supportingText = uiState.textoLogoErrorResId?.let { { Text(stringResource(it)) } }
                 )
 
                 // Tipo de Pagamento & Categoria / Label
