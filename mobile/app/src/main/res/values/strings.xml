@@ -108,4 +108,20 @@
     <string name="pagamento_dinheiro">Dinheiro</string>
     <string name="pagamento_a_pagar">A pagar</string>
     <string name="pagamento_link">Link de pagamento</string>
+
+    <!-- DDI & Países -->
+    <string name="pais_brasil">Brasil</string>
+    <string name="pais_portugal">Portugal</string>
+    <string name="pais_eua">Estados Unidos</string>
+    <string name="pais_argentina">Argentina</string>
+    <string name="pais_espanha">Espanha</string>
+    <string name="pais_outro">Outro DDI</string>
+    <string name="ddi_dialog_titulo">Código do País (DDI)</string>
+    <string name="ddi_dialog_placeholder">Ex: 44, 33, 49</string>
+
+    <!-- Validações inline -->
+    <string name="erro_whatsapp_obrigatorio">WhatsApp é obrigatório</string>
+    <string name="erro_whatsapp_invalido">Informe um número de WhatsApp válido</string>
+    <string name="erro_texto_logo_obrigatorio">A descrição do carimbo é obrigatória</string>
+    <string name="erro_valor_obrigatorio">O valor deve ser maior que zero</string>
 </resources>

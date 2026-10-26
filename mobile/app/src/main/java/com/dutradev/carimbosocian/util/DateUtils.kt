@@ -91,6 +91,15 @@ object DateUtils {
         return cal.time
     }
 
+    fun parseIso(str: String?): Date? {
+        if (str.isNullOrBlank()) return null
+        return try {
+            parseAny(str)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     private fun parseAny(str: String): Date {
         val patterns = listOf(
             "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX",

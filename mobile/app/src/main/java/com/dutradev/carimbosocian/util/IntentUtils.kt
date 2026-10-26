@@ -15,8 +15,8 @@ object IntentUtils {
 
     fun openWhatsApp(context: Context, rawPhone: Long, message: String? = null) {
         val phoneString = rawPhone.toString().filter { it.isDigit() }
-        // Se não tiver DDI (ex: 55), adiciona 55 caso tenha 10 ou 11 dígitos
-        val formattedNumber = if (phoneString.length in 10..11) {
+        // Se for número brasileiro padrão (10 ou 11 dígitos), adiciona o DDI 55
+        val formattedNumber = if (phoneString.length in 10..11 && (phoneString.length == 10 || phoneString[2] == '9')) {
             "55$phoneString"
         } else {
             phoneString

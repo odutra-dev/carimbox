@@ -108,4 +108,20 @@
     <string name="pagamento_dinheiro">Efectivo</string>
     <string name="pagamento_a_pagar">Por pagar</string>
     <string name="pagamento_link">Enlace de pago</string>
+
+    <!-- DDI & Países -->
+    <string name="pais_brasil">Brasil</string>
+    <string name="pais_portugal">Portugal</string>
+    <string name="pais_eua">Estados Unidos</string>
+    <string name="pais_argentina">Argentina</string>
+    <string name="pais_espanha">España</string>
+    <string name="pais_outro">Otro DDI</string>
+    <string name="ddi_dialog_titulo">Código de País (DDI)</string>
+    <string name="ddi_dialog_placeholder">Ej: 44, 33, 49</string>
+
+    <!-- Validaciones inline -->
+    <string name="erro_whatsapp_obrigatorio">WhatsApp es obligatorio</string>
+    <string name="erro_whatsapp_invalido">Ingrese un número de WhatsApp válido</string>
+    <string name="erro_texto_logo_obrigatorio">La descripción del sello es obligatoria</string>
+    <string name="erro_valor_obrigatorio">El valor debe ser superior a cero</string>
 </resources>

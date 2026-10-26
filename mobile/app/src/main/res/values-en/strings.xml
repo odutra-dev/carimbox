@@ -108,4 +108,20 @@
     <string name="pagamento_dinheiro">Cash</string>
     <string name="pagamento_a_pagar">To pay</string>
     <string name="pagamento_link">Link payment</string>
+
+    <!-- DDI & Countries -->
+    <string name="pais_brasil">Brazil</string>
+    <string name="pais_portugal">Portugal</string>
+    <string name="pais_eua">United States</string>
+    <string name="pais_argentina">Argentina</string>
+    <string name="pais_espanha">Spain</string>
+    <string name="pais_outro">Other DDI</string>
+    <string name="ddi_dialog_titulo">Country Code (DDI)</string>
+    <string name="ddi_dialog_placeholder">e.g. 44, 33, 49</string>
+
+    <!-- Inline Validations -->
+    <string name="erro_whatsapp_obrigatorio">WhatsApp is required</string>
+    <string name="erro_whatsapp_invalido">Please enter a valid WhatsApp number</string>
+    <string name="erro_texto_logo_obrigatorio">Stamp description is required</string>
+    <string name="erro_valor_obrigatorio">Amount must be greater than zero</string>
 </resources>
