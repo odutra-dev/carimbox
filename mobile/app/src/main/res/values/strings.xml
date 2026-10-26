@@ -14,6 +14,12 @@
     <string name="tema_sistema">Sistema</string>
     <string name="tema_claro">Claro</string>
     <string name="tema_escuro">Escuro</string>
+    <string name="idioma">Idioma</string>
+    <string name="idioma_descricao">Escolha o idioma do aplicativo</string>
+    <string name="idioma_sistema">Padrão do sistema</string>
+    <string name="idioma_pt">Português (Brasil)</string>
+    <string name="idioma_en">English (US)</string>
+    <string name="idioma_es">Español</string>
     <string name="versao">Versão: %1$s</string>
 
     <string name="pedido_id">Pedido #%1$d</string>

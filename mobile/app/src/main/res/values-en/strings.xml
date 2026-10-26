@@ -14,6 +14,12 @@
     <string name="tema_sistema">System</string>
     <string name="tema_claro">Light</string>
     <string name="tema_escuro">Dark</string>
+    <string name="idioma">Language</string>
+    <string name="idioma_descricao">Choose application language</string>
+    <string name="idioma_sistema">System default</string>
+    <string name="idioma_pt">Português (Brasil)</string>
+    <string name="idioma_en">English (US)</string>
+    <string name="idioma_es">Español</string>
     <string name="versao">Version: %1$s</string>
 
     <string name="pedido_id">Order #%1$d</string>
