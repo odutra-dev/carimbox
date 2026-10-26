@@ -263,9 +263,6 @@ fun AtualizarPedidoScreen(
                         isError = uiState.textoLogoErrorResId != null,
                         supportingText = uiState.textoLogoErrorResId?.let { { Text(stringResource(it)) } }
                     )
-                        shape = RoundedCornerShape(10.dp),
-                        minLines = 3
-                    )
 
                     // Tipo de Pagamento & Categoria / Label
                     if (isTablet) {
