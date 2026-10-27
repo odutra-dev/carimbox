@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Carimbos Ocian</string>
+    <string name="pedidos_titulo">Orders</string>
+    <string name="configuracoes_titulo">Settings</string>
+    <string name="mensagem_home">Track recent orders</string>
+    <string name="pedidos_page">Orders</string>
+    <string name="configuracoes_page">Settings</string>
+    <string name="pendentes">Pending</string>
+    <string name="concluidos">Completed</string>
+    <string name="todos">All</string>
+    <string name="modo_escuro">Dark mode</string>
+    <string name="tema_aparencia">Theme Appearance</string>
+    <string name="tema_sistema">System</string>
+    <string name="tema_claro">Light</string>
+    <string name="tema_escuro">Dark</string>
+    <string name="idioma">Language</string>
+    <string name="idioma_descricao">Choose application language</string>
+    <string name="idioma_sistema">System default</string>
+    <string name="idioma_pt">Português (Brasil)</string>
+    <string name="idioma_en">English (US)</string>
+    <string name="idioma_es">Español</string>
+    <string name="versao">Version: %1$s</string>
+
+    <string name="pedido_id">Order #%1$d</string>
+    <string name="pedido_id_card">Order</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="cliente">Client</string>
+    <string name="tipo_modelo">Model</string>
+    <string name="texto_logo">Description</string>
+    <string name="observacao">Notes</string>
+    <string name="tipo_pagamento">Payment Method</string>
+    <string name="valor">Amount</string>
+    <string name="data_pedido">Order date</string>
+    <string name="data_entrega">Delivery date</string>
+    <string name="horario_entrega">Time</string>
+    <string name="selecionar_horario">Select Time</string>
+    <string name="status">Status</string>
+    <string name="entregue">Delivered</string>
+    <string name="categoria_label">Label</string>
+
+    <string name="copiar_todos">Copy all data</string>
+    <string name="dados_copiados">Text copied to clipboard.</string>
+    <string name="abrir_whatsapp">Chat on WhatsApp</string>
+    <string name="editar">Edit</string>
+    <string name="excluir">Delete</string>
+    <string name="excluir_pedido">Delete Order</string>
+    <string name="excluir_pedido_confirmacao">Are you sure you want to delete Order #%1$d? This action cannot be undone.</string>
+    <string name="pedido_excluido_sucesso">Order deleted successfully!</string>
+    <string name="detalhes_pedido">Order Details</string>
+    <string name="reabrir_pedido">Reopen Order (Mark as Pending)</string>
+    <string name="concluir_pedido">Complete Order (Mark as Delivered)</string>
+    <string name="voltar">Back</string>
+
+    <string name="marcar_como_pendente_titulo">Mark as pending?</string>
+    <string name="marcar_como_pendente_msg">Do you want to mark order #%1$d as pending?</string>
+    <string name="marcar_como_concluido_titulo">Mark as completed?</string>
+    <string name="marcar_como_concluido_msg">Do you want to mark order #%1$d as completed?</string>
+    <string name="pedido_marcado_pendente">Order marked as pending!</string>
+    <string name="pedido_marcado_concluido">Order marked as completed!</string>
+    <string name="pedido_ja_concluido">This order is already completed!</string>
+    <string name="confirmar">Confirm</string>
+    <string name="cancelar">Cancel</string>
+    <string name="salvar">Save</string>
+    <string name="salvando">Saving...</string>
+
+    <string name="novo_pedido_titulo">📝 New Order</string>
+    <string name="novo_pedido_subtitulo">Fill in the fields below to register a new order</string>
+    <string name="cadastrar_pedido">Register Order</string>
+    <string name="editar_pedido_titulo">✏️ Update Order</string>
+    <string name="editar_pedido_subtitulo">Edit the order information below</string>
+    <string name="atualizar_pedido">Update Order</string>
+    <string name="pedido_criado_sucesso">Order created successfully!</string>
+    <string name="pedido_atualizado_sucesso">Order updated successfully!</string>
+    <string name="alerta_campos_obrigatorios">Please fill in all required fields!</string>
+    <string name="carregando_pedido">Loading order...</string>
+    <string name="erro">Error</string>
+    <string name="erro_carregar_pedidos">Failed to load orders. Please check your connection.</string>
+
+    <string name="cliente_placeholder">Client name</string>
+    <string name="whatsapp_placeholder">Ex: 11999999999</string>
+    <string name="tipo_modelo_placeholder">Ex: Automatic, Trodat 4911</string>
+    <string name="texto_logo_placeholder">Enter the stamp text</string>
+    <string name="observacao_placeholder">Any additional details?</string>
+    <string name="valor_placeholder">Ex: 79.90</string>
+
+    <string name="search_page">Search</string>
+    <string name="search_titulo">Search Orders</string>
+    <string name="buscar_por_id">Search by Order ID</string>
+    <string name="buscar_placeholder">Search by client, description or whatsapp…</string>
+    <string name="nenhum_pedido_encontrado">No orders found.</string>
+    <string name="aplicar_filtros">Apply Filters</string>
+    <string name="limpar_filtros">Clear filters</string>
+    <string name="filtro_data">Filter by date</string>
+    <string name="sem_filtro">No filter</string>
+    <string name="dia">Day</string>
+    <string name="mes">Month</string>
+    <string name="ano">Year</string>
+    <string name="selecionar_data">Select Date</string>
+
+    <string name="label_carimbo">Stamp</string>
+    <string name="label_mdf">MDF/Acrylic</string>
+    <string name="label_outhers">Others</string>
+
+    <string name="pagamento_pix">Pix</string>
+    <string name="pagamento_credito">Credit Card</string>
+    <string name="pagamento_debito">Debit Card</string>
+    <string name="pagamento_dinheiro">Cash</string>
+    <string name="pagamento_a_pagar">To pay</string>
+    <string name="pagamento_link">Link payment</string>
+
+    <!-- Form Sections -->
+    <string name="secao_cliente">Customer Information</string>
+    <string name="secao_detalhes_pedido">Order Details</string>
+    <string name="secao_pagamento_retirada">Payment &amp; Pickup</string>
+
+    <!-- DDI & Countries -->
+    <string name="pais_brasil">Brazil</string>
+    <string name="pais_portugal">Portugal</string>
+    <string name="pais_eua">United States</string>
+    <string name="pais_argentina">Argentina</string>
+    <string name="pais_espanha">Spain</string>
+    <string name="pais_outro">Other DDI</string>
+    <string name="ddi_dialog_titulo">Country Code (DDI)</string>
+    <string name="ddi_dialog_placeholder">e.g. 44, 33, 49</string>
+
+    <!-- Inline Validations -->
+    <string name="erro_whatsapp_obrigatorio">WhatsApp is required</string>
+    <string name="erro_whatsapp_invalido">Please enter a valid WhatsApp number</string>
+    <string name="erro_texto_logo_obrigatorio">Stamp description is required</string>
+    <string name="erro_valor_obrigatorio">Amount must be greater than zero</string>
+</resources>

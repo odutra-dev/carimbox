@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Carimbos Ocian</string>
+    <string name="pedidos_titulo">Pedidos</string>
+    <string name="configuracoes_titulo">Configurações</string>
+    <string name="mensagem_home">Acompanhe os pedidos recentes</string>
+    <string name="pedidos_page">Pedidos</string>
+    <string name="configuracoes_page">Configurações</string>
+    <string name="pendentes">Pendentes</string>
+    <string name="concluidos">Concluídos</string>
+    <string name="todos">Todos</string>
+    <string name="modo_escuro">Modo escuro</string>
+    <string name="tema_aparencia">Aparência do Tema</string>
+    <string name="tema_sistema">Sistema</string>
+    <string name="tema_claro">Claro</string>
+    <string name="tema_escuro">Escuro</string>
+    <string name="idioma">Idioma</string>
+    <string name="idioma_descricao">Escolha o idioma do aplicativo</string>
+    <string name="idioma_sistema">Padrão do sistema</string>
+    <string name="idioma_pt">Português (Brasil)</string>
+    <string name="idioma_en">English (US)</string>
+    <string name="idioma_es">Español</string>
+    <string name="versao">Versão: %1$s</string>
+
+    <string name="pedido_id">Pedido #%1$d</string>
+    <string name="pedido_id_card">Pedido</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="cliente">Cliente</string>
+    <string name="tipo_modelo">Modelo</string>
+    <string name="texto_logo">Descrição</string>
+    <string name="observacao">Observações</string>
+    <string name="tipo_pagamento">Forma de Pagamento</string>
+    <string name="valor">Valor</string>
+    <string name="data_pedido">Data do pedido</string>
+    <string name="data_entrega">Data de entrega</string>
+    <string name="horario_entrega">Horário</string>
+    <string name="selecionar_horario">Selecionar Horário</string>
+    <string name="status">Status</string>
+    <string name="entregue">Entregue</string>
+    <string name="categoria_label">Etiqueta</string>
+
+    <string name="copiar_todos">Copiar todos os dados</string>
+    <string name="dados_copiados">Texto copiado para a área de transferência.</string>
+    <string name="abrir_whatsapp">Conversar no WhatsApp</string>
+    <string name="editar">Editar</string>
+    <string name="excluir">Excluir</string>
+    <string name="excluir_pedido">Excluir Pedido</string>
+    <string name="excluir_pedido_confirmacao">Tem certeza de que deseja excluir o Pedido #%1$d? Esta ação não pode ser desfeita.</string>
+    <string name="pedido_excluido_sucesso">Pedido excluído com sucesso!</string>
+    <string name="detalhes_pedido">Detalhes do Pedido</string>
+    <string name="reabrir_pedido">Reabrir Pedido (Marcar como Pendente)</string>
+    <string name="concluir_pedido">Concluir Pedido (Marcar como Entregue)</string>
+    <string name="voltar">Voltar</string>
+
+    <string name="marcar_como_pendente_titulo">Marcar como pendente?</string>
+    <string name="marcar_como_pendente_msg">Deseja marcar o pedido #%1$d como pendente?</string>
+    <string name="marcar_como_concluido_titulo">Marcar como concluído?</string>
+    <string name="marcar_como_concluido_msg">Deseja marcar o pedido #%1$d como concluído?</string>
+    <string name="pedido_marcado_pendente">Pedido marcado como pendente!</string>
+    <string name="pedido_marcado_concluido">Pedido marcado como concluído!</string>
+    <string name="pedido_ja_concluido">Este pedido já está concluído!</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="salvar">Salvar</string>
+    <string name="salvando">Salvando...</string>
+
+    <string name="novo_pedido_titulo">📝 Novo Pedido</string>
+    <string name="novo_pedido_subtitulo">Preencha os campos abaixo para registrar um novo pedido</string>
+    <string name="cadastrar_pedido">Cadastrar Pedido</string>
+    <string name="editar_pedido_titulo">✏️ Atualizar Pedido</string>
+    <string name="editar_pedido_subtitulo">Edite as informações do pedido abaixo</string>
+    <string name="atualizar_pedido">Atualizar Pedido</string>
+    <string name="pedido_criado_sucesso">Pedido criado com sucesso!</string>
+    <string name="pedido_atualizado_sucesso">Pedido atualizado com sucesso!</string>
+    <string name="alerta_campos_obrigatorios">Preencha todos os campos obrigatórios!</string>
+    <string name="carregando_pedido">Carregando pedido...</string>
+    <string name="erro">Erro</string>
+    <string name="erro_carregar_pedidos">Erro ao carregar pedidos. Verifique sua conexão.</string>
+
+    <string name="cliente_placeholder">Nome do cliente</string>
+    <string name="whatsapp_placeholder">Ex: 11999999999</string>
+    <string name="tipo_modelo_placeholder">Ex: Automático, Trodat 4911</string>
+    <string name="texto_logo_placeholder">Digite o texto do carimbo</string>
+    <string name="observacao_placeholder">Algum detalhe adicional?</string>
+    <string name="valor_placeholder">Ex: 79,90</string>
+
+    <string name="search_page">Buscar</string>
+    <string name="search_titulo">Buscar Pedidos</string>
+    <string name="buscar_por_id">Buscar por ID do Pedido</string>
+    <string name="buscar_placeholder">Buscar por cliente, texto ou whatsapp…</string>
+    <string name="nenhum_pedido_encontrado">Nenhum pedido encontrado.</string>
+    <string name="aplicar_filtros">Aplicar Filtros</string>
+    <string name="limpar_filtros">Limpar filtros</string>
+    <string name="filtro_data">Filtrar por data</string>
+    <string name="sem_filtro">Sem filtro</string>
+    <string name="dia">Dia</string>
+    <string name="mes">Mês</string>
+    <string name="ano">Ano</string>
+    <string name="selecionar_data">Selecionar Data</string>
+
+    <string name="label_carimbo">Carimbo</string>
+    <string name="label_mdf">MDF/Acrílico</string>
+    <string name="label_outhers">Outros</string>
+
+    <string name="pagamento_pix">Pix</string>
+    <string name="pagamento_credito">Cartão de Crédito</string>
+    <string name="pagamento_debito">Cartão de Débito</string>
+    <string name="pagamento_dinheiro">Dinheiro</string>
+    <string name="pagamento_a_pagar">A pagar</string>
+    <string name="pagamento_link">Link de pagamento</string>
+
+    <!-- Seções dos formulários -->
+    <string name="secao_cliente">Dados do Cliente</string>
+    <string name="secao_detalhes_pedido">Detalhes do Pedido</string>
+    <string name="secao_pagamento_retirada">Pagamento &amp; Retirada</string>
+
+    <!-- DDI & Países -->
+    <string name="pais_brasil">Brasil</string>
+    <string name="pais_portugal">Portugal</string>
+    <string name="pais_eua">Estados Unidos</string>
+    <string name="pais_argentina">Argentina</string>
+    <string name="pais_espanha">Espanha</string>
+    <string name="pais_outro">Outro DDI</string>
+    <string name="ddi_dialog_titulo">Código do País (DDI)</string>
+    <string name="ddi_dialog_placeholder">Ex: 44, 33, 49</string>
+
+    <!-- Validações inline -->
+    <string name="erro_whatsapp_obrigatorio">WhatsApp é obrigatório</string>
+    <string name="erro_whatsapp_invalido">Informe um número de WhatsApp válido</string>
+    <string name="erro_texto_logo_obrigatorio">A descrição do carimbo é obrigatória</string>
+    <string name="erro_valor_obrigatorio">O valor deve ser maior que zero</string>
+</resources>
