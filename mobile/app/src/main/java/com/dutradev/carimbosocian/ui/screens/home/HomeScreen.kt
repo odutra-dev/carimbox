@@ -1,6 +1,5 @@
 package com.dutradev.carimbosocian.ui.screens.home
 
-import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -57,6 +56,7 @@ import com.dutradev.carimbosocian.R
 import com.dutradev.carimbosocian.ui.components.PedidoCard
 import com.dutradev.carimbosocian.util.DateUtils
 import java.util.Calendar
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -194,21 +194,13 @@ fun HomeScreen(
                     FilterChip(
                         selected = isSelected,
                         onClick = {
-                            val cal = Calendar.getInstance().apply {
-                                if (isSelected) time = uiState.dateFilterValue
+                            val initial = if (isSelected) uiState.dateFilterValue else Date()
+                            DateUtils.showDatePicker(context, initial) { year, month, dayOfMonth ->
+                                val picked = Calendar.getInstance().apply {
+                                    set(year, month, dayOfMonth)
+                                }.time
+                                viewModel.setDateFilter(type, picked)
                             }
-                            DatePickerDialog(
-                                context,
-                                { _, year, month, dayOfMonth ->
-                                    val picked = Calendar.getInstance().apply {
-                                        set(year, month, dayOfMonth)
-                                    }.time
-                                    viewModel.setDateFilter(type, picked)
-                                },
-                                cal.get(Calendar.YEAR),
-                                cal.get(Calendar.MONTH),
-                                cal.get(Calendar.DAY_OF_MONTH)
-                            ).show()
                         },
                         label = { Text(chipLabel, fontSize = 12.sp) },
                         trailingIcon = if (isSelected) {
@@ -275,7 +267,7 @@ fun HomeScreen(
                     ) {
                         items(
                             items = uiState.pedidos,
-                            key = { it.id ?: it.hashCode() }
+                            key = { it.id ?: "temp_${System.identityHashCode(it)}" }
                         ) { pedido ->
                             PedidoCard(
                                 pedido = pedido,

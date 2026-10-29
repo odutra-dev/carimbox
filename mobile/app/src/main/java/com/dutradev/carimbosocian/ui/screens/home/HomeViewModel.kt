@@ -79,7 +79,7 @@ class HomeViewModel(
             result.onSuccess { newItems ->
                 _uiState.update {
                     it.copy(
-                        pedidos = it.pedidos + newItems,
+                        pedidos = (it.pedidos + newItems).distinctBy { p -> p.id },
                         isLoadingMore = false,
                         page = nextPage,
                         hasMore = newItems.size >= pageSize
@@ -111,7 +111,7 @@ class HomeViewModel(
             result.onSuccess { items ->
                 _uiState.update {
                     it.copy(
-                        pedidos = items,
+                        pedidos = items.distinctBy { p -> p.id },
                         isLoading = false,
                         isRefreshing = false,
                         page = 0,
