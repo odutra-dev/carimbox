@@ -101,7 +101,7 @@ class SearchViewModel(
             )
 
             result.onSuccess { list ->
-                _uiState.update { it.copy(pedidos = list, isLoading = false) }
+                _uiState.update { it.copy(pedidos = list.distinctBy { p -> p.id }, isLoading = false) }
             }.onFailure { err ->
                 _uiState.update {
                     it.copy(

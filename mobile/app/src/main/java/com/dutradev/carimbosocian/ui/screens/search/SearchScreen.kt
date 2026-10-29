@@ -252,7 +252,7 @@ fun SearchScreen(
                 ) {
                     items(
                         items = uiState.pedidos,
-                        key = { it.id ?: it.hashCode() }
+                        key = { it.id ?: "temp_${System.identityHashCode(it)}" }
                     ) { pedido ->
                         PedidoCard(
                             pedido = pedido,
