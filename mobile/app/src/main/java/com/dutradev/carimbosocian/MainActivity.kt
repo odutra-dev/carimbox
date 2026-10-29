@@ -1,5 +1,7 @@
 package com.dutradev.carimbosocian
 
+import android.content.ContextWrapper
+import android.content.res.AssetManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
@@ -14,6 +16,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
@@ -22,6 +25,8 @@ import com.dutradev.carimbosocian.data.model.ThemeMode
 import com.dutradev.carimbosocian.ui.navigation.CarimboxNavGraph
 import com.dutradev.carimbosocian.ui.theme.CarimboxTheme
 import java.util.Locale
+
+val LocalActivity = staticCompositionLocalOf<ComponentActivity?> { null }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +70,11 @@ class MainActivity : ComponentActivity() {
                 val config = Configuration(baseContext.resources.configuration)
                 config.setLocale(currentLocale)
                 config.setLayoutDirection(currentLocale)
-                baseContext.createConfigurationContext(config)
+                val configContext = baseContext.createConfigurationContext(config)
+                object : ContextWrapper(baseContext) {
+                    override fun getResources(): Resources = configContext.resources
+                    override fun getAssets(): AssetManager = configContext.assets
+                }
             }
 
             DisposableEffect(isDark) {
@@ -83,6 +92,7 @@ class MainActivity : ComponentActivity() {
             }
 
             CompositionLocalProvider(
+                LocalActivity provides this@MainActivity,
                 LocalConfiguration provides localizedConfig,
                 LocalContext provides localizedContext
             ) {

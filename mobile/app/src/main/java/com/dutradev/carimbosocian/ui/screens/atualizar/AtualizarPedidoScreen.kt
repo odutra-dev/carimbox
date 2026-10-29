@@ -1,7 +1,5 @@
 package com.dutradev.carimbosocian.ui.screens.atualizar
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,7 +63,6 @@ import com.dutradev.carimbosocian.ui.components.CurrencyInput
 import com.dutradev.carimbosocian.ui.components.PhoneWithDdiInput
 import com.dutradev.carimbosocian.ui.util.isTabletOrLandscape
 import com.dutradev.carimbosocian.util.DateUtils
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -590,81 +587,100 @@ fun AtualizarPedidoScreen(
                             }
 
                             // Data e Horário de Entrega lado a lado
-                            val cal = Calendar.getInstance().apply { time = uiState.dataEntrega }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 // Campo Data de Entrega
-                                Box(modifier = Modifier.weight(1.2f)) {
-                                OutlinedTextField(
-                                    value = DateUtils.toDisplayDateOnly(uiState.dataEntrega),
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    label = { Text(stringResource(R.string.data_entrega)) },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.CalendarToday,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp)
-                                )
                                 Box(
                                     modifier = Modifier
-                                        .matchParentSize()
+                                        .weight(1.2f)
                                         .clickable {
-                                            DatePickerDialog(
-                                                context,
-                                                { _, year, month, dayOfMonth ->
+                                            DateUtils.showDatePicker(context, uiState.dataEntrega) { year, month, dayOfMonth ->
+                                                val updated = DateUtils.updateDate(uiState.dataEntrega, year, month, dayOfMonth)
+                                                viewModel.onDataEntregaChange(updated)
+                                            }
+                                        }
+                                ) {
+                                    OutlinedTextField(
+                                        value = DateUtils.toDisplayDateOnly(uiState.dataEntrega),
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text(stringResource(R.string.data_entrega)) },
+                                        leadingIcon = {
+                                            IconButton(onClick = {
+                                                DateUtils.showDatePicker(context, uiState.dataEntrega) { year, month, dayOfMonth ->
                                                     val updated = DateUtils.updateDate(uiState.dataEntrega, year, month, dayOfMonth)
                                                     viewModel.onDataEntregaChange(updated)
-                                                },
-                                                cal.get(Calendar.YEAR),
-                                                cal.get(Calendar.MONTH),
-                                                cal.get(Calendar.DAY_OF_MONTH)
-                                            ).show()
-                                        }
-                                )
-                            }
+                                                }
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Default.CalendarToday,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.primary
+                                                )
+                                            }
+                                        },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .clickable {
+                                                DateUtils.showDatePicker(context, uiState.dataEntrega) { year, month, dayOfMonth ->
+                                                    val updated = DateUtils.updateDate(uiState.dataEntrega, year, month, dayOfMonth)
+                                                    viewModel.onDataEntregaChange(updated)
+                                                }
+                                            }
+                                    )
+                                }
 
-                            // Campo Horário de Entrega
-                            Box(modifier = Modifier.weight(0.9f)) {
-                                OutlinedTextField(
-                                    value = DateUtils.toDisplayTimeOnly(uiState.dataEntrega),
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    label = { Text(stringResource(R.string.horario_entrega)) },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.AccessTime,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp)
-                                )
+                                // Campo Horário de Entrega
                                 Box(
                                     modifier = Modifier
-                                        .matchParentSize()
+                                        .weight(0.9f)
                                         .clickable {
-                                            TimePickerDialog(
-                                                context,
-                                                { _, hourOfDay, minute ->
+                                            DateUtils.showTimePicker(context, uiState.dataEntrega) { hourOfDay, minute ->
+                                                val updated = DateUtils.updateTime(uiState.dataEntrega, hourOfDay, minute)
+                                                viewModel.onDataEntregaChange(updated)
+                                            }
+                                        }
+                                ) {
+                                    OutlinedTextField(
+                                        value = DateUtils.toDisplayTimeOnly(uiState.dataEntrega),
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text(stringResource(R.string.horario_entrega)) },
+                                        leadingIcon = {
+                                            IconButton(onClick = {
+                                                DateUtils.showTimePicker(context, uiState.dataEntrega) { hourOfDay, minute ->
                                                     val updated = DateUtils.updateTime(uiState.dataEntrega, hourOfDay, minute)
                                                     viewModel.onDataEntregaChange(updated)
-                                                },
-                                                cal.get(Calendar.HOUR_OF_DAY),
-                                                cal.get(Calendar.MINUTE),
-                                                true
-                                            ).show()
-                                        }
-                                )
+                                                }
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Default.AccessTime,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.primary
+                                                )
+                                            }
+                                        },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .clickable {
+                                                DateUtils.showTimePicker(context, uiState.dataEntrega) { hourOfDay, minute ->
+                                                    val updated = DateUtils.updateTime(uiState.dataEntrega, hourOfDay, minute)
+                                                    viewModel.onDataEntregaChange(updated)
+                                                }
+                                            }
+                                    )
+                                }
                             }
-                        }
                     }
                 }
 

@@ -1,7 +1,5 @@
 package com.dutradev.carimbosocian.ui.screens.novo
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,7 +63,6 @@ import com.dutradev.carimbosocian.ui.components.CurrencyInput
 import com.dutradev.carimbosocian.ui.components.PhoneWithDdiInput
 import com.dutradev.carimbosocian.ui.util.isTabletOrLandscape
 import com.dutradev.carimbosocian.util.DateUtils
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -580,24 +577,39 @@ fun NovoPedidoScreen(
                         }
 
                         // Data e Horário de Entrega lado a lado
-                        val cal = Calendar.getInstance().apply { time = uiState.dataEntrega }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             // Campo Data de Entrega
-                            Box(modifier = Modifier.weight(1.2f)) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1.2f)
+                                    .clickable {
+                                        DateUtils.showDatePicker(context, uiState.dataEntrega) { year, month, dayOfMonth ->
+                                            val updated = DateUtils.updateDate(uiState.dataEntrega, year, month, dayOfMonth)
+                                            viewModel.onDataEntregaChange(updated)
+                                        }
+                                    }
+                            ) {
                                 OutlinedTextField(
                                     value = DateUtils.toDisplayDateOnly(uiState.dataEntrega),
                                     onValueChange = {},
                                     readOnly = true,
                                     label = { Text(stringResource(R.string.data_entrega)) },
                                     leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.CalendarToday,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
+                                        IconButton(onClick = {
+                                            DateUtils.showDatePicker(context, uiState.dataEntrega) { year, month, dayOfMonth ->
+                                                val updated = DateUtils.updateDate(uiState.dataEntrega, year, month, dayOfMonth)
+                                                viewModel.onDataEntregaChange(updated)
+                                            }
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Default.CalendarToday,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
                                     },
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(12.dp)
@@ -606,33 +618,43 @@ fun NovoPedidoScreen(
                                     modifier = Modifier
                                         .matchParentSize()
                                         .clickable {
-                                            DatePickerDialog(
-                                                context,
-                                                { _, year, month, dayOfMonth ->
-                                                    val updated = DateUtils.updateDate(uiState.dataEntrega, year, month, dayOfMonth)
-                                                    viewModel.onDataEntregaChange(updated)
-                                                },
-                                                cal.get(Calendar.YEAR),
-                                                cal.get(Calendar.MONTH),
-                                                cal.get(Calendar.DAY_OF_MONTH)
-                                            ).show()
+                                            DateUtils.showDatePicker(context, uiState.dataEntrega) { year, month, dayOfMonth ->
+                                                val updated = DateUtils.updateDate(uiState.dataEntrega, year, month, dayOfMonth)
+                                                viewModel.onDataEntregaChange(updated)
+                                            }
                                         }
                                 )
                             }
 
                             // Campo Horário de Entrega
-                            Box(modifier = Modifier.weight(0.9f)) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(0.9f)
+                                    .clickable {
+                                        DateUtils.showTimePicker(context, uiState.dataEntrega) { hourOfDay, minute ->
+                                            val updated = DateUtils.updateTime(uiState.dataEntrega, hourOfDay, minute)
+                                            viewModel.onDataEntregaChange(updated)
+                                        }
+                                    }
+                            ) {
                                 OutlinedTextField(
                                     value = DateUtils.toDisplayTimeOnly(uiState.dataEntrega),
                                     onValueChange = {},
                                     readOnly = true,
                                     label = { Text(stringResource(R.string.horario_entrega)) },
                                     leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Default.AccessTime,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
+                                        IconButton(onClick = {
+                                            DateUtils.showTimePicker(context, uiState.dataEntrega) { hourOfDay, minute ->
+                                                val updated = DateUtils.updateTime(uiState.dataEntrega, hourOfDay, minute)
+                                                viewModel.onDataEntregaChange(updated)
+                                            }
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Default.AccessTime,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
                                     },
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(12.dp)
@@ -641,16 +663,10 @@ fun NovoPedidoScreen(
                                     modifier = Modifier
                                         .matchParentSize()
                                         .clickable {
-                                            TimePickerDialog(
-                                                context,
-                                                { _, hourOfDay, minute ->
-                                                    val updated = DateUtils.updateTime(uiState.dataEntrega, hourOfDay, minute)
-                                                    viewModel.onDataEntregaChange(updated)
-                                                },
-                                                cal.get(Calendar.HOUR_OF_DAY),
-                                                cal.get(Calendar.MINUTE),
-                                                true
-                                            ).show()
+                                            DateUtils.showTimePicker(context, uiState.dataEntrega) { hourOfDay, minute ->
+                                                val updated = DateUtils.updateTime(uiState.dataEntrega, hourOfDay, minute)
+                                                viewModel.onDataEntregaChange(updated)
+                                            }
                                         }
                                 )
                             }
