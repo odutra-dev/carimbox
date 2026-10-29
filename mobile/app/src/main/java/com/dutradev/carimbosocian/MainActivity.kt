@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.os.ConfigurationCompat
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -43,8 +44,8 @@ class MainActivity : ComponentActivity() {
             val currentLocale = remember(appLanguage) {
                 when (appLanguage) {
                     AppLanguage.SYSTEM -> {
-                        val systemLocales = Resources.getSystem().configuration.locales
-                        if (!systemLocales.isEmpty) systemLocales[0] else Locale.getDefault()
+                        val systemLocales = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
+                        if (!systemLocales.isEmpty) systemLocales[0] ?: Locale.getDefault() else Locale.getDefault()
                     }
                     AppLanguage.PORTUGUESE -> Locale("pt", "BR")
                     AppLanguage.ENGLISH -> Locale.US
