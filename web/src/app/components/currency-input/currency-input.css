@@ -50,14 +50,6 @@
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
-.currency-prefix {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  margin-right: 6px;
-  user-select: none;
-}
-
 .currency-control {
   flex: 1;
   background: transparent;

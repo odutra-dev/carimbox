@@ -132,7 +132,7 @@ export class NovoPedido {
         tipo_pagamento: formValue.tipo_pagamento,
         valor: Number(formValue.valor),
         observacao: formValue.observacao?.trim() || null,
-        entregue: !!formValue.entregue,
+        entregue: false,
         data_entrega: new Date(formValue.data_entrega).toISOString(),
         label: formValue.label,
       });
