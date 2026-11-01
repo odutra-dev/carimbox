@@ -4,6 +4,7 @@ import { Supabase } from '../../services/supabase';
 import { CupomService } from '../../services/cupom';
 import { Pedido } from '../../../@types/pedido';
 import { Router } from '@angular/router';
+import { PhoneUtils } from '../../utils/phone.utils';
 
 @Component({
   selector: 'app-lista-pedidos',
@@ -51,66 +52,82 @@ export class ListaPedidos implements OnInit {
 
   // ✅ Formata número de WhatsApp
   formatarWhatsapp(numero: string): string {
-    const num = numero.replace(/\D/g, '');
-    if (num.length === 11) {
-      return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
-    }
-    if (num.length === 10) {
-      return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
-    }
-    return numero;
+    return PhoneUtils.formatPhoneDisplay(numero);
   }
 
-  // ✅ Mensagem padrão de novo pedido
+  // ✅ Mensagem padrão de novo pedido (layout padronizado com mobile)
   mensagemNovoPedido(pedido: Pedido): string {
-    const dataEntrega = new Date(pedido.data_entrega).toLocaleString('pt-BR', {
+    const dataEntregaObj = new Date(pedido.data_entrega);
+    const dataFormatada = dataEntregaObj.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
+    });
+    const horaFormatada = dataEntregaObj.toLocaleTimeString('pt-BR', {
       hour: '2-digit',
       minute: '2-digit',
     });
+    const formattedDataEntrega = `${dataFormatada} às ${horaFormatada}`;
 
-    return `Olá ${pedido.cliente ?? ''}, aqui é da Carimbos Ocian! 😄
+    const saudacao = pedido.cliente?.trim()
+      ? `Olá ${pedido.cliente.trim()}, aqui é da Carimbos Ocian! 😄`
+      : `Olá, aqui é da Carimbos Ocian! 😄`;
+
+    const modeloParte = pedido.tipo_modelo?.trim()
+      ? `🔖 Modelo: ${pedido.tipo_modelo.trim()}\n\n`
+      : '';
+    const observacaoParte = pedido.observacao?.trim()
+      ? `\n\n📝 Observação: ${pedido.observacao.trim()}`
+      : '';
+    const formattedValor = (pedido.valor ?? 0).toFixed(2).replace('.', ',');
+
+    return `${saudacao}
 
 Segue o resumo do seu pedido:
 
-🧾 Pedido nº: ${pedido.id}
-🔖 Modelo: ${pedido.tipo_modelo ?? 'N/A'}
+━━━━━━━━━━━━━━━━━
+📦 Nº DO PEDIDO
+     *Nº: ${pedido.id ?? 0}*
+━━━━━━━━━━━━━━━━━
 
-✏ Descrição:
-${pedido.texto_logo}
+${modeloParte}✏ Descrição:
 
-${pedido.observacao ? `📝 Observação: ${pedido.observacao}` : ''}
+${pedido.texto_logo}${observacaoParte}
 
 💰 Forma de pagamento: ${pedido.tipo_pagamento}
-💵 Valor total: R$ ${pedido.valor?.toFixed(2)}
-📅 Entrega Prevista: ${dataEntrega.replace(',', ' às')}
+💵 Valor total: R$ ${formattedValor}
 
-*RETIRADA*:  DENTRO do CHAVEIRO OCIAN
-Rua Remo Estéfane, 50 – Ocian
-https://maps.app.goo.gl/3FzpDGgtgv9ipG1f9`;
+━━━━━━━━━━━━━━━━━
+📦 RETIRADA A PARTIR DE
+📅 ${formattedDataEntrega}
+━━━━━━━━━━━━━━━━━
+
+📍 *RETIRADA: DENTRO do CHAVEIRO OCIAN*
+Rua Remo Estéfane, 50 – Ocian`;
   }
 
-  // ✅ Mensagem de pedido concluído
-  mensagemPedidoConcluido(): string {
-    return `✅ Pedido finalizado! ✅
+  // ✅ Mensagem de pedido concluído (layout padronizado com mobile)
+  mensagemPedidoConcluido(pedido: Pedido): string {
+    return `✅ Seu pedido já foi finalizado e está disponível para retirada! ✅
 
-📦 Seu pedido está pronto para retirada/entrega.
-Qualquer dúvida, estamos aqui!
+━━━━━━━━━━━━━━━━━━━━━━━━
+📦 Retirada com o nº do pedido: ${pedido.id ?? 0}
+━━━━━━━━━━━━━━━━━━━━━━━━
 
-Se puder, avalie a Carimbos Ocian no Google:
-👉 https://g.page/r/CbOE8NI63dFnEBM/review
+📍 *RETIRADA: DENTRO do CHAVEIRO OCIAN*
+Rua Remo Estéfane, 50 – Ocian
+https://maps.app.goo.gl/3FzpDGgtgv9ipG1f9
 
 💙 Agradecemos pela confiança! 💙`;
   }
 
   // ✅ Envia mensagem no WhatsApp
   enviarWhatsApp(pedido: Pedido) {
-    const numero = pedido.whatsapp.toString().replace(/\D/g, '');
     const mensagem = this.mensagemNovoPedido(pedido);
-    const url = `https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`;
-    window.open(url, '_blank');
+    const url = PhoneUtils.buildWhatsAppUrl(pedido.whatsapp, mensagem);
+    if (url) {
+      window.open(url, '_blank');
+    }
   }
 
   // ✅ Marca pedido como entregue no Supabase
@@ -159,10 +176,11 @@ Se puder, avalie a Carimbos Ocian no Google:
 
   // ✅ Envia mensagem de conclusão
   enviarMensagemConcluido(pedido: Pedido) {
-    const numero = pedido.whatsapp.toString().replace(/\D/g, '');
-    const mensagem = this.mensagemPedidoConcluido();
-    const url = `https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`;
-    window.open(url, '_blank');
+    const mensagem = this.mensagemPedidoConcluido(pedido);
+    const url = PhoneUtils.buildWhatsAppUrl(pedido.whatsapp, mensagem);
+    if (url) {
+      window.open(url, '_blank');
+    }
   }
 
   novoPedido() {

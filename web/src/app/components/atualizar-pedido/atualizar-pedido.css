@@ -1,9 +1,68 @@
-form {
-  margin-top: 8px;
+.form-section-card {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 22px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-button[type='submit'] {
-  margin-top: 12px;
-  padding: 13px 20px;
-  font-size: 1rem;
+.form-section-card:hover {
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-icon {
+  font-size: 1.25rem;
+  color: var(--primary);
+}
+
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--error);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.form-control.is-invalid {
+  border-color: var(--error);
+}
+
+.form-control.is-invalid:focus {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18);
+}
+
+.form-actions {
+  margin-top: 10px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 12px;
+  letter-spacing: 0.2px;
+}
+
+@media (max-width: 600px) {
+  .form-section-card {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
 }

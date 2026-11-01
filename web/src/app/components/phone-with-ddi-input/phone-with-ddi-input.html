@@ -1,0 +1,99 @@
+<div class="phone-input-group" [class.has-error]="!!validationError">
+  <label class="form-label" *ngIf="label">
+    <i class="bi bi-whatsapp label-icon"></i>
+    {{ label }}
+    <span class="required" *ngIf="required">*</span>
+  </label>
+
+  <div class="input-wrapper">
+    <!-- DDI Selector Button -->
+    <button
+      type="button"
+      class="ddi-trigger"
+      (click)="toggleDropdown($event)"
+      [disabled]="disabled"
+      [attr.aria-expanded]="dropdownOpen"
+      title="Selecionar país/DDI"
+    >
+      <span class="country-flag">{{ currentFlag }}</span>
+      <span class="ddi-text">+{{ selectedDdi }}</span>
+      <i class="bi bi-chevron-down chevron-icon" [class.rotated]="dropdownOpen"></i>
+    </button>
+
+    <!-- Country Dropdown Menu -->
+    <div class="ddi-dropdown" *ngIf="dropdownOpen">
+      <div class="dropdown-header">Selecione o País</div>
+      <button
+        type="button"
+        class="dropdown-item"
+        *ngFor="let country of countries"
+        [class.active]="country.code === selectedDdi"
+        (click)="selectCountry(country)"
+      >
+        <span class="country-flag">{{ country.flag }}</span>
+        <span class="country-name">{{ country.name }}</span>
+        <span class="country-code">+{{ country.code }}</span>
+      </button>
+
+      <div class="dropdown-divider"></div>
+
+      <button type="button" class="dropdown-item custom-ddi-item" (click)="openCustomDdiModal()">
+        <span class="country-flag">🌐</span>
+        <span class="country-name">Outro país...</span>
+      </button>
+    </div>
+
+    <!-- Phone Number Input -->
+    <input
+      type="tel"
+      class="form-control phone-control"
+      [placeholder]="placeholder"
+      [value]="displayValue"
+      (input)="onInput($event)"
+      (blur)="onBlur()"
+      [disabled]="disabled"
+      autocomplete="off"
+    />
+  </div>
+
+  <!-- Validation Error Feedback -->
+  <div class="error-feedback" *ngIf="validationError">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ validationError }}</span>
+  </div>
+
+  <!-- Custom DDI Modal Dialog -->
+  <div class="modal-backdrop" *ngIf="showCustomDdiModal" (click)="cancelCustomDdi($event)">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4 class="modal-title">🌐 Informar DDI</h4>
+        <button type="button" class="modal-close" (click)="cancelCustomDdi($event)" aria-label="Fechar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-hint">Digite o código DDI do país (somente números):</p>
+        <div class="custom-ddi-wrapper">
+          <span class="plus-prefix">+</span>
+          <input
+            type="tel"
+            inputmode="numeric"
+            class="form-control"
+            placeholder="Ex: 44"
+            [ngModel]="customDdiInput"
+            (ngModelChange)="onCustomDdiChange($event)"
+            name="customDdi"
+            [ngModelOptions]="{standalone: true}"
+            maxlength="4"
+            autofocus
+            (keyup.enter)="confirmCustomDdi($event)"
+          />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelCustomDdi($event)">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="confirmCustomDdi($event)">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
