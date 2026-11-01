@@ -1,0 +1,26 @@
+<div class="currency-input-group" [class.has-error]="!!validationError">
+  <label class="form-label" *ngIf="label">
+    <i class="bi bi-cash-stack label-icon"></i>
+    {{ label }}
+    <span class="required" *ngIf="required">*</span>
+  </label>
+
+  <div class="input-wrapper">
+    <span class="currency-prefix">R$</span>
+    <input
+      type="tel"
+      class="form-control currency-control"
+      placeholder="R$ 0,00"
+      [value]="displayValue"
+      (input)="onInput($event)"
+      (blur)="onBlur()"
+      [disabled]="disabled"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="error-feedback" *ngIf="validationError">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ validationError }}</span>
+  </div>
+</div>

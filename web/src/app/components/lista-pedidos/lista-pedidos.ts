@@ -4,6 +4,7 @@ import { Supabase } from '../../services/supabase';
 import { CupomService } from '../../services/cupom';
 import { Pedido } from '../../../@types/pedido';
 import { Router } from '@angular/router';
+import { PhoneUtils } from '../../utils/phone.utils';
 
 @Component({
   selector: 'app-lista-pedidos',
@@ -51,14 +52,7 @@ export class ListaPedidos implements OnInit {
 
   // ✅ Formata número de WhatsApp
   formatarWhatsapp(numero: string): string {
-    const num = numero.replace(/\D/g, '');
-    if (num.length === 11) {
-      return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
-    }
-    if (num.length === 10) {
-      return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
-    }
-    return numero;
+    return PhoneUtils.formatPhoneDisplay(numero);
   }
 
   // ✅ Mensagem padrão de novo pedido
@@ -107,9 +101,9 @@ Se puder, avalie a Carimbos Ocian no Google:
 
   // ✅ Envia mensagem no WhatsApp
   enviarWhatsApp(pedido: Pedido) {
-    const numero = pedido.whatsapp.toString().replace(/\D/g, '');
+    const target = PhoneUtils.getWhatsAppTargetPhone(pedido.whatsapp);
     const mensagem = this.mensagemNovoPedido(pedido);
-    const url = `https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`;
+    const url = `https://wa.me/${target}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
   }
 
@@ -159,9 +153,9 @@ Se puder, avalie a Carimbos Ocian no Google:
 
   // ✅ Envia mensagem de conclusão
   enviarMensagemConcluido(pedido: Pedido) {
-    const numero = pedido.whatsapp.toString().replace(/\D/g, '');
+    const target = PhoneUtils.getWhatsAppTargetPhone(pedido.whatsapp);
     const mensagem = this.mensagemPedidoConcluido();
-    const url = `https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`;
+    const url = `https://wa.me/${target}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
   }
 

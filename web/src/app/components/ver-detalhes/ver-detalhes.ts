@@ -4,6 +4,7 @@ import { Supabase } from '../../services/supabase';
 import { CupomService } from '../../services/cupom';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { PhoneUtils } from '../../utils/phone.utils';
 
 @Component({
   selector: 'app-ver-detalhes',
@@ -36,11 +37,7 @@ export class VerDetalhes implements OnInit {
   }
 
   formatarWhatsapp(numero: string): string {
-    if (!numero) return '';
-    const num = numero.replace(/\D/g, '');
-    if (num.length === 11) return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
-    if (num.length === 10) return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
-    return numero;
+    return PhoneUtils.formatPhoneDisplay(numero);
   }
 
   copiarTexto(): void {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import type { jsPDF } from 'jspdf';
 import { Pedido } from '../../@types/pedido';
+import { PhoneUtils } from '../utils/phone.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -8,15 +9,7 @@ import { Pedido } from '../../@types/pedido';
 export class CupomService {
   // Formata o número de WhatsApp
   formatarWhatsapp(numero?: number | string | null): string {
-    if (!numero) return '';
-    const num = numero.toString().replace(/\D/g, '');
-    if (num.length === 11) {
-      return `(${num.slice(0, 2)}) ${num.slice(2, 7)}-${num.slice(7)}`;
-    }
-    if (num.length === 10) {
-      return `(${num.slice(0, 2)}) ${num.slice(2, 6)}-${num.slice(6)}`;
-    }
-    return num;
+    return PhoneUtils.formatPhoneDisplay(numero);
   }
 
   // Formata data e hora
