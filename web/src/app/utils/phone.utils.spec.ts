@@ -57,4 +57,16 @@ describe('PhoneUtils', () => {
     expect(PhoneUtils.getValidationError('55', '13888887777')).toBe('Celular com 9 dígitos deve iniciar com 9');
     expect(PhoneUtils.getValidationError('55', '13997654321')).toBeNull();
   });
+
+  it('should build direct api.whatsapp.com URL with properly encoded emojis', () => {
+    const message = 'Olá João! 😄\n📦 Pedido nº: 123\n✅ Concluído';
+    const url = PhoneUtils.buildWhatsAppUrl(13997654321, message);
+
+    expect(url).toContain('https://api.whatsapp.com/send?phone=5513997654321&text=');
+    expect(url).toContain(encodeURIComponent('😄'));
+    expect(url).toContain(encodeURIComponent('📦'));
+    expect(url).toContain(encodeURIComponent('✅'));
+    // Should NOT contain wa.me
+    expect(url).not.toContain('wa.me');
+  });
 });

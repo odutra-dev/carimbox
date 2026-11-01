@@ -323,4 +323,16 @@ export class PhoneUtils {
 
     return null;
   }
+
+  static buildWhatsAppUrl(
+    rawPhone: number | string | null | undefined,
+    message?: string
+  ): string {
+    const target = this.getWhatsAppTargetPhone(rawPhone);
+    if (!target) return '';
+    if (message && message.trim()) {
+      return `https://api.whatsapp.com/send?phone=${target}&text=${encodeURIComponent(message)}`;
+    }
+    return `https://api.whatsapp.com/send?phone=${target}`;
+  }
 }
