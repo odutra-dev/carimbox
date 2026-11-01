@@ -124,8 +124,16 @@ export class PhoneWithDdiInput implements ControlValueAccessor {
     this.showCustomDdiModal = true;
   }
 
-  confirmCustomDdi(): void {
-    const clean = this.customDdiInput.replace(/\D/g, '').slice(0, 4);
+  onCustomDdiChange(value: any): void {
+    this.customDdiInput = String(value ?? '').replace(/\D/g, '').slice(0, 4);
+  }
+
+  confirmCustomDdi(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const clean = String(this.customDdiInput ?? '').replace(/\D/g, '').slice(0, 4);
     if (clean) {
       this.selectedDdi = clean;
       this.ddiChange.emit(this.selectedDdi);
@@ -134,7 +142,11 @@ export class PhoneWithDdiInput implements ControlValueAccessor {
     this.showCustomDdiModal = false;
   }
 
-  cancelCustomDdi(): void {
+  cancelCustomDdi(event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     this.showCustomDdiModal = false;
   }
 

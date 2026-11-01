@@ -36,4 +36,19 @@ describe('PhoneWithDdiInput', () => {
     expect(component.selectedDdi).toBe('351');
     expect(component.currentFlag).toBe('🇵🇹');
   });
+
+  it('should save custom DDI on confirmCustomDdi', () => {
+    spyOn(component.ddiChange, 'emit');
+    component.openCustomDdiModal();
+    expect(component.showCustomDdiModal).toBeTrue();
+
+    // User types 44 (even if bound as number or string)
+    component.onCustomDdiChange('44');
+    component.confirmCustomDdi();
+
+    expect(component.selectedDdi).toBe('44');
+    expect(component.currentFlag).toBe('🌐');
+    expect(component.showCustomDdiModal).toBeFalse();
+    expect(component.ddiChange.emit).toHaveBeenCalledWith('44');
+  });
 });

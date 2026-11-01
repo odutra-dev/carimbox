@@ -63,11 +63,11 @@
   </div>
 
   <!-- Custom DDI Modal Dialog -->
-  <div class="modal-backdrop" *ngIf="showCustomDdiModal" (click)="cancelCustomDdi()">
+  <div class="modal-backdrop" *ngIf="showCustomDdiModal" (click)="cancelCustomDdi($event)">
     <div class="modal-dialog" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h4 class="modal-title">🌐 Informar DDI</h4>
-        <button type="button" class="modal-close" (click)="cancelCustomDdi()" aria-label="Fechar">
+        <button type="button" class="modal-close" (click)="cancelCustomDdi($event)" aria-label="Fechar">
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
@@ -76,19 +76,23 @@
         <div class="custom-ddi-wrapper">
           <span class="plus-prefix">+</span>
           <input
-            type="number"
+            type="tel"
+            inputmode="numeric"
             class="form-control"
             placeholder="Ex: 44"
-            [(ngModel)]="customDdiInput"
+            [ngModel]="customDdiInput"
+            (ngModelChange)="onCustomDdiChange($event)"
+            name="customDdi"
+            [ngModelOptions]="{standalone: true}"
             maxlength="4"
             autofocus
-            (keyup.enter)="confirmCustomDdi()"
+            (keyup.enter)="confirmCustomDdi($event)"
           />
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cancelCustomDdi()">Cancelar</button>
-        <button type="button" class="btn btn-primary" (click)="confirmCustomDdi()">Confirmar</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelCustomDdi($event)">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="confirmCustomDdi($event)">Confirmar</button>
       </div>
     </div>
   </div>
