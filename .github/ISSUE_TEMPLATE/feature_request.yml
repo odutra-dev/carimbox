@@ -1,0 +1,72 @@
+name: "💡 Sugestão de Funcionalidade"
+description: "Sugira uma nova ideia, melhoria ou funcionalidade para o projeto."
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por sugerir uma melhoria para o Carimbox! Ideias e contribuições são muito bem-vindas.
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 💻 Plataforma alvo
+      description: "Para qual plataforma essa funcionalidade é destinada?"
+      options:
+        - Web
+        - Mobile
+        - Ambos (Web e Mobile)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 🚀 Descrição da Funcionalidade
+      description: "Uma explicação clara e concisa de qual funcionalidade você gostaria de ver."
+      placeholder: "Ex: Gostaria de poder filtrar pedidos por data de entrega no painel..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 💡 Motivação e Caso de Uso
+      description: "Qual problema essa funcionalidade resolve? Qual o benefício para os usuários?"
+      placeholder: "Ex: Atualmente é difícil encontrar pedidos urgentes que vencem hoje..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: 🛠️ Solução Proposta ou Ideias de Implementação
+      description: "Como você imagina o funcionamento ou a interface dessa nova funcionalidade?"
+      placeholder: "Ex: Adicionar um seletor de data ao lado do campo de busca que filtre dinamicamente..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 Alternativas Consideradas
+      description: "Você considerou soluções alternativas ou fluxos de contorno?"
+    validations:
+      required: false
+
+  - type: textarea
+    id: references
+    attributes:
+      label: 🎨 Mockups, Referências ou Contexto Adicional
+      description: "Cole aqui prints, esboços, referências visuais ou links úteis."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklists
+    attributes:
+      label: ✅ Validações
+      options:
+        - label: "Procurei nas issues abertas/fechadas e confirmei que esta funcionalidade ainda não foi solicitada."
+          required: true
