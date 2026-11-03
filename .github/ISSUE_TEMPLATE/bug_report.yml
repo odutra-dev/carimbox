@@ -1,0 +1,80 @@
+name: "🐛 Relato de Bug"
+description: "Crie um relatório para nos ajudar a identificar e corrigir um erro."
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por dedicar seu tempo para relatar um problema! Por favor, preencha o formulário abaixo com o máximo de detalhes possível.
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 💻 Plataforma afetada
+      description: "Em qual plataforma o bug foi observado?"
+      options:
+        - Web
+        - Mobile
+        - Ambos (Web e Mobile)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Descrição do Bug
+      description: "Uma descrição clara e concisa do que aconteceu."
+      placeholder: "Ex: Ao clicar no botão 'Salvar Pedido', a tela trava e não envia os dados..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Passos para Reproduzir
+      description: "Como podemos reproduzir o erro? Seja o mais específico possível."
+      value: |
+        1. Acesse a tela '...'
+        2. Preencha os campos '...'
+        3. Clique no botão '...'
+        4. Observe o erro ocorrido
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 🎯 Comportamento Esperado
+      description: "O que você esperava que acontecesse normalmente?"
+      placeholder: "Ex: O pedido deveria ser salvo e uma notificação de sucesso exibida..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 🌐 Ambiente e Dispositivo
+      description: "Informe dados do ambiente onde o erro ocorreu (se aplicável)."
+      placeholder: |
+        - Dispositivo / Modelo: (ex: Samsung Galaxy S21 / PC Ubuntu 24)
+        - Navegador / Versão: (ex: Chrome 120 / Edge / Firefox)
+        - Versão do Android: (ex: Android 13)
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 📸 Screenshots ou Logs
+      description: "Arraste e solte imagens, prints ou cole mensagens de erro do console/logs aqui."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklists
+    attributes:
+      label: ✅ Validações
+      options:
+        - label: "Procurei nas issues abertas/fechadas e confirmei que este problema ainda não foi relatado."
+          required: true
