@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Supabase } from '../../services/supabase';
 import { CupomService } from '../../services/cupom';
 import { Pedido } from '../../../@types/pedido';
@@ -9,7 +10,7 @@ import { PhoneUtils } from '../../utils/phone.utils';
 @Component({
   selector: 'app-lista-pedidos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './lista-pedidos.html',
   styleUrls: ['./lista-pedidos.css'],
 })
@@ -17,6 +18,7 @@ export class ListaPedidos implements OnInit {
   pedidos: Pedido[] = [];
   loading = true;
   errorMsg = '';
+  termoBusca = '';
 
   filtro: 'todos' | 'pendentes' | 'concluidos' = 'pendentes';
 
@@ -187,14 +189,69 @@ https://maps.app.goo.gl/3FzpDGgtgv9ipG1f9
     this.router.navigate(['/novo-pedido']); // Substitua pela rota correta
   }
 
-  // ✅ Getter que retorna apenas os pedidos filtrados
+  // ✅ Limpa o termo de busca atual
+  limparBusca() {
+    this.termoBusca = '';
+  }
+
+  // ✅ Getter que retorna os pedidos filtrados por status e busca inteligente
   get pedidosFiltrados(): Pedido[] {
+    let lista = this.pedidos;
+
     if (this.filtro === 'pendentes') {
-      return this.pedidos.filter((p) => !p.entregue);
+      lista = lista.filter((p) => !p.entregue);
     } else if (this.filtro === 'concluidos') {
-      return this.pedidos.filter((p) => p.entregue);
+      lista = lista.filter((p) => p.entregue);
     }
-    return this.pedidos; // todos
+
+    const busca = this.termoBusca?.trim().toLowerCase();
+    if (!busca) {
+      return lista;
+    }
+
+    const digits = busca.replace(/\D/g, '');
+
+    return lista.filter((p) => {
+      // 1. Busca por ID
+      if (p.id?.toString().toLowerCase().includes(busca)) {
+        return true;
+      }
+      if (digits && p.id?.toString() === digits) {
+        return true;
+      }
+
+      // 2. Busca por Texto (Cliente, Descrição, Modelo, Observação)
+      if (p.cliente?.toLowerCase().includes(busca)) return true;
+      if (p.texto_logo?.toLowerCase().includes(busca)) return true;
+      if (p.tipo_modelo?.toLowerCase().includes(busca)) return true;
+      if (p.observacao?.toLowerCase().includes(busca)) return true;
+
+      // 3. Busca Inteligente por WhatsApp
+      if (p.whatsapp != null) {
+        const rawPhone = p.whatsapp.toString();
+        const formatted = PhoneUtils.formatPhoneDisplay(rawPhone).toLowerCase();
+        const target = PhoneUtils.getWhatsAppTargetPhone(rawPhone);
+
+        // Correspondência no formato exibido ou nos dígitos brutos
+        if (formatted.includes(busca) || rawPhone.includes(busca)) {
+          return true;
+        }
+
+        // Correspondência baseada em dígitos
+        if (digits.length >= 2) {
+          if (rawPhone.includes(digits) || target.includes(digits)) {
+            return true;
+          }
+          // Se digitou 8 ou 9 dígitos (sem DDD), tenta com o DDD 13 padrão ou final do número
+          if (digits.length === 8 || digits.length === 9) {
+            if (rawPhone.endsWith(digits)) return true;
+            if (rawPhone === `13${digits}` || rawPhone === `5513${digits}`) return true;
+          }
+        }
+      }
+
+      return false;
+    });
   }
 
   // Função para alterar filtro
