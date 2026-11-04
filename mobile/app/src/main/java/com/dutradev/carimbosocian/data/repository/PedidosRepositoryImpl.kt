@@ -65,41 +65,53 @@ class PedidosRepositoryImpl(
     override suspend fun searchPedidos(
         id: Long?,
         phone: Long?,
+        phoneCandidates: List<Long>?,
         query: String?,
         startDate: String?,
         endDate: String?
     ): Result<List<Pedido>> = withContext(Dispatchers.IO) {
         runCatching {
+            val allPhoneCandidates = mutableSetOf<Long>()
+            if (phoneCandidates != null) {
+                allPhoneCandidates.addAll(phoneCandidates)
+            }
+            if (phone != null) {
+                allPhoneCandidates.add(phone)
+                val phoneStr = phone.toString()
+                if (phoneStr.startsWith("55") && phoneStr.length in 12..13) {
+                    phoneStr.substring(2).toLongOrNull()?.let { allPhoneCandidates.add(it) }
+                } else if (phoneStr.length in 10..11) {
+                    "55$phoneStr".toLongOrNull()?.let { allPhoneCandidates.add(it) }
+                }
+            }
+
             supabaseClient.from("Pedidos").select {
                 order("id", Order.DESCENDING)
                 filter {
                     if (id != null) {
-                        eq("id", id)
-                    }
-                    if (phone != null) {
-                        val phoneStr = phone.toString()
-                        val altPhone = if (phoneStr.startsWith("55") && phoneStr.length in 12..13) {
-                            phoneStr.substring(2).toLongOrNull()
-                        } else if (phoneStr.length in 10..11) {
-                            "55$phoneStr".toLongOrNull()
-                        } else {
-                            null
-                        }
-
-                        if (altPhone != null) {
-                            or {
-                                eq("whatsapp", phone)
-                                eq("whatsapp", altPhone)
-                            }
-                        } else {
-                            eq("whatsapp", phone)
-                        }
-                    }
-                    if (!query.isNullOrBlank()) {
                         or {
-                            ilike("cliente", "%$query%")
-                            ilike("texto_logo", "%$query%")
-                            ilike("tipo_modelo", "%$query%")
+                            eq("id", id)
+                            if (!query.isNullOrBlank()) {
+                                ilike("cliente", "%$query%")
+                                ilike("texto_logo", "%$query%")
+                                ilike("tipo_modelo", "%$query%")
+                            }
+                        }
+                    } else {
+                        val hasPhones = allPhoneCandidates.isNotEmpty()
+                        val hasText = !query.isNullOrBlank()
+
+                        if (hasPhones || hasText) {
+                            or {
+                                allPhoneCandidates.forEach { candidatePhone ->
+                                    eq("whatsapp", candidatePhone)
+                                }
+                                if (hasText) {
+                                    ilike("cliente", "%$query%")
+                                    ilike("texto_logo", "%$query%")
+                                    ilike("tipo_modelo", "%$query%")
+                                }
+                            }
                         }
                     }
                     if (!startDate.isNullOrBlank() && !endDate.isNullOrBlank()) {
