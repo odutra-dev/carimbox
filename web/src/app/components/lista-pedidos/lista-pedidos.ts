@@ -71,10 +71,6 @@ export class ListaPedidos implements OnInit {
     });
     const formattedDataEntrega = `${dataFormatada} às ${horaFormatada}`;
 
-    const saudacao = pedido.cliente?.trim()
-      ? `Olá ${pedido.cliente.trim()}, aqui é da Carimbos Ocian! 😄`
-      : `Olá, aqui é da Carimbos Ocian! 😄`;
-
     const modeloParte = pedido.tipo_modelo?.trim()
       ? `🔖 Modelo: ${pedido.tipo_modelo.trim()}\n\n`
       : '';
@@ -83,9 +79,7 @@ export class ListaPedidos implements OnInit {
       : '';
     const formattedValor = (pedido.valor ?? 0).toFixed(2).replace('.', ',');
 
-    return `${saudacao}
-
-Segue o resumo do seu pedido:
+    return `Segue o resumo do seu pedido:
 
 ━━━━━━━━━━━━━━━━━
 📦 Nº DO PEDIDO

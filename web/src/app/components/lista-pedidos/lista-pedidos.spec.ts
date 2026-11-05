@@ -122,6 +122,13 @@ describe('ListaPedidos', () => {
     expect(mockPedidos[0].entregue).toBeTrue();
   });
 
+  it('should format mensagemNovoPedido without "Olá, aqui é da Carimbos Ocian!" greeting', () => {
+    const mensagem = component.mensagemNovoPedido(mockPedidos[0]);
+    expect(mensagem).not.toContain('aqui é da Carimbos Ocian');
+    expect(mensagem).not.toContain('Olá');
+    expect(mensagem.startsWith('Segue o resumo do seu pedido:')).toBeTrue();
+  });
+
   describe('Busca inteligente e filtro por WhatsApp', () => {
     beforeEach(async () => {
       await component.ngOnInit();
