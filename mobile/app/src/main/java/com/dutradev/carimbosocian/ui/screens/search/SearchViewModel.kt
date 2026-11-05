@@ -56,29 +56,42 @@ class SearchViewModel(
         val state = _uiState.value
         val trimmed = state.query.trim()
         val digits = trimmed.filter { it.isDigit() }
+        val hasLetters = trimmed.any { it.isLetter() }
 
         val id: Long?
-        val phone: Long?
-        val textQuery: String?
+        val phoneCandidates = mutableListOf<Long>()
+        val textQuery: String? = trimmed.ifBlank { null }
 
         when {
-            // Se tiver entre 8 e 15 dígitos, é um telefone (nacional ou internacional)
-            digits.length in 8..15 -> {
-                id = null
-                phone = digits.toLongOrNull()
-                textQuery = trimmed.ifBlank { null }
-            }
-            // Se for número puro com até 7 dígitos, é busca por ID do pedido
-            digits.isNotEmpty() && digits == trimmed -> {
+            // Se for número puro com até 7 dígitos, busca por ID (e também no texto)
+            digits.isNotEmpty() && digits == trimmed && digits.length <= 7 -> {
                 id = digits.toLongOrNull()
-                phone = null
-                textQuery = null
+            }
+            // Se NÃO tem letras e tem entre 8 e 15 dígitos numéricos, é reconhecido como telefone
+            !hasLetters && digits.length in 8..15 -> {
+                id = null
+                val num = digits.toLongOrNull()
+                if (num != null) {
+                    phoneCandidates.add(num)
+                }
+
+                // 8 ou 9 dígitos: telefone local sem DDD -> tentar com DDD 13 padrão e DDI 55 + DDD 13
+                if (digits.length in 8..9) {
+                    "13$digits".toLongOrNull()?.let { phoneCandidates.add(it) }
+                    "5513$digits".toLongOrNull()?.let { phoneCandidates.add(it) }
+                }
+                // 10 ou 11 dígitos (padrão nacional brasileiro com DDD) -> tentar com DDI 55
+                else if (digits.length in 10..11) {
+                    "55$digits".toLongOrNull()?.let { phoneCandidates.add(it) }
+                }
+                // 12 ou 13 dígitos começando com DDI 55 -> tentar sem o 55
+                else if (digits.startsWith("55") && digits.length in 12..13) {
+                    digits.substring(2).toLongOrNull()?.let { phoneCandidates.add(it) }
+                }
             }
             // Caso contrário, busca textual normal
             else -> {
                 id = null
-                phone = null
-                textQuery = trimmed.ifBlank { null }
             }
         }
 
@@ -94,7 +107,7 @@ class SearchViewModel(
         viewModelScope.launch {
             val result = repository.searchPedidos(
                 id = id,
-                phone = phone,
+                phoneCandidates = phoneCandidates.ifEmpty { null },
                 query = textQuery,
                 startDate = range?.first,
                 endDate = range?.second

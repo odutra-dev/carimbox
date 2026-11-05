@@ -121,4 +121,78 @@ describe('ListaPedidos', () => {
     expect(mockSupabase.updatePedido).toHaveBeenCalledWith(1, { entregue: true });
     expect(mockPedidos[0].entregue).toBeTrue();
   });
+
+  it('should format mensagemNovoPedido without "Olá, aqui é da Carimbos Ocian!" greeting', () => {
+    const mensagem = component.mensagemNovoPedido(mockPedidos[0]);
+    expect(mensagem).not.toContain('aqui é da Carimbos Ocian');
+    expect(mensagem).not.toContain('Olá');
+    expect(mensagem.startsWith('Segue o resumo do seu pedido:')).toBeTrue();
+  });
+
+  describe('Busca inteligente e filtro por WhatsApp', () => {
+    beforeEach(async () => {
+      await component.ngOnInit();
+      component.filtro = 'todos';
+    });
+
+    it('should search by client name', () => {
+      component.termoBusca = 'joão';
+      expect(component.pedidosFiltrados.length).toBe(1);
+      expect(component.pedidosFiltrados[0].cliente).toBe('João Silva');
+    });
+
+    it('should search by order id', () => {
+      component.termoBusca = '2';
+      expect(component.pedidosFiltrados.length).toBe(1);
+      expect(component.pedidosFiltrados[0].id).toBe(2);
+    });
+
+    it('should search by unformatted whatsapp digits', () => {
+      component.termoBusca = '13999991111';
+      expect(component.pedidosFiltrados.length).toBe(1);
+      expect(component.pedidosFiltrados[0].id).toBe(1);
+    });
+
+    it('should search by formatted whatsapp with mask', () => {
+      component.termoBusca = '(13) 99999-2222';
+      expect(component.pedidosFiltrados.length).toBe(1);
+      expect(component.pedidosFiltrados[0].id).toBe(2);
+    });
+
+    it('should search by partial whatsapp digits', () => {
+      component.termoBusca = '99999';
+      expect(component.pedidosFiltrados.length).toBe(2);
+    });
+
+    it('should search by 8/9 digits without DDD assuming default DDD 13', () => {
+      component.termoBusca = '999991111';
+      expect(component.pedidosFiltrados.length).toBe(1);
+      expect(component.pedidosFiltrados[0].id).toBe(1);
+    });
+
+    it('should search by whatsapp with international DDI 55 prefix', () => {
+      component.termoBusca = '5513999992222';
+      expect(component.pedidosFiltrados.length).toBe(1);
+      expect(component.pedidosFiltrados[0].id).toBe(2);
+    });
+
+    it('should search by description or text logo', () => {
+      component.termoBusca = 'Texto 1';
+      expect(component.pedidosFiltrados.length).toBe(1);
+      expect(component.pedidosFiltrados[0].id).toBe(1);
+    });
+
+    it('should return empty list when no matches found', () => {
+      component.termoBusca = 'inexistente 999999';
+      expect(component.pedidosFiltrados.length).toBe(0);
+    });
+
+    it('should clear search term on limparBusca', () => {
+      component.termoBusca = 'João';
+      expect(component.pedidosFiltrados.length).toBe(1);
+      component.limparBusca();
+      expect(component.termoBusca).toBe('');
+      expect(component.pedidosFiltrados.length).toBe(2);
+    });
+  });
 });

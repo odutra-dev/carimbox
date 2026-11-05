@@ -14,13 +14,33 @@
     </button>
   </div>
 
+  <!-- Barra de Busca -->
+  <div class="search-bar-container">
+    <div class="search-input-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Buscar por nº do pedido, cliente, descrição ou WhatsApp..."
+        [(ngModel)]="termoBusca"
+        aria-label="Buscar pedidos"
+      />
+      <button
+        *ngIf="termoBusca"
+        type="button"
+        class="btn-clear-search"
+        (click)="limparBusca()"
+        title="Limpar busca"
+        aria-label="Limpar busca"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+
   <!-- Filtros -->
   <div class="filtros">
-    <button
-      type="button"
-      [class.active]="filtro === 'pendentes'"
-      (click)="setFiltro('pendentes')"
-    >
+    <button type="button" [class.active]="filtro === 'pendentes'" (click)="setFiltro('pendentes')">
       <i class="bi bi-clock"></i>
       <span>Pendentes</span>
     </button>
@@ -34,11 +54,7 @@
       <span>Concluídos</span>
     </button>
 
-    <button
-      type="button"
-      [class.active]="filtro === 'todos'"
-      (click)="setFiltro('todos')"
-    >
+    <button type="button" [class.active]="filtro === 'todos'" (click)="setFiltro('todos')">
       <i class="bi bi-list-ul"></i>
       <span>Todos</span>
     </button>
@@ -150,7 +166,24 @@
   </div>
 
   <!-- Mensagem caso não haja pedidos filtrados -->
-  <div *ngIf="!loading && pedidosFiltrados.length === 0" class="state-box empty">
+  <div
+    *ngIf="!loading && !errorMsg && pedidosFiltrados.length === 0 && termoBusca"
+    class="state-box empty-search"
+  >
+    <i class="bi bi-search"></i>
+    <p>
+      Nenhum pedido encontrado para <strong>"{{ termoBusca }}"</strong>
+    </p>
+    <button type="button" class="btn btn-clear-filter" (click)="limparBusca()">
+      <i class="bi bi-x-circle"></i>
+      <span>Limpar busca</span>
+    </button>
+  </div>
+
+  <div
+    *ngIf="!loading && !errorMsg && pedidosFiltrados.length === 0 && !termoBusca"
+    class="state-box empty"
+  >
     <i class="bi bi-inbox"></i>
     <p>Nenhum pedido encontrado nesta categoria.</p>
   </div>
