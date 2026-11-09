@@ -71,7 +71,7 @@ describe('VerDetalhes', () => {
   it('should navigate to edit on editarPedido()', () => {
     component.pedido = mockPedido;
     component.editarPedido();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/editar-pedido', 42]);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/atualizar-pedido', 42]);
   });
 
   it('should call cupomService on imprimirCupom()', () => {

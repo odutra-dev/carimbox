@@ -12,7 +12,13 @@ export class Supabase {
   constructor() {
     const SUPABASE_URL = environment.supabaseUrl;
     const SUPABASE_ANON_KEY = environment.supabaseAnonKey;
-    this.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    this.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+    });
   }
 
   // 🔹 Buscar todos os pedidos
