@@ -3,7 +3,7 @@ package com.dutradev.carimbosocian.ui.components
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -63,7 +63,7 @@ class CurrencyInputTest {
             text = "1,00",
             substring = true
         )
-        inputNode.performTextInput("5")
+        inputNode.performTextReplacement("1005")
 
         // Valida que caracteres não numéricos são removidos e zeros à esquerda são limpos
         assertEquals("1005", updatedCents)

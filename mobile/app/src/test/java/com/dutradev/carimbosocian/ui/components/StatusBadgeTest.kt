@@ -3,10 +3,12 @@ package com.dutradev.carimbosocian.ui.components
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import com.dutradev.carimbosocian.R
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
@@ -22,7 +24,8 @@ class StatusBadgeTest {
             StatusBadge(isDelivered = true)
         }
 
-        composeTestRule.onNodeWithText("Concluídos").assertIsDisplayed()
+        val expected = RuntimeEnvironment.getApplication().getString(R.string.concluidos)
+        composeTestRule.onNodeWithText(expected).assertIsDisplayed()
     }
 
     @Test
@@ -31,6 +34,7 @@ class StatusBadgeTest {
             StatusBadge(isDelivered = false)
         }
 
-        composeTestRule.onNodeWithText("Pendentes").assertIsDisplayed()
+        val expected = RuntimeEnvironment.getApplication().getString(R.string.pendentes)
+        composeTestRule.onNodeWithText(expected).assertIsDisplayed()
     }
 }

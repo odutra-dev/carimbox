@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import com.dutradev.carimbosocian.R
 import com.dutradev.carimbosocian.testutil.PedidoTestFactory
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -12,6 +13,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
@@ -39,10 +41,14 @@ class PedidoCardTest {
             )
         }
 
+        val context = RuntimeEnvironment.getApplication()
+        val btnConcluidoDesc = context.getString(R.string.marcar_como_concluido_titulo)
+        val btnWhatsappDesc = context.getString(R.string.abrir_whatsapp)
+
         composeTestRule.onNodeWithText("#777", substring = true).assertIsDisplayed()
         composeTestRule.onNodeWithText("Fernanda Lima", substring = true).assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("Marcar como concluído").assertIsDisplayed()
-        composeTestRule.onNodeWithContentDescription("Abrir WhatsApp").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(btnConcluidoDesc).assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(btnWhatsappDesc).assertIsDisplayed()
     }
 
     @Test
@@ -74,8 +80,12 @@ class PedidoCardTest {
             )
         }
 
-        composeTestRule.onNodeWithContentDescription("Marcar como concluído").assertDoesNotExist()
-        composeTestRule.onNodeWithContentDescription("Abrir WhatsApp").assertIsDisplayed()
+        val context = RuntimeEnvironment.getApplication()
+        val btnConcluidoDesc = context.getString(R.string.marcar_como_concluido_titulo)
+        val btnWhatsappDesc = context.getString(R.string.abrir_whatsapp)
+
+        composeTestRule.onNodeWithContentDescription(btnConcluidoDesc).assertDoesNotExist()
+        composeTestRule.onNodeWithContentDescription(btnWhatsappDesc).assertIsDisplayed()
     }
 
     @Test
@@ -95,12 +105,16 @@ class PedidoCardTest {
             )
         }
 
+        val context = RuntimeEnvironment.getApplication()
+        val btnConcluidoDesc = context.getString(R.string.marcar_como_concluido_titulo)
+        val btnConfirmar = context.getString(R.string.confirmar)
+
         // Clica no botão de concluir
-        composeTestRule.onNodeWithContentDescription("Marcar como concluído").performClick()
+        composeTestRule.onNodeWithContentDescription(btnConcluidoDesc).performClick()
 
         // Diálogo deve abrir com botão Confirmar
-        composeTestRule.onNodeWithText("Confirmar").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Confirmar").performClick()
+        composeTestRule.onNodeWithText(btnConfirmar).assertIsDisplayed()
+        composeTestRule.onNodeWithText(btnConfirmar).performClick()
 
         assertEquals(50L, toggledId)
         assertEquals(false, toggledStatus)
