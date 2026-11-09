@@ -1,6 +1,7 @@
 package com.dutradev.carimbosocian
 
 import android.app.Application
+import android.os.Build
 import android.util.Log
 import com.dutradev.carimbosocian.di.AppContainer
 import com.dutradev.carimbosocian.di.DefaultAppContainer
@@ -18,6 +19,12 @@ class CarimboxApplication : Application() {
     }
 
     private fun setupSecurityProviders() {
+        // Ignora no ambiente de testes JVM do Robolectric para evitar falha no carregamento JNI
+        if (Build.FINGERPRINT.contains("robolectric", ignoreCase = true) ||
+            Build.HARDWARE == "robolectric"
+        ) {
+            return
+        }
         try {
             // Insere o provedor Conscrypt para garantir suporte a TLS 1.2/1.3 e CAs modernas
             // mesmo em versões antigas como Android 5.0/5.1 (API 21/22)

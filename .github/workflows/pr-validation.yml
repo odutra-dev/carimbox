@@ -178,7 +178,7 @@ jobs:
         run: |
           if [ -n "$ANDROID_HOME" ] || [ -z "$ACT" ]; then
             echo "Executando testes unitários e build do Android..."
-            ./gradlew testDebugUnitTest --continue
+            ./gradlew testDebugUnitTest --continue --stacktrace
             ./gradlew assembleDebug
           else
             echo "⚠️ ANDROID_HOME não configurado no container local do act."
