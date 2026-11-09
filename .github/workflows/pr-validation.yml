@@ -1,0 +1,298 @@
+name: PR Validation (CI)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+    branches:
+      - main
+      - master
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+  checks: write
+
+jobs:
+  # 1. Detect which parts of the monorepo were touched
+  changes:
+    name: Detect Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.filter.outputs.web }}
+      mobile: ${{ steps.filter.outputs.mobile }}
+      root: ${{ steps.filter.outputs.root }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Filter modified paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            web:
+              - 'web/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.github/workflows/pr-validation.yml'
+            mobile:
+              - 'mobile/**'
+              - '.github/workflows/pr-validation.yml'
+            root:
+              - '*'
+              - '.github/**'
+              - '.husky/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.lintstagedrc.json'
+              - 'commitlint.config.js'
+
+  # 2. PR Title, Commit Messages (Commitlint) & Prettier Formatter
+  pr-metadata:
+    name: PR Standards & Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Root Dependencies
+        run: npm ci
+
+      - name: Validate PR Title (Conventional Commits)
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          if [ -n "$PR_TITLE" ]; then
+            echo "Validando título do PR: $PR_TITLE"
+            echo "$PR_TITLE" | npx commitlint --verbose
+          else
+            echo "Nenhum título de PR detectado para validar."
+          fi
+
+      - name: Validate PR Commits (Commitlint)
+        run: |
+          BASE_REF="${{ github.base_ref || github.event.pull_request.base.ref || 'main' }}"
+          echo "Validando commits do PR comparando com origin/$BASE_REF..."
+          git fetch origin "$BASE_REF" --depth=1 || true
+          npx commitlint --from "origin/$BASE_REF" --to "HEAD" --verbose || \
+          npx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "HEAD" --verbose
+
+      - name: Check Prettier Formatting on Changed Files
+        run: |
+          BASE_REF="${{ github.base_ref || github.event.pull_request.base.ref || 'main' }}"
+          mapfile -t FILES < <(git diff --name-only --diff-filter=ACMRT "origin/$BASE_REF"...HEAD 2>/dev/null | grep -E '\.(ts|js|json|html|css|md)$' || true)
+          if [ ${#FILES[@]} -gt 0 ] && [ -n "${FILES[0]}" ]; then
+            echo "Verificando formatação nos seguintes arquivos:"
+            printf '%s\n' "${FILES[@]}"
+            npx prettier --check "${FILES[@]}"
+          else
+            echo "Nenhum arquivo formatável modificado neste PR."
+          fi
+
+  # 3. Web Frontend Validation (Angular)
+  web-validation:
+    name: Web Frontend (Angular)
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install Web Dependencies
+        run: npm ci
+
+      - name: Build Web Application
+        env:
+          NG_APP_SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NG_APP_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
+        run: npm run build
+
+      - name: Run Web Unit Tests (Headless)
+        env:
+          NG_APP_SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NG_APP_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || 'placeholder-anon-key' }}
+        run: |
+          if command -v google-chrome &> /dev/null || command -v chromium &> /dev/null || [ -n "$CHROME_BIN" ]; then
+            npm test -- --watch=false --browsers=ChromeHeadlessNoSandbox
+          else
+            echo "⚠️ Nenhum navegador Chrome encontrado no ambiente (comum ao rodar via 'act' local com imagem reduzida)."
+            echo "No GitHub Actions (ubuntu-latest), o Google Chrome está pré-instalado nativamente."
+            if [ -n "$ACT" ]; then
+              echo "Ambiente local 'act' detectado: ignorando inicialização do Karma neste container local."
+            else
+              exit 1
+            fi
+          fi
+
+  # 4. Mobile Android Validation
+  mobile-validation:
+    name: Mobile App (Android)
+    needs: changes
+    if: needs.changes.outputs.mobile == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Make Gradlew Executable
+        run: chmod +x gradlew
+
+      - name: Run Android Unit Tests & Build
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY || 'placeholder-supabase-key' }}
+        run: |
+          if [ -n "$ANDROID_HOME" ] || [ -z "$ACT" ]; then
+            echo "Executando testes unitários e build do Android..."
+            ./gradlew testDebugUnitTest --continue --stacktrace
+            ./gradlew assembleDebug
+          else
+            echo "⚠️ ANDROID_HOME não configurado no container local do act."
+            echo "No GitHub Actions (ubuntu-latest), o Android SDK (API 35) está pré-instalado nativamente."
+            echo "Validando estrutura do Gradle localmente..."
+            ./gradlew --version
+          fi
+
+  # 5. Summary & Sticky PR Comment
+  pr-summary:
+    name: Publish PR Summary
+    needs: [changes, pr-metadata, web-validation, mobile-validation]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Summary Report
+        id: summary
+        run: |
+          METADATA_STATUS="${{ needs.pr-metadata.result }}"
+          WEB_STATUS="${{ needs.web-validation.result }}"
+          MOBILE_STATUS="${{ needs.mobile-validation.result }}"
+
+          function format_status() {
+            case "$1" in
+              "success") echo "✅ Passou" ;;
+              "failure") echo "❌ Falhou" ;;
+              "skipped") echo "⏭️ Ignorado (sem alterações)" ;;
+              "cancelled") echo "⚠️ Cancelado" ;;
+              *) echo "❓ $1" ;;
+            esac
+          }
+
+          METADATA_ICON=$(format_status "$METADATA_STATUS")
+          WEB_ICON=$(format_status "$WEB_STATUS")
+          MOBILE_ICON=$(format_status "$MOBILE_STATUS")
+
+          if [ "$METADATA_STATUS" = "success" ] && \
+             { [ "$WEB_STATUS" = "success" ] || [ "$WEB_STATUS" = "skipped" ]; } && \
+             { [ "$MOBILE_STATUS" = "success" ] || [ "$MOBILE_STATUS" = "skipped" ]; }; then
+            OVERALL_STATUS="✅ **Todos os checks obrigatórios foram validados com sucesso!**"
+          else
+            OVERALL_STATUS="❌ **Validação falhou. Verifique os logs detalhados para corrigir antes do merge.**"
+          fi
+
+          SUMMARY_CONTENT=$(cat <<EOF
+          ## 🤖 Relatório de Validação de CI/CD (PR #${{ github.event.pull_request.number }})
+
+          $OVERALL_STATUS
+
+          ### 📋 Resumo das Etapas:
+
+          | Etapa | Status | Detalhes |
+          |---|:---:|---|
+          | **Padrões de PR & Formatação** | $METADATA_ICON | Título do PR, Commitlint e Prettier |
+          | **Web Frontend (Angular)** | $WEB_ICON | Build de produção e Testes unitários (Karma Headless) |
+          | **Mobile App (Android)** | $MOBILE_ICON | Compilação Debug e Testes unitários JUnit |
+
+          > _Executado no commit \`${{ github.event.pull_request.head.sha }}\` para a branch base \`${{ github.base_ref }}\`._
+          EOF
+          )
+
+          echo "$SUMMARY_CONTENT" >> $GITHUB_STEP_SUMMARY
+
+          # Salva para uso no PR comment
+          echo "comment_body<<EOF" >> $GITHUB_OUTPUT
+          echo "$SUMMARY_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post or Update Sticky PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        continue-on-error: true
+        if: github.event.pull_request.number != null && !env.ACT
+        with:
+          header: pr-ci-validation-summary
+          message: ${{ steps.summary.outputs.comment_body }}
+
+  # 6. CI Gate / Enforcer for GitHub Branch Protection Rules
+  ci-gate:
+    name: CI / All Validations Passed
+    needs: [changes, pr-metadata, web-validation, mobile-validation]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required checks status
+        run: |
+          METADATA_STATUS="${{ needs.pr-metadata.result }}"
+          WEB_STATUS="${{ needs.web-validation.result }}"
+          MOBILE_STATUS="${{ needs.mobile-validation.result }}"
+
+          echo "Verificando resultados dos jobs de validação:"
+          echo "- PR Metadata & Format: $METADATA_STATUS"
+          echo "- Web Frontend: $WEB_STATUS"
+          echo "- Mobile Android: $MOBILE_STATUS"
+
+          FAILED=0
+
+          if [ "$METADATA_STATUS" != "success" ]; then
+            echo "❌ Erro: pr-metadata não passou (Status: $METADATA_STATUS)"
+            FAILED=1
+          fi
+
+          if [ "$WEB_STATUS" != "success" ] && [ "$WEB_STATUS" != "skipped" ]; then
+            echo "❌ Erro: web-validation falhou (Status: $WEB_STATUS)"
+            FAILED=1
+          fi
+
+          if [ "$MOBILE_STATUS" != "success" ] && [ "$MOBILE_STATUS" != "skipped" ]; then
+            echo "❌ Erro: mobile-validation falhou (Status: $MOBILE_STATUS)"
+            FAILED=1
+          fi
+
+          if [ $FAILED -ne 0 ]; then
+            echo "💥 Um ou mais checks essenciais falharam. Bloqueando validação do PR."
+            exit 1
+          fi
+
+          echo "🎉 Todas as validações obrigatórias foram concluídas com sucesso!"

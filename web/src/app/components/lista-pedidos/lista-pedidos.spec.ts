@@ -11,8 +11,9 @@ describe('ListaPedidos', () => {
   let mockSupabase: jasmine.SpyObj<Supabase>;
   let mockRouter: jasmine.SpyObj<Router>;
   let mockCupomService: jasmine.SpyObj<CupomService>;
+  let mockPedidos: Pedido[];
 
-  const mockPedidos: Pedido[] = [
+  const getMockPedidos = (): Pedido[] => [
     {
       id: 1,
       cliente: 'João Silva',
@@ -44,8 +45,9 @@ describe('ListaPedidos', () => {
   ];
 
   beforeEach(async () => {
+    mockPedidos = getMockPedidos();
     mockSupabase = jasmine.createSpyObj('Supabase', ['getPedidos', 'updatePedido', 'deletePedido']);
-    mockSupabase.getPedidos.and.resolveTo([...mockPedidos]);
+    mockSupabase.getPedidos.and.resolveTo(mockPedidos);
     mockSupabase.updatePedido.and.resolveTo(mockPedidos[0]);
     mockSupabase.deletePedido.and.resolveTo();
 
@@ -116,6 +118,9 @@ describe('ListaPedidos', () => {
   });
 
   it('should mark order as delivered and update list', async () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    spyOn(window, 'alert');
+    spyOn(component, 'enviarMensagemConcluido');
     await component.ngOnInit();
     await component.marcarComoEntregue(mockPedidos[0]);
     expect(mockSupabase.updatePedido).toHaveBeenCalledWith(1, { entregue: true });

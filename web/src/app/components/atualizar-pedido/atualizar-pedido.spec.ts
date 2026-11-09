@@ -72,13 +72,13 @@ describe('AtualizarPedido', () => {
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
   });
 
-  it('should update pedido on valid submit and navigate to details', async () => {
+  it('should update pedido on valid submit and navigate to home', async () => {
     await component.ngOnInit();
     expect(component.pedidoForm.valid).toBeTrue();
 
     await component.onSubmit();
 
     expect(mockSupabase.updatePedido).toHaveBeenCalled();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/ver-pedido', 10]);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
   });
 });

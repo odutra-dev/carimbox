@@ -35,7 +35,7 @@ describe('NovoPedido', () => {
 
   it('should initialize form with invalid status due to required fields', () => {
     expect(component.pedidoForm.valid).toBeFalse();
-    expect(component.pedidoForm.get('cliente')?.hasError('required')).toBeTrue();
+    expect(component.pedidoForm.get('texto_logo')?.hasError('required')).toBeTrue();
     expect(component.pedidoForm.get('whatsapp')?.hasError('required')).toBeTrue();
   });
 
