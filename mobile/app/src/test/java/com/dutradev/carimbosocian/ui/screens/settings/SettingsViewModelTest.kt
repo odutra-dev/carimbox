@@ -57,11 +57,11 @@ class SettingsViewModelTest {
         viewModel.language.test {
             assertEquals(AppLanguage.SYSTEM, awaitItem())
 
-            languageFlow.value = AppLanguage.PT
-            assertEquals(AppLanguage.PT, awaitItem())
+            languageFlow.value = AppLanguage.PORTUGUESE
+            assertEquals(AppLanguage.PORTUGUESE, awaitItem())
 
-            languageFlow.value = AppLanguage.EN
-            assertEquals(AppLanguage.EN, awaitItem())
+            languageFlow.value = AppLanguage.ENGLISH
+            assertEquals(AppLanguage.ENGLISH, awaitItem())
 
             cancelAndIgnoreRemainingEvents()
         }
@@ -86,9 +86,9 @@ class SettingsViewModelTest {
         coEvery { preferencesDataStore.setLanguage(any()) } returns Unit
 
         val viewModel = SettingsViewModel(preferencesDataStore)
-        viewModel.setLanguage(AppLanguage.ES)
+        viewModel.setLanguage(AppLanguage.SPANISH)
 
-        coVerify(exactly = 1) { preferencesDataStore.setLanguage(AppLanguage.ES) }
+        coVerify(exactly = 1) { preferencesDataStore.setLanguage(AppLanguage.SPANISH) }
     }
 
     @Test
